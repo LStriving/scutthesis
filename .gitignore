@@ -15,3 +15,16 @@ sample_test.idx
 sample_test.log
 sample_test.out
 sample_test.toc
+
+*.aux
+*.bbl
+*.blg
+*.idx
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.hd
+*.xdv
+

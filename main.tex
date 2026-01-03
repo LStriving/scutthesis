@@ -1,0 +1,114 @@
+%% LyX 2.1.4 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[unicode,pdfcover,master]{scutthesis}
+\usepackage{fontspec}
+\usepackage{color}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage[unicode=true,
+ bookmarks=true,bookmarksnumbered=true,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=true]
+ {hyperref}
+% table
+% \usepackage{xspace}
+% \usepackage{enumitem}
+% \usepackage{amsmath,amsfonts}
+% % \usepackage{algorithmic}
+% % \usepackage{algorithm}
+% \usepackage{array}
+% \usepackage{textcomp}
+% \usepackage{stfloats}
+% % \usepackage{url}
+% \usepackage{verbatim}
+% \usepackage{graphicx}
+% \usepackage{graphicx}
+% \usepackage[table]{xcolor}
+% \usepackage{amssymb}
+% \usepackage{booktabs}
+
+% \usepackage{paralist}
+% \usepackage{colortbl} % 和longtable冲突
+\usepackage{multicol}
+\usepackage{multirow}
+% \usepackage{subcaption}
+\usepackage{makecell}
+% \usepackage{rotating}
+% \usepackage{caption}
+% \usepackage{subcaption}
+
+
+% \usepackage{etoolbox}
+% \usepackage{stfloats}
+% \usepackage{mathtools}
+\usepackage{bbding}
+
+
+\newcommand{\theHalgorithm}{\arabic{algorithm}}
+\newcommand{\sexyname}{SG-Mamba\xspace}
+\newcommand{\fullname}{Skeleton-Guided Mamba for Temporal Micro-Action Localization\xspace}
+\newcommand{\crossblockfull}{Channel-enhanced Cross-Mamba\xspace}
+\newcommand{\channelblockfull}{Channel-wise Enhancement\xspace}
+\newcommand{\crossblockshort}{CCM\xspace}
+\newcommand{\channelblockshort}{CE\xspace}
+\definecolor{mygray}{rgb}{0.9,0.9,0.9}
+\newcommand{\cell}{\cellcolor[rgb]{0.92,0.92,0.92}}
+\hypersetup{
+  pdftitle={医疗场景下的视频动作理解研究},
+  pdfauthor={李奕锐},
+  pdfsubject={华南理工大学专业硕士学位论文},
+  pdfkeywords={关键字1, 关键字2},
+  unicode=true,linkcolor=black, anchorcolor=black, citecolor=olive, filecolor=magenta, menucolor=red, urlcolor=magenta, pdfstartview=FitH}
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+\providecommand{\LyX}{\texorpdfstring%
+  {L\kern-.1667em\lower.25em\hbox{Y}\kern-.125emX\@}
+  {LyX}}
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+
+\makeatother
+
+\usepackage{listings}
+\usepackage{xunicode}
+\renewcommand{\lstlistingname}{列表}
+
+\begin{document}
+
+\title{医疗场景下的视频动作理解研究}
+\author{李奕锐}
+\supervisor{指导教师：陈健\ 教授}
+\institute{华南理工大学}
+
+
+\date{2026年4月13日}
+
+\maketitle
+\frontmatter
+
+\include{sec/0-abs}
+\include{sec/0-ENabs}
+
+\tableofcontents{}
+
+\listoftables
+\listoffigures
+
+\include{sec/symbol}
+\include{sec/short}
+\mainmatter
+
+\include{sec/1-intro}
+\include{sec/2-related}
+\include{sec/3-alg1}
+\include{sec/4-alg2}
+\include{sec/5-plt}
+\include{sec/6-con}
+\bibliographystyle{gbt7714-numerical-scut}
+\bibliography{main}
+\include{sec/appendix}
+\include{sec/7-pub}
+\include{sec/8-thanks}
+
+\end{document}
