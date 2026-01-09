@@ -27,4 +27,8 @@ sample_test.toc
 *.lot
 *.hd
 *.xdv
+*.run.xml
+*.bcf
+*.synctex*
 
+*.pdf

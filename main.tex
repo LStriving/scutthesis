@@ -13,9 +13,9 @@
 % table
 % \usepackage{xspace}
 % \usepackage{enumitem}
-% \usepackage{amsmath,amsfonts}
-% % \usepackage{algorithmic}
-% % \usepackage{algorithm}
+\usepackage{amsmath,amsfonts}
+\usepackage{algorithmic}
+\usepackage{algorithm}
 % \usepackage{array}
 % \usepackage{textcomp}
 % \usepackage{stfloats}
@@ -42,12 +42,19 @@
 % \usepackage{stfloats}
 % \usepackage{mathtools}
 \usepackage{bbding}
+% \usepackage[backend=biber,style=gb7714-2015]{biblatex}
 
+% 定义一个新的正文引用命令
+\newcommand{\mycite}[1]{{\setcitestyle{numbers,square,sort&compress}\cite{#1}}}
+
+% 全局将名字改为中文“算法”
+\floatname{algorithm}{算法}
+\renewcommand{\thealgorithm}{\thechapter-\arabic{algorithm}}
 
 \newcommand{\theHalgorithm}{\arabic{algorithm}}
 \newcommand{\sexyname}{SG-Mamba\xspace}
 \newcommand{\fullname}{Skeleton-Guided Mamba for Temporal Micro-Action Localization\xspace}
-\newcommand{\crossblockfull}{Channel-enhanced Cross-Mamba\xspace}
+\newcommand{\crossblockfull}{通道增强的交叉Mamba\xspace}
 \newcommand{\channelblockfull}{Channel-wise Enhancement\xspace}
 \newcommand{\crossblockshort}{CCM\xspace}
 \newcommand{\channelblockshort}{CE\xspace}

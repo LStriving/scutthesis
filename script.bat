@@ -5,3 +5,4 @@ bibtex main
 bibtex main 
 xelatex -no-pdf --interaction=nonstopmode main 
 xelatex --interaction=nonstopmode main 
+start main.pdf
