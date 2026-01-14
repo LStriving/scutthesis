@@ -524,31 +524,74 @@ VideoMamba \cite{li2025videomamba}          &    端到端 &\textbf{75.5}&\textb
 本节旨在量化分析 \sexyname 中关键组件的贡献，主要评估指标包括 mAP@0.1、mAP@0.3、mAP@0.5、mAP@0.7 以及平均 mAP (Avg.)。
 
 \textbf{多模态建模策略分析}\quad 如表~\ref{tab: modality ablation} 所示，与文献 \mycite{ruan2023temporal} 的结论一致，采用单类别分类的“由粗到细”定位策略显著优于单阶段多类别分类方法（mAP@Avg. 从 59.0\% 提升至 61.7\%），证明了级联定位在处理短时微动作时的有效性。
+% \begin{table}[tp]
+% \small
+% \renewcommand{\arraystretch}{1.0}
+% \renewcommand{\tabcolsep}{5pt}
+% \begin{center}
+% \caption{骨架热图提取器的性能和参数比较，以及它们集成到骨架分支 (Ske.) 和 \sexyname 框架后的性能}
+% % 修改列定义：增加一列，将原来的第3列拆分为两个 c
+% \begin{tabular}{lrcclrrrrr}
+% \toprule
+% % 表头拆分
+% \multirow{2}{*}{提取器} & \multirow{2}{*}{\makecell{PCK}} & \multirow{2}{*}{FLOPs} & \multirow{2}{*}{参数量} & \multirow{2}{*}{方法} & \multicolumn{5}{c}{mAP@tIoU 阈值} \\
+%  & & & & & 0.1 & 0.3 & 0.5 & 0.7 & Avg.\\
+% \midrule
+% % Simple-Baseline 数据拆分
+% \multirow{2}{*}{\makecell{Simple-\\Baseline} ~\cite{zhao2019m2det}} & \multirow{2}{*}{80.8} & \multirow{2}{*}{6.2} & \multirow{2}{*}{15.4} & Ske. & 65.9 & 60.8 & 47.3 & 20.0 & 49.6 \\
+%  & & & & 本章方法 & 81.5 & 72.4 & 58.8 & 36.5 & 63.0 \\
+% \midrule
+% % HRNet 数据拆分
+% \multirow{2}{*}{HRNet~\cite{wang2020deep}} & \multirow{2}{*}{82.2} & \multirow{2}{*}{7.7} & \multirow{2}{*}{28.5} & Ske. & 75.5 & 66.4 & 50.3 & 13.0 & 52.7 \\ 
+%  & & & & 本章方法 & \textbf{83.1} & \textbf{74.6} & \textbf{59.0} & \textbf{37.2} & \textbf{64.3}\\
+% \bottomrule
+% \end{tabular}
+% \label{tab: heatmap extractor}
+% \end{center}
+% \end{table}
 \begin{table}[tp]
 \small
 \renewcommand{\arraystretch}{1.0}
-\renewcommand{\tabcolsep}{5pt}
+\renewcommand{\tabcolsep}{8pt} % 稍微增加列间距让表格更美观
 \begin{center}
-\caption{骨架热图提取器的性能和参数比较，以及它们集成到骨架分支 (Ske.) 和 \sexyname 框架后的性能}
-% 修改列定义：增加一列，将原来的第3列拆分为两个 c
-\begin{tabular}{lrcclrrrrr}
+\caption{不同骨架热图提取器的性能比较}
+\begin{tabular}{lccc}
 \toprule
-% 表头拆分
-\multirow{2}{*}{提取器} & \multirow{2}{*}{\makecell{PCK}} & \multirow{2}{*}{FLOPs} & \multirow{2}{*}{参数量} & \multirow{2}{*}{方法} & \multicolumn{5}{c}{mAP@tIoU 阈值} \\
- & & & & & 0.1 & 0.3 & 0.5 & 0.7 & Avg.\\
+提取器  & FLOPs (G) & 参数量 (M) & PCK \\
 \midrule
-% Simple-Baseline 数据拆分
-\multirow{2}{*}{\makecell{Simple-\\Baseline} ~\cite{zhao2019m2det}} & \multirow{2}{*}{80.8} & \multirow{2}{*}{6.2} & \multirow{2}{*}{15.4} & Ske. & 65.9 & 60.8 & 47.3 & 20.0 & 49.6 \\
- & & & & 本章方法 & 81.5 & 72.4 & 58.8 & 36.5 & 63.0 \\
-\midrule
-% HRNet 数据拆分
-\multirow{2}{*}{HRNet~\cite{wang2020deep}} & \multirow{2}{*}{82.2} & \multirow{2}{*}{7.7} & \multirow{2}{*}{28.5} & Ske. & 75.5 & 66.4 & 50.3 & 13.0 & 52.7 \\ 
- & & & & 本章方法 & \textbf{83.1} & \textbf{74.6} & \textbf{59.0} & \textbf{37.2} & \textbf{64.3}\\
+Simple-Baseline~\cite{zhao2019m2det}  & 6.2 & 15.4 & 80.8\\
+HRNet~\cite{wang2020deep}  & 7.7 & 28.5 & 82.2 \\
 \bottomrule
 \end{tabular}
-\label{tab: heatmap extractor}
+\label{tab:extractor_performance}
 \end{center}
 \end{table}
+
+\begin{table}[tp]
+\small
+\renewcommand{\arraystretch}{1.0}
+\renewcommand{\tabcolsep}{4pt}
+\begin{center}
+\caption{不同提取器集成到骨架分支 (Ske.) 与本章方法后的性能对比}
+\begin{tabular}{llrrrrr}
+\toprule
+\multirow{2}{*}{提取器} & \multirow{2}{*}{方法} & \multicolumn{5}{c}{mAP@tIoU 阈值} \\
+\cmidrule(l){3-7} % 添加 cmidrule 增加层次感
+ & & 0.1 & 0.3 & 0.5 & 0.7 & Avg.\\
+\midrule
+% Simple-Baseline 部分
+\multirow{2}{*}{\makecell[l]{Simple-\\Baseline}} & Ske. & 65.9 & 60.8 & 47.3 & 20.0 & 49.6 \\
+ & 本章方法 & 81.5 & 72.4 & 58.8 & 36.5 & 63.0 \\
+\midrule
+% HRNet 部分
+\multirow{2}{*}{HRNet} & Ske. & 75.5 & 66.4 & 50.3 & 13.0 & 52.7 \\ 
+ & 本章方法 & \textbf{83.1} & \textbf{74.6} & \textbf{59.0} & \textbf{37.2} & \textbf{64.3}\\
+\bottomrule
+\end{tabular}
+\label{tab:framework_performance}
+\end{center}
+\end{table}
+
 
 \begin{table}[tp]
 \small
