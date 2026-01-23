@@ -56,35 +56,35 @@
 该任务面临严峻的时空挑战：在时间维度上，微动作持续时间极短且存在重叠；在空间维度上，细微的运动幅度、复杂的背景噪声以及模糊的解剖轮廓，严重干扰了对关键解剖结构的识别及动作边界的精准定位。
 
 
-\section{预备知识}
-由于我们的方法广泛使用了 Mamba 模块，首先介绍基于状态空间模型（State-Space Models, SSMs）的模型，特别是 S4 \cite{gu2021efficiently} 和 Mamba \cite{gu2023mamba}。SSMs 是一类数学框架，旨在通过隐藏状态 $h(t) \in \mathbb{R}^N$ 将输入序列 $x(t)$ 映射到输出序列 $y(t)$。形式上，SSMs 由常微分方程（ODEs）控制：
-\begin{equation}
-    h'(t) = \mathbf{A}h(t) + \mathbf{B}x(t), \quad y(t) = \mathbf{C}h(t),
-\end{equation}
-其中 $\mathbf{A} \in \mathbb{R}^{N \times N}$ 是状态转移矩阵，$\mathbf{B} \in \mathbb{R}^{N \times 1}$ 和 $\mathbf{C} \in \mathbb{R}^{1 \times N}$ 是投影矩阵。SSM 独立应用于 $x(t)\in \mathbb{R}^D$ 的每个通道。
+% \section{预备知识}
+% 由于我们的方法广泛使用了 Mamba 模块，首先介绍基于状态空间模型（State-Space Models, SSMs）的模型，特别是 S4 \cite{gu2021efficiently} 和 Mamba \cite{gu2023mamba}。SSMs 是一类数学框架，旨在通过隐藏状态 $h(t) \in \mathbb{R}^N$ 将输入序列 $x(t)$ 映射到输出序列 $y(t)$。形式上，SSMs 由常微分方程（ODEs）控制：
+% \begin{equation}
+%     h'(t) = \mathbf{A}h(t) + \mathbf{B}x(t), \quad y(t) = \mathbf{C}h(t),
+% \end{equation}
+% 其中 $\mathbf{A} \in \mathbb{R}^{N \times N}$ 是状态转移矩阵，$\mathbf{B} \in \mathbb{R}^{N \times 1}$ 和 $\mathbf{C} \in \mathbb{R}^{1 \times N}$ 是投影矩阵。SSM 独立应用于 $x(t)\in \mathbb{R}^D$ 的每个通道。
 
-Mamba~\cite{gu2023mamba} 是离散 SSM 的一种变体，它包含一个时间尺度参数 $\Delta$，通过零阶保持（Zero-Order Hold, ZOH）将连续参数 $\mathbf{A}$ 和 $\mathbf{B}$ 转换为离散对应项 $\overline{\mathbf{A}}$ 和 $\overline{\mathbf{B}}$：
-\begin{equation}
-    \overline{\mathbf{A}} = \exp(\Delta \mathbf{A}),\quad
-    \overline{\mathbf{B}} = (\Delta \mathbf{A})^{-1}(\exp(\Delta \mathbf{A}) - \mathbf{I}) \cdot \Delta \mathbf{B}.
-\end{equation}
-这些变换使得隐藏状态 \(h_t\) 可以通过离散化的状态空间公式迭代计算：
-\begin{equation}
-    h_t = \overline{\mathbf{A}} h_{t-1} + \overline{\mathbf{B}} x_t, \quad y_t = \mathbf{C} h_t.
-\end{equation}
-上述操作可以通过全局卷积范式高效实现：
-\begin{equation}\label{eq:ssm}
-    \overline{\mathbf{K}}=(\mathbf{C}\overline{\mathbf{B}},\mathbf{C}\overline{\mathbf{A}\mathbf{B}},\ldots,\mathbf{C}\overline{\mathbf{A}}^{S-1}\overline{\mathbf{B}}),\quad\mathbf{Y}=\mathbf{X}*\overline{\mathbf{K}}
-\end{equation}
-其中 $S$ 表示序列的长度，$\mathbf{X} \in \mathbb{R}^{S \times D}$ 和 $\mathbf{Y} \in \mathbb{R}^{S \times D}$ 分别是输入和输出序列。与依赖静态参数的传统 SSM 不同，Mamba 引入了选择性扫描机制（Selective Scan Mechanism, S6）作为其核心算子，引入了动态上下文敏感性和自适应权重调制。在这里，$\mathbf{B}\in\mathbb{R}^{S \times D \times N}$，$\mathbf{C}\in\mathbb{R}^{S \times D \times N}$ 和 $\Delta\in\mathbb{R}^{S \times D}$ 是直接从输入 $\mathbf{X}\in \mathbb{R}^{S \times D}$ 推断出来的，从而能够有效处理不同的输入分布。为方便起见，我们使用 $\mathbf{Y}={\rm SSM}(\mathbf{X})$ 来表示公式~\ref{eq:ssm}。该公式也可在公式~\ref{eq:fw_ssm} 中复用。
+% Mamba~\cite{gu2023mamba} 是离散 SSM 的一种变体，它包含一个时间尺度参数 $\Delta$，通过零阶保持（Zero-Order Hold, ZOH）将连续参数 $\mathbf{A}$ 和 $\mathbf{B}$ 转换为离散对应项 $\overline{\mathbf{A}}$ 和 $\overline{\mathbf{B}}$：
+% \begin{equation}
+%     \overline{\mathbf{A}} = \exp(\Delta \mathbf{A}),\quad
+%     \overline{\mathbf{B}} = (\Delta \mathbf{A})^{-1}(\exp(\Delta \mathbf{A}) - \mathbf{I}) \cdot \Delta \mathbf{B}.
+% \end{equation}
+% 这些变换使得隐藏状态 \(h_t\) 可以通过离散化的状态空间公式迭代计算：
+% \begin{equation}
+%     h_t = \overline{\mathbf{A}} h_{t-1} + \overline{\mathbf{B}} x_t, \quad y_t = \mathbf{C} h_t.
+% \end{equation}
+% 上述操作可以通过全局卷积范式高效实现：
+% \begin{equation}\label{eq:ssm}
+%     \overline{\mathbf{K}}=(\mathbf{C}\overline{\mathbf{B}},\mathbf{C}\overline{\mathbf{A}\mathbf{B}},\ldots,\mathbf{C}\overline{\mathbf{A}}^{S-1}\overline{\mathbf{B}}),\quad\mathbf{Y}=\mathbf{X}*\overline{\mathbf{K}}
+% \end{equation}
+% 其中 $S$ 表示序列的长度，$\mathbf{X} \in \mathbb{R}^{S \times D}$ 和 $\mathbf{Y} \in \mathbb{R}^{S \times D}$ 分别是输入和输出序列。与依赖静态参数的传统 SSM 不同，Mamba 引入了选择性扫描机制（Selective Scan Mechanism, S6）作为其核心算子，引入了动态上下文敏感性和自适应权重调制。在这里，$\mathbf{B}\in\mathbb{R}^{S \times D \times N}$，$\mathbf{C}\in\mathbb{R}^{S \times D \times N}$ 和 $\Delta\in\mathbb{R}^{S \times D}$ 是直接从输入 $\mathbf{X}\in \mathbb{R}^{S \times D}$ 推断出来的，从而能够有效处理不同的输入分布。为方便起见，我们使用 $\mathbf{Y}={\rm SSM}(\mathbf{X})$ 来表示公式~\ref{eq:ssm}。该公式也可在公式~\ref{eq:fw_ssm} 中复用。
 
-\begin{figure*}[tp]
-    % \vspace{-5pt}
-    \centering
-    \includegraphics[width=1.0\textwidth]{fig/alg1/framework_v6 (cropped).pdf}
-    \caption{本章所提出的SG-Mamba框架示意图}
-    \label{fig:framework}
-\end{figure*}
+% \begin{figure*}[tp]
+%     % \vspace{-5pt}
+%     \centering
+%     \includegraphics[width=1.0\textwidth]{fig/alg1/framework_v6 (cropped).pdf}
+%     \caption{本章所提出的SG-Mamba框架示意图}
+%     \label{fig:framework}
+% \end{figure*}
 
 \section{本章方法}
 
@@ -94,7 +94,7 @@ Mamba~\cite{gu2023mamba} 是离散 SSM 的一种变体，它包含一个时间�
 随后在精细定位阶段，以候选区间的中心为基准向外扩展固定时长（如 4 秒）对视频进行裁剪。
 粗定位阶段的标签集记为 $Z^{1}=\{z^1_1,z^1_2,\ldots,z^1_M\}$，其中 $M = N/C$ 表示吞咽事件的总数。每个事件 $z^1_i=(s_i,e_i)$ 仅包含起止时间 $s_i$ 与 $e_i$。
 第二阶段（精细定位）的标签集则表示为 $Z^2 = \{z^2_1, \dots, z^2_C\}$。
-由于粗定位阶段本质上是一个二分类时序动作定位任务，且非本文核心创新点，故不再赘述。
+由于粗定位阶段本质上是一个二分类时序动作定位任务，后续不再赘述。
 
 针对精细定位阶段，本文引入骨架热图作为一种编码解剖学先验的新颖模态。
 通过追踪八个具有临床显著性的关键点构建结构化骨架序列，旨在增强模型对解剖结构的关注度并抑制背景噪声，从而克服了仅依赖外观数据的局限性。
@@ -186,7 +186,7 @@ f^{ske}_i = {\rm AvgPooling}(\mathcal{F}_{\text{BM}}(h^{3D}_i)),
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=0.8\linewidth]{fig/alg1/heatmap_example.png}
+    \includegraphics[width=0.8\linewidth]{fig/alg1/heatmap-example.pdf}
     \caption{不同热力图输入的可视化示例}
     \label{fig: heatmap illu}
 \end{figure}
@@ -448,7 +448,7 @@ w/o CE  & 82.3&73.3  & 58.1  & 35.1 & 63.3  & 109.1& 116.9\\
 \midrule
 CE-Add  & 81.7&73.3  &  58.6  & 36.0 &   63.5   & 109.2& 116.9\\
 SE \cite{hu2018squeeze} &  82.5&74.0 & 57.8 &36.0 & 63.7   & 115.9& 116.9\\
-ECA \cite{wang2020eca}  & 73.5 & 59.0  & 36.8 & 63.9  \\
+% ECA \cite{wang2020eca}  & 73.5 & 59.0  & 36.8 & 63.9  \\
 \channelblockshort (本章方法)  & \textbf{83.1}&\textbf{74.6}& \textbf{59.0} & \textbf{37.2}&\textbf{64.3}   & 109.2& 116.9\\
 \bottomrule
 \end{tabular}%}
@@ -464,7 +464,8 @@ ECA \cite{wang2020eca}  & 73.5 & 59.0  & 36.8 & 63.9  \\
 (2) 针对 VFSS 优化的微动作定位方法~\cite{ruan2023temporal}\footnote{由于 Jeong \etal~\cite{jeong2023application} 提出的方法专用于裁剪后的视频且代码未开源，故未纳入本次比较。}；
 (3) 引入骨架增强的多模态微动作定位方法~\cite{hyder2024action}
 在通用 TAL 方法中，ActionMamba 确立了最强的基准性能（平均 mAP 达 59.0\%），充分验证了 Mamba 架构相较于 CNN 和 Transformer 在长时序建模方面的显著优势。
-针对 VFSS 特定方法，我们在同等实验设置下基于 ActionMamba 复现了文献 \mycite{ruan2023temporal} 的策略（表中标记为 $\dagger$）。实验结果表明，尽管该策略对 A2Net 有所改进，但将其迁移至 ActionMamba 后带来的性能增益十分有限，暴露出该方法对特定架构的依赖性及其泛化瓶颈。
+针对 VFSS 特定方法，我们在同等实验设置下基于 ActionMamba 复现了文献 \mycite{ruan2023temporal} 的策略（表中标记为 $\dagger$）。
+实验结果表明，尽管该策略对 A2Net 有所改进，但将其迁移至 ActionMamba 后带来的性能增益十分有限，暴露出该方法对特定架构的依赖性及其泛化瓶颈。
 对于多模态方法，Hyder 等人 \cite{hyder2024action} 简单地将热图特征与 RGB 特征进行拼接，并通过 $1\times1$ 卷积融合，虽然取得了 59.3\% 的平均 mAP，但简单的线性融合难以充分挖掘跨模态的深层互补信息。
 
 相比之下，本文提出的 \sexyname 取得了 64.3\% 的平均 mAP，全面超越了上述三类方法：相较于最先进的 TAL 方法 (ActionMamba) 提升了 \textbf{5.3\%}；相较于现有的 VFSS 特定优化策略 (Ruan \etal with A2Net) 提升了 \textbf{14.4\%}；相较于骨架增强基线 (Hyder \etal) 提升了 \textbf{5.0\%}。
@@ -514,10 +515,14 @@ VideoMamba \cite{li2025videomamba}          &    端到端 &\textbf{75.5}&\textb
 \end{table}
 
 \subsection{外部验证与泛化性分析}
-为验证模型的泛化能力与临床鲁棒性，本文引入了采集自不同医疗中心（明心康复中心）的独立外部数据集进行测试。该数据集包含 8 名受试者的影像资料，均使用 VFSS 采集分析系统（朗意医疗，中国广州）以 30 fps 的帧率进行数字化录制。所有视频（总时长 95 分钟）均由两名资深临床医生独立评估，最终依据文献 \mycite{ruan2023temporal} 的标准筛选并标注了 48 个微动作片段，平均持续时间为 1.1 秒。
+为验证模型的泛化能力与临床鲁棒性，本文引入了采集自不同医疗中心（明心康复中心）的独立外部数据集进行测试。
+该数据集包含 8 名受试者的影像资料，均使用 VFSS 采集分析系统（朗意医疗，中国广州）以 30 fps 的帧率进行数字化录制。
+所有视频（总时长 95 分钟）均由两名资深临床医生独立评估，最终依据文献 \mycite{ruan2023temporal} 的标准筛选并标注了 48 个微动作片段，平均持续时间为 1.1 秒。
 实验采用直接推理模式，即直接使用在源域 \cite{ruan2023temporal} 训练的模型对该外部数据集进行评估，过程中未进行任何微调或重新训练。
 
-如表~\ref{tab: external} 所示，\sexyname（基于 ActionMamba）在大多数 tIoU 阈值下均表现出显著优势。其平均 mAP 较现有的 VFSS 方法提升了 9.0\%，较骨架增强基线提升了 5.9\%。这一结果有力证明了模型在应对异构采集设备、不同患者特征及复杂临床环境时，具有卓越的鲁棒性与泛化能力。
+如表~\ref{tab: external} 所示，\sexyname（基于 ActionMamba）在大多数 tIoU 阈值下均表现出显著优势。
+其平均 mAP 较现有的 VFSS 方法提升了 9.0\%，较骨架增强基线提升了 5.9\%。
+这一结果有力证明了模型在应对异构采集设备、不同患者特征及复杂临床环境时，具有卓越的鲁棒性与泛化能力。
 基于上述算法，我们进一步开发了智能辅助诊断原型系统，初步验证了该方法在实际临床工作流中的应用潜力。
 \subsection{消融实验}
 \label{sec: ablation}
@@ -576,7 +581,7 @@ HRNet~\cite{wang2020deep}  & 7.7 & 28.5 & 82.2 \\
 \begin{tabular}{llrrrrr}
 \toprule
 \multirow{2}{*}{提取器} & \multirow{2}{*}{方法} & \multicolumn{5}{c}{mAP@tIoU 阈值} \\
-\cmidrule(l){3-7} % 添加 cmidrule 增加层次感
+% \cmidrule(l){3-7} % 添加 cmidrule 增加层次感
  & & 0.1 & 0.3 & 0.5 & 0.7 & Avg.\\
 \midrule
 % Simple-Baseline 部分
