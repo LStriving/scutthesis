@@ -1,8 +1,6 @@
 \chapter{基于解剖结构校准的吞咽造影视频分析}
 \section{引言}
 
-
-
 吞咽障碍（Dysphagia）~\cite{rommel2016oropharyngeal} 多发于儿童及老年群体，
 据统计，65岁及以上人群的患病率超过 30\% \cite{lee2019automatic}。
 该症状通常也是帕金森病 \cite{pflug2018critical} 和食管癌 \cite{hughes2011management} 等多种疾病的早期指征。
@@ -10,17 +8,17 @@
 目前，视频吞咽造影检查（VFSS）被公认为评估吞咽障碍的“金标准”，
 其能够记录吞咽过程中口腔期、咽期及食管期的动态 X 射线影像。
 在 VFSS 分析中，对微动作（如舌骨运动）进行精确的时序定位对于异常检测具有重要意义 \cite{molfenter2012temporal, kendall2000timing}。
-% 微动作定位任务的核心目标即在于获取这些动作发生的起止时间参数。
 
 相较于常规的时序动作定位（TAL）任务，VFSS 中的时序微动作定位（TMAL）受限于成像原理及吞咽生理机制的双重特性，面临更为严峻的挑战：
-1) \textbf{解剖结构追踪的空间模糊性}：
+1) \textbf{关键解剖结构的模糊性}：
 微动作的精确定位依赖于对关键解剖结构（如舌骨）运动的持续追踪。
 然而，X 射线成像中成像对比度低 \cite{zheng2004automated, amiot2016spatio} ，关键结构轮廓模糊；
 此外，结构性遮挡经常致使关键轮廓不可见（如下颌骨对舌骨的遮挡），进一步提高了动作时序边界定位的难度。
-2) \textbf{吞咽微动作的瞬时性}：
-吞咽微动作持续时间极短，平均持续时间在1秒左右 \cite{ruan2023temporal}，
-这种快速运动在 X 射线帧中同时还会引发显著的运动模糊，
-导致解剖结构的边界变得模糊不清，难以界定，进一步影响微动作边界的定位。
+2) \textbf{关键运动结构体积微小}：
+医疗视频中的往往关键运动目标往往体积极小（如细窄的舌骨结构、微小的手术器械尖端）\cite{ruan2023temporal}，
+且动作幅度有限，导致不同动作模式难以区分。这意味着在整个视频画面中，有效运动区域的像素占比极低，
+绝大部分区域被静态的解剖背景（如颅骨、脊柱）所占据。
+这中“强背景、弱目标”分布特征，使得微动作的判别信号极易淹没在噪声中，从而影响微动作边界的定位。
 
 传统的临床工作流程主要依赖专家进行逐帧人工标注 \cite{kellen2010computer}，
 由于吞咽过程分析涉及多个靶器官和众多参数计算，加之造影视频本身清晰度不高且吞咽动作变化细小，人工标记过程极为耗时费力。
@@ -60,41 +58,22 @@
 我们提出了\crossblockfull（\crossblockshort）模块来促进两个分支间的特征层面上的校准。
 具体而言，为解决 X 射线图像中的空间模糊性，该模块利用骨架轨迹作为空间置信度门控，帮助模型关注吞咽过程重要的区域来动态校准外观特征，从而利用和学习临床的相关先验。
 另一方面，骨架特征通过外观特征的上下文信息进行增强，以补偿其固有的稀疏性。
-在这个模块中，我们还采用了一个\channelblockfull（\channelblockshort），显式地减去各通道间共享的静态背景信息，从而显著增强特征的区分度。
-通过堆叠多层\crossblockshort 模块，模型能够渐进式地优化提取的时空特征，从而实现精准的时序定位。
+
+鉴于微小目标易被背景淹没，本章在\crossblockshort 中提出的\channelblockfull（\channelblockshort）模块进一步增强了特征的判别能力。
+利用通道间的相关性显式建模并剔除静态背景信息。
+这一操作类似于背景抑制，显著提升了微小运动目标在特征空间中的信噪比。
+通过上述设计，\sexyname 框架能够有效地融合解剖结构先验与外观特征，从而实现 VFSS 视频中吞咽微动作的精准时序定位。
 
 \section{问题定义}
 
 时序微动作定位（TMAL）任务旨在精准预测视频中微动作的起止时间，并识别其具体类别。
 给定一个未裁剪的吞咽视频 \(V\)，令标签集合 \(Z=\{z_1, z_2, \dots, z_{N}\}\) 表示视频中包含的微动作实例，其中 \(N\) 为实例总数。
-每个实例定义为 \(z_i=(s_i, e_i, a_i)\)，其中 \(s_i\) 和 \(e_i\) 分别表示动作的开始与结束时间（满足 \(s_i < e_i\)），\(a_i \in \{1, \dots, C\}\) 为动作类别标签，\(C\) 表示预定义的类别总数。
+每个实例定义为 \(z_i=(s_i, e_i, a_i)\)，
+其中 \(s_i\) 和 \(e_i\) 分别表示动作的开始与结束时间（满足 \(s_i < e_i\)），\(a_i \in \{1, \dots, C\}\) 为动作类别标签，\(C\) 表示预定义的类别总数。
 
 该任务面临严峻的时空挑战：
 在时间维度上，微动作持续时间极短且存在重叠；
 在空间维度上，细微的运动幅度、复杂的背景噪声以及模糊的解剖轮廓，严重干扰了对关键解剖结构的识别及动作边界的精准定位。
-
-
-% \section{预备知识}
-% 由于我们的方法广泛使用了 Mamba 模块，首先介绍基于状态空间模型（State-Space Models, SSMs）的模型，特别是 S4 \cite{gu2021efficiently} 和 Mamba \cite{gu2023mamba}。SSMs 是一类数学框架，旨在通过隐藏状态 \(h(t) \in \mathbb{R}^N\) 将输入序列 \(x(t)\) 映射到输出序列 \(y(t)\)。形式上，SSMs 由常微分方程（ODEs）控制：
-% \begin{equation}
-%     h'(t) = \mathbf{A}h(t) + \mathbf{B}x(t), \quad y(t) = \mathbf{C}h(t),
-% \end{equation}
-% 其中 \(\mathbf{A} \in \mathbb{R}^{N \times N}\) 是状态转移矩阵，\(\mathbf{B} \in \mathbb{R}^{N \times 1}\) 和 \(\mathbf{C} \in \mathbb{R}^{1 \times N}\) 是投影矩阵。SSM 独立应用于 \(x(t)\in \mathbb{R}^D\) 的每个通道。
-
-% Mamba~\cite{gu2023mamba} 是离散 SSM 的一种变体，它包含一个时间尺度参数 \(\Delta\)，通过零阶保持（Zero-Order Hold, ZOH）将连续参数 \(\mathbf{A}\) 和 \(\mathbf{B}\) 转换为离散对应项 \(\overline{\mathbf{A}}\) 和 \(\overline{\mathbf{B}}\)：
-% \begin{equation}
-%     \overline{\mathbf{A}} = \exp(\Delta \mathbf{A}),\quad
-%     \overline{\mathbf{B}} = (\Delta \mathbf{A})^{-1}(\exp(\Delta \mathbf{A}) - \mathbf{I}) \cdot \Delta \mathbf{B}.
-% \end{equation}
-% 这些变换使得隐藏状态 \(h_t\) 可以通过离散化的状态空间公式迭代计算：
-% \begin{equation}
-%     h_t = \overline{\mathbf{A}} h_{t-1} + \overline{\mathbf{B}} x_t, \quad y_t = \mathbf{C} h_t.
-% \end{equation}
-% 上述操作可以通过全局卷积范式高效实现：
-% \begin{equation}\label{eq:ssm}
-%     \overline{\mathbf{K}}=(\mathbf{C}\overline{\mathbf{B}},\mathbf{C}\overline{\mathbf{A}\mathbf{B}},\ldots,\mathbf{C}\overline{\mathbf{A}}^{S-1}\overline{\mathbf{B}}),\quad\mathbf{Y}=\mathbf{X}*\overline{\mathbf{K}}
-% \end{equation}
-% 其中 \(S\) 表示序列的长度，\(\mathbf{X} \in \mathbb{R}^{S \times D}\) 和 \(\mathbf{Y} \in \mathbb{R}^{S \times D}\) 分别是输入和输出序列。与依赖静态参数的传统 SSM 不同，Mamba 引入了选择性扫描机制（Selective Scan Mechanism, S6）作为其核心算子，引入了动态上下文敏感性和自适应权重调制。在这里，\(\mathbf{B}\in\mathbb{R}^{S \times D \times N}\)，\(\mathbf{C}\in\mathbb{R}^{S \times D \times N}\) 和 \(\Delta\in\mathbb{R}^{S \times D}\) 是直接从输入 \(\mathbf{X}\in \mathbb{R}^{S \times D}\) 推断出来的，从而能够有效处理不同的输入分布。为方便起见，我们使用 \(\mathbf{Y}={\rm SSM}(\mathbf{X})\) 来表示公式~\ref{eq:ssm}。该公式也可在公式~\ref{eq:fw_ssm} 中复用。
 
 \begin{figure*}[tp]
     % \vspace{-5pt}
@@ -204,7 +183,7 @@ h^L_{ijl} = \exp\left(-\frac{{\rm dist}((i, j), {\rm seg}(\alpha, \beta))}{2 \si
 
 针对视频片段 \(v_i\) 的 3D 骨架热图 \(h^{3D}_i\)，利用 VideoMamba~\cite{li2025videomamba} 中的三个双向 Mamba 块提取特征。
 首先，\(h^{3D}_i\) 经由 3D 卷积 Patch Embedding 进行序列化（Tokenization），并融合时空位置编码。
-随后，序列 Token 依次通过三个双向 Mamba 层以建模长程时空依赖。
+随后，序列 Token 依次通过三个双向 Mamba 层进行建模。
 最后，对第三层输出的所有 Token 进行全局平均池化，得到骨架特征向量 \(f^{ske}_i \in \mathbb{R}^d\)：
 \begin{equation}\label{eq: heatmap feature}
 f^{ske}_i = {\rm AvgPooling}(\mathcal{F}_{\text{BM}}(h^{3D}_i)),
@@ -240,9 +219,16 @@ f^{app}_i = [\mathcal{F}_{\text{rgb}}(v_i)\|\mathcal{F}_{\text{flow}}(v_i^{flow}
 \({\rm Conv}\) 为一维深度卷积，\(\psi\) 为线性投影层，\(\odot\) 表示逐元素乘法（Hadamard Product），\({\rm flip}\) 表示沿时间维度的翻转操作。
 该乘法操作充当了空间维度上的置信度门控，骨架特征图发挥了类似掩码的作用，
 即仅允许具有高解剖相关性区域的梯度通过，从而有效阻断背景噪声的干扰。
-鉴于 VFSS 视频中包含大面积的静态背景（如成像黑边），导致许多特征通道间存在高度的冗余激活。
-为增强特征的判别能力，在拼接 \(F^{app}_{\text{fw}}\) 和 \(F^{app}_{\text{bw}}\) 后，
-该模块嵌入了\channelblockfull(\channelblockshort) ，从而构建了完整的\crossblockshort 模块：
+
+在 VFSS 视频中，舌骨等关键结构的运动幅度小且区域占比低，
+这导致提取的特征 \(F^{app}\) 往往由大面积的静态背景主导，
+包含动作语义的动态特征极其微弱。
+为解决这一“特征淹没”问题，我们在模块中嵌入了 \channelblockfull（\channelblockshort）。
+该模块旨在捕捉特征通道中的全局共性信息（即静态背景），并将其从原始特征中剥离。
+通过减去这种高能量的背景分量，我们相对放大了微小目标引起的局部特征变化，
+使得模型能够敏锐感知像素级幅度的细微运动，从而有效区分高度相似的微动作类别。
+具体而言，在拼接 \(F^{app}_{\text{fw}}\) 和 \(F^{app}_{\text{bw}}\) 后，
+\crossblockshort 模块中嵌入了\channelblockfull(\channelblockshort) ，公式如下：
 \begin{equation}
 \begin{aligned}\label{eq: ccm}
     {\rm \crossblockshort}(F^{app},F^{ske})=F^{app}+\psi_{\text{out}}(\mathcal{C}([F^{app}_{\text{fw}}\|F^{app}_{\text{bw}}]))
@@ -255,7 +241,7 @@ f^{app}_i = [\mathcal{F}_{\text{rgb}}(v_i)\|\mathcal{F}_{\text{flow}}(v_i^{flow}
 \end{equation}
 其中 \( \psi_{\text{out}} \) 为降维线性投影层，用于将特征通道维度从 \(2D\) 映射回 \(D\)。
 \( \mathcal{C} \) 表示通道级增强操作，\( \gamma \) 为可学习的通道缩放因子（初始化为 \(10^{-5}\)）。\( {\rm Conv_1} \) 是核大小为 1 的 1D 卷积。
-减法操作显式地剔除了共有的背景信号，从而迫使模型聚焦于动态变化。
+减法操作显式地剔除了共有的背景信号，从而迫使模型聚焦于幅度微小的细微动态变化。
 同理，骨架特征 \(F^{ske}\) 亦可通过 \({\rm \crossblockshort}(F^{ske}, F^{app})\) 进行增强。
 外观分支提供了稠密的上下文信息，从而在关键点检测发生抖动时，对稀疏的骨架信号起到稳定作用。
 最终，通过堆叠多层（如 3 层）\crossblockshort 模块，我们获得增强校准后的外观特征 \(E^{app}\) 和骨架特征 \(E^{ske}\)，用于后续的微动作检测任务。
@@ -725,10 +711,10 @@ HRNet~\cite{wang2020deep}  & 7.7 & 28.5 & 82.2 \\
 值得注意的是，\crossblockshort 在实现上述性能突破的同时，保持了极高的计算效率：其参数量（109.2M）和计算量（116.9G FLOPs）分别比交叉注意力机制（188.7M Params, 163.3G FLOPs）降低了 42\% 和 28\%。这一结果有力地证明，模型的性能增益不仅源于有效的跨模态交互设计，更得益于 \crossblockshort 高效的计算架构，使其极具在资源受限临床场景下部署的潜力。
 
 \textbf{\channelblockshort 模块消融分析}\quad 表\ref{tab: CE ablation}探究了 \channelblockshort 的作用。
-去除通道增强模块（w/o \channelblockshort）导致性能显著衰减（mAP@Avg. 下降 1.0\%），充分验证了该组件的必要性。
+去除\channelblockshort 模块（w/o \channelblockshort）导致性能显著衰减（mAP@Avg. 下降 1.0\%），充分验证了该组件的必要性。
 虽然引入 SE 模块 \cite{hu2018squeeze} 能带来轻微改善，但本章设计的 \channelblockshort 在所有增强变体中，
 以最低的参数量（109.2M）和微乎其微的额外计算成本，实现了最佳精度（64.3\% mAP@Avg.）。
-关键在于，\channelblockshort 采用的减法操作优于加法变体（CE-Add，mAP 高出 0.8\%），这有力地证明了在跨模态交互中，“冗余抑制”策略比单纯的“特征强化”更为有效。
+关键在于，\channelblockshort 采用的减法操作优于加法变体（CE-Add，mAP 高出 0.8\%），这进一步验证了本章抑制共享背景噪声的设计动机。
 
 \textbf{骨架编码器架构探究}\quad 表\ref{tab: heatmap encoder ablation}评估了三种不同架构的骨架特征提取器：基于 CNN 的 I3D \cite{carreira2017quo}、多尺度 Vision Transformer (MViT) \cite{fan2021multiscale} 以及最先进的基于状态空间模型的 VideoMamba \cite{li2025videomamba}。
 考虑到热图数据的空间稀疏性，对 MViT 和 VideoMamba 均采用了 3 层的浅层架构设计。如表~\ref{tab: heatmap encoder ablation} 所示，VideoMamba 展现出卓越的性能优势，其平均 mAP 达到 52.7\%，显著优于 I3D (42.7\%) 和 MViT (49.1\%)。这一结果充分验证了选用 VideoMamba 作为骨架特征主干网络的合理性。
@@ -880,11 +866,14 @@ HRNet~\cite{wang2020deep}  & 7.7 & 28.5 & 82.2 \\
 \end{figure}
 
 \section{本章小结}
-本章提出了\fullname，一个专为视频透视吞咽检查 (VFSS) 场景下的时序微动作定位 (TMAL) 任务设计的全新框架。
-针对 VFSS 影像中常见的噪声干扰与结构模糊问题，本章通过将具有临床意义的解剖学先验编码为骨架热图，
-不仅显著增强了模型的抗干扰能力，还提升了微动作定位过程的可解释性。
-此外，本章设计了\crossblockfull (\crossblockshort) 模块。
-该模块结合线性复杂度的序列建模能力与\channelblockfull (\channelblockshort) 机制，实现了外观特征与骨架特征的高效深度融合。
-在基准数据集上的系统性实验表明，\sexyname 取得了目前最先进的性能（SOTA），大幅超越了现有方法。
+本章提出了\fullname，一个吞咽造影视频 (VFSS) 场景下的时序微动作定位 (TMAL) 任务设计的全新框架。
+针对 X 射线影像中解剖结构模糊及成像噪声带来的定位难题，
+本章首先引入了基于临床先验的骨架热图模态，为模型提供了鲁棒的几何结构参照，显著增强了模型在低对比度环境下的特征表征能力。
+进一步地，针对吞咽关键器官（如舌骨）目标极小、运动幅度微弱且极易被大面积静态背景淹没的挑战，
+本章设计了\crossblockfull (\crossblockshort) 模块。
+该模块创新性地融合了\channelblockfull (\channelblockshort) 机制，
+通过显式剥离冗余的静态背景信息，有效放大了微弱的动态特征信号；
+同时结合骨架特征作为空间注意力门控，实现了对细微解剖运动区域的精准聚焦与特征校准。
+在基准数据集上的系统性实验表明，\sexyname 取得了目前最先进的性能，大幅超越了现有方法。
 同时，外部验证实验也证实了其在跨临床环境中的优越泛化能力。
-上述研究成果充分展示了骨架引导建模在推动吞咽障碍评估自动化与智能化方面的巨大潜力。
+上述研究成果验证了“解剖先验引导”与“微弱信号增强”策略的有效性，充分展示了该方法在推动吞咽障碍评估自动化与智能化方面的巨大潜力。
