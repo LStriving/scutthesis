@@ -54,11 +54,11 @@
 
 随着骨架模态的引入，如何实现模态间的高效交互成为关键。
 为了有效集成这些模态，设计了一个双分支架构来并行处理外观特征和骨架特征。
-我们提出了\crossblockfull（\crossblockshort）模块来促进两个分支间的特征层面上的校准。
+我们提出了\crossblockfull（\crossblockfullen, \crossblockshort）模块来促进两个分支间的特征层面上的校准。
 具体而言，为解决 X 射线图像中的空间模糊性，该模块利用骨架轨迹作为空间置信度门控，帮助模型关注吞咽过程重要的区域来动态校准外观特征，从而利用和学习临床的相关先验。
 另一方面，骨架特征通过外观特征的上下文信息进行增强，以补偿其固有的稀疏性。
 
-鉴于微小目标易被背景淹没，本章在\crossblockshort 中提出的\channelblockfull（\channelblockshort）模块进一步增强了特征的判别能力。
+鉴于微小目标易被背景淹没，本章在\crossblockshort 中提出的\channelblockfull（\channelblockfullen, \channelblockshort）模块进一步增强了特征的判别能力。
 利用通道间的相关性显式建模并剔除静态背景信息。
 这一操作类似于背景抑制，显著提升了微小运动目标在特征空间中的信噪比。
 通过上述设计，\sexyname 框架能够有效地融合解剖结构先验与外观特征，从而实现 VFSS 视频中吞咽微动作的精准时序定位。
@@ -707,10 +707,10 @@ HRNet~\cite{wang2020deep}  & 7.7 & 28.5 & 82.2 \\
 \multirow{2}{*}{提取器} & \multirow{2}{*}{方法} & \multicolumn{5}{c}{mAP@tIoU 阈值} \\
  & & 0.1 & 0.3 & 0.5 & 0.7 & Avg.\\
 \midrule
-\multirow{2}{*}{\makecell[l]{Simple-\\Baseline}} & Ske. & 65.9 & 60.8 & 47.3 & 20.0 & 49.6 \\
+\multirow{2}{*}{\makecell[l]{Simple-\\Baseline}~\cite{zhao2019m2det}} & Ske. & 65.9 & 60.8 & 47.3 & 20.0 & 49.6 \\
  & 本章方法 & 81.5 & 72.4 & 58.8 & 36.5 & 63.0 \\
 \midrule
-\multirow{2}{*}{HRNet} & Ske. & 75.5 & 66.4 & 50.3 & 13.0 & 52.7 \\ 
+\multirow{2}{*}{HRNet~\cite{wang2020deep}} & Ske. & 75.5 & 66.4 & 50.3 & 13.0 & 52.7 \\ 
  & 本章方法 & \textbf{83.1} & \textbf{74.6} & \textbf{59.0} & \textbf{37.2} & \textbf{64.3}\\
 \bottomrule
 \end{tabular}
@@ -724,6 +724,7 @@ HRNet~\cite{wang2020deep}  & 7.7 & 28.5 & 82.2 \\
 
 \textbf{\channelblockshort 模块消融分析}\quad 表\ref{tab: CE ablation}探究了 \channelblockshort 的作用。
 去除\channelblockshort 模块（w/o \channelblockshort）导致性能显著衰减（mAP@Avg. 下降 1.0\%），充分验证了该组件的必要性。
+% TODO: 这里说明为什么要比较SE
 虽然引入 SE 模块 \cite{hu2018squeeze} 能带来轻微改善，但本章设计的 \channelblockshort 在所有增强变体中，
 以最低的参数量（109.2M）和微乎其微的额外计算成本，实现了最佳精度（64.3\% mAP@Avg.）。
 关键在于，\channelblockshort 采用的减法操作优于加法变体（CE-Add，mAP 高出 0.8\%），这进一步验证了本章抑制共享背景噪声的设计动机。
@@ -851,7 +852,7 @@ HRNet~\cite{wang2020deep}  & 7.7 & 28.5 & 82.2 \\
 尽管所有方法均能成功检出微动作，但本章方法在时序边界的回归精度上表现更为出色，预测结果与真值更加贴合。
 
 而在包含运动模糊的复杂场景下（见图~\ref{fig:qual_comparisons} 右半部分），各方法的性能差异更为显著。
-原始方法~\cite{ruan2023temporal} 漏检了大多数微动作，其 ActionMamba 变体也未能识别“口腔运送”阶段；
+基线方法~\cite{ruan2023temporal} 漏检了大多数微动作，其 ActionMamba 变体也未能识别“口腔运送”阶段；
 相比之下，本章框架的检测结果与标签值保持了高度重叠，准确覆盖了所有关键动作。
 这一结果有力证明了模型对模糊视频的鲁棒性，而这正是应对临床实际场景中频繁出现的运动伪影的关键能力。
 
