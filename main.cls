@@ -70,7 +70,7 @@
 \RequirePackage{CJKnumb} % used in recent TEX distribution
 %\punctstyle{kaiming}
 \setmainfont[Mapping=tex-text]{Times New Roman}%\rmfamily 使用的字体,默认英文和数字的字体。
-\XeTeXlinebreaklocale "zh" %采用中文断行方式
+\XeTeXlinebreaklocale ``zh'' %采用中文断行方式
 \XeTeXlinebreakskip = 0pt plus 1pt %字元间可加入0pt~1pt 的弹性间距，这样才能排出左右对齐的段落。
 
 \setCJKmainfont{SimSun}
@@ -143,7 +143,7 @@
 \newcommand{\footnotefont}{\songti\xiaowuhao\normalfont}     % 脚注字体
 \newcommand{\ftcaptionfont}{\kaiti\wuhao\normalfont}         % 图表标题的字体
 \newcommand{\reftitlefont}{\heiti\xiaoerhao}      % “参考文献”字样的字体
-\newcommand{\refbodyfont}{\songti\wuhao\normalfont}          % 参考文献字体
+\newcommand{\refbodyfont}{\songti\xiaosihao\normalfont}          % 参考文献字体
 \newcommand{\thanktitlefont}{\heiti\sanhao}    % “致谢”字样的字体
 \newcommand{\appendixtitlefont}{\heiti\sanhao} % “附录”字样的字体
 %\normalfont command (essentially) executes the command sequence:
@@ -343,16 +343,31 @@
 }
 
 \let\orig@bibliography=\bibliography
-\renewcommand{\bibliography}[1]{
-%	\cleardoublepage % 使参考文献使用 seunolabel 页面样式
-	\refbodyfont
-        \chapterxtrue % 改变页眉标题方式
-        \chapterxname{\bibname}
-	\let\ps@plain=\ps@revtitlestyle
-	\pagestyle{revtitlestyle} % here and continue 
-	\orig@bibliography{#1}
-	\normalsize
-} 
+% \renewcommand{\bibliography}[1]{
+% 	\cleardoublepage % 使参考文献使用 seunolabel 页面样式
+% 	\refbodyfont
+%         \chapterxtrue % 改变页眉标题方式
+%         \chapterxname{\bibname}
+% 	\let\ps@plain=\ps@revtitlestyle
+% 	\pagestyle{revtitlestyle} % here and continue 
+%   \pdfbookmark[0]{\bibname}{bibliography}
+% 	\begingroup
+%         \renewcommand{\chapter}[2]{} % 临时屏蔽原始命令里的 chapter 调用
+%         \orig@bibliography{#1}
+%     \endgroup
+% 	\normalsize
+% } 
+\renewcommand{\bibliography}[1]{%
+    \cleardoublepage          % 强制新页，结束上一章的层级
+    \phantomsection
+    \begingroup
+    \refbodyfont
+    \chapterxtrue
+    \let\ps@plain=\ps@revtitlestyle
+    \let\ps@headings=\ps@revtitlestyle
+    \orig@bibliography{#1}
+    \endgroup
+}
 
 \renewcommand\frontmatter{ %标题之后，开始中英文摘要，目录
     \pagenumbering{Roman}% Roman style page number

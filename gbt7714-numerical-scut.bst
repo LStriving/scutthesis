@@ -67,7 +67,7 @@ FUNCTION {load.config}
   #0 'uppercase.name :=
   #0 'terms.in.macro :=
   #0 'year.after.author :=
-  #1 'period.after.author :=
+  #0 'period.after.author :=
   #0 'italic.book.title :=
   #1 'sentence.case.title :=
   #0 'link.title :=
@@ -592,7 +592,7 @@ FUNCTION {format.name}
     { bbl.et.al }
     { t get.str.lang 'name.lang :=
       name.lang lang.en =
-        { t #1 "{vv~}{ll}{ f.}" format.name$
+        { t #1 "{vv~}{ll}{ f}" format.name$
           uppercase.name
             { "u" change.case$ }
             'skip$
