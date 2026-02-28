@@ -90,9 +90,9 @@
 具体而言，首先在粗定位阶段利用现有检测器
 （如 ActionFormer~\cite{zhang2022actionformer} 或 ActionMamba\cite{chen2024video}）提取完整吞咽事件的候选区间（Proposals）；
 随后在精细定位阶段，以候选区间的中心为基准向外扩展固定时长（如 4 秒）对视频进行裁剪。
-粗定位阶段的标签集记为 \(Z^{1}=\{z^1_1,z^1_2,\ldots,z^1_M\}\)，其中 \(M = N/C\) 表示吞咽事件的总数。
-每个事件 \(z^1_i=(s_i,e_i)\) 仅包含起止时间 \(s_i\) 与 \(e_i\)。
-第二阶段的标签集则表示为 \(Z^2 = \{z^2_1, \dots, z^2_C\}\)。
+粗定位阶段的标签集记为 \(\matr{Z}^{1}=\{\vect{z}^1_1,\vect{z}^1_2,\ldots,\vect{z}^1_M\}\)，其中 \(M = N/C\) 表示吞咽事件的总数。
+每个事件 \(\vect{z}^1_i=(s_i,e_i)\) 仅包含起止时间 \(s_i\) 与 \(e_i\)。
+第二阶段的标签集则表示为 \(\matr{Z}^2 = \{\vect{z}^2_1, \dots, \vect{z}^2_C\}\)。
 由于粗定位阶段本质上是一个二分类时序动作定位任务，后续不再赘述。
 
 针对精细定位阶段，本章引入骨架热图作为一种编码了解剖学先验的新模态。
@@ -132,9 +132,9 @@
                 \STATE \quad \( \{(\hat{s}_i^{\text{app}}, \hat{e}_i^{\text{app}},  \theta_i^{\text{app}})\}_{i=1}^T\) 和 \(\{(\hat{s}_i^{\text{ske}}, \hat{e}_i^{\text{ske}}, \theta_i^{\text{ske}})\}_{i=1}^T\)；
                 
                 \STATE \textit{// 4. 参数优化}
-                \STATE 计算总损失 \( \mathcal{L} = \mathcal{L}_\text{app} + \mathcal{L}_\text{ske} \)，其中：
-                \STATE \quad \( \mathcal{L}_\text{app} = \mathcal{L}_{cls}^{\text{app}} + \mathcal{L}_{reg}^{\text{app}} \)，
-                \( \mathcal{L}_\text{ske} = \mathcal{L}_{cls}^{\text{ske}} + \mathcal{L}_{reg}^{\text{ske}} \)；
+                \STATE 计算总损失 \( \mathcal{L} = \mathcal{L}^\text{app} + \mathcal{L}^\text{ske} \)，其中：
+                \STATE \quad \( \mathcal{L}^\text{app} = \mathcal{L}_{cls}^{\text{app}} + \mathcal{L}_{reg}^{\text{app}} \)，
+                \( \mathcal{L}^\text{ske} = \mathcal{L}_{cls}^{\text{ske}} + \mathcal{L}_{reg}^{\text{ske}} \)；
                 \STATE 通过最小化 \( \mathcal{L} \) 更新模型参数；
             \ENDFOR
         \ENDFOR
@@ -165,23 +165,23 @@
 这些关键点被转换为热图张量 \(\matr{h} \in \mathbb{R}^{W \times H \times K}\)，其中 \(W, H\) 为分辨率，\(K=8\) 为关键点数量。
 具体地，基于关键点的高斯热图 \(\matr{h}^J\) 定义如下：
 \begin{equation}\label{eq: heatmap_k}
-    h^J_{ijk} = \exp\left(-\frac{(i - x_k)^2 + (j - y_k)^2}{2 \sigma^2}\right) \cdot c_k.
+    \matr{h}^J_{ijk} = \exp\left(-\frac{(i - x_k)^2 + (j - y_k)^2}{2 \sigma^2}\right) \cdot c_k.
 \end{equation}
 % （注：热图张量名为 \matr{h}，元素索引保持原样）
 此外，本章还构建了骨架连线热图 \(\matr{h}^L \in \mathbb{R}^{W \times H \times L}\)，其中 \(L\) 为关键点连线数量，计算公式为：
 \begin{equation}\label{eq: heatmap_l}
-h^L_{ijl} = \exp\left(-\frac{{\rm dist}((i, j), {\rm seg}(\alpha, \beta))}{2 \sigma^2}\right) \cdot \min(c_{\alpha}, c_{\beta}),
+\matr{h}^L_{ijl} = \exp\left(-\frac{{\rm dist}((i, j), {\rm seg}(\alpha, \beta))}{2 \sigma^2}\right) \cdot \min(c_{\alpha}, c_{\beta}),
 \end{equation}
 其中第 \(l\) 条连线对应关键点 \(\alpha\) 和 \(\beta\) 之间的线段 \({\rm seg}(\alpha, \beta)\)，\({\rm dist}\) 表示像素点 \((i, j)\) 到线段的欧氏距离。
-为去除热图冗余，参考 Hyder 等人 \cite{hyder2024action} 的方法，对关键点热图 \(h^J\) 和连线热图 \(h^L\) 在通道维度进行聚合。
+为去除热图冗余，参考 Hyder 等人 \cite{hyder2024action} 的方法，对关键点热图 \(\matr{h}^J\) 和连线热图 \(\matr{h}^L\) 在通道维度进行聚合。
 实验表明（见表~\ref{tab: heatmap input ablation}），融合关键点与连线热图的策略效果最优。
-因此，对于帧 \(f_i\)，最终的“骨架”热图 \(h_i \in \mathbb{R}^{W \times H}\) 定义为：\(h_i = (h_i^J + h_i^L)/{2}\)。
+因此，对于帧 \(f_i\)，最终的“骨架”热图 \(\matr{h}_i \in \mathbb{R}^{W \times H}\) 定义为：\(\matr{h}_i = (\matr{h}_i^J + \matr{h}_i^L)/{2}\)。
 图~\ref{fig: heatmap illu} 展示了上述三种热图的示例。
 为进一步去除空间冗余背景，本章算法将骨架热图裁剪为覆盖所有时序关键点的最小包围盒（Bounding Box），并统一调整至目标分辨率（如 \(56 \times 56\)）。
 最终的热图序列由在时间维度堆叠处理后的 2D 热图构建而成。
 
-针对视频片段 \(v_i\) 的 3D 骨架热图 \(h^{3D}_i\)，利用 VideoMamba~\cite{li2025videomamba} 中的三个双向 Mamba 块提取特征。
-首先，\(h^{3D}_i\) 经由 3D 卷积 Patch Embedding 进行序列化（Tokenization），并融合时空位置编码。
+针对视频片段 \(\matr{v}_i\) 的 3D 骨架热图 \(\matr{h}^{3D}_i\)，利用 VideoMamba~\cite{li2025videomamba} 中的三个双向 Mamba 块提取特征。
+首先，\(\matr{h}^{3D}_i\) 经由 3D 卷积 Patch Embedding 进行序列化（Tokenization），并融合时空位置编码。
 随后，序列 Token 依次通过三个双向 Mamba 层进行建模。
 最后，对第三层输出的所有 Token 进行全局平均池化，得到骨架特征向量 \(\vect{f}^{\text{ske}}_i \in \mathbb{R}^d\)：
 \begin{equation}\label{eq: heatmap feature}
@@ -266,7 +266,7 @@ h^L_{ijl} = \exp\left(-\frac{{\rm dist}((i, j), {\rm seg}(\alpha, \beta))}{2 \si
 在训练优化方面，参考文献\mycite{zhang2022actionformer}和\mycite{chen2024video}的设定，
 本章采用 Focal Loss \cite{tian2019fcos} 优化二分类任务，
 并利用 DIoU Loss \cite{rezatofighi2019generalized} 进行边界回归，以显著提升时序定位精度。
-对于外观分支，其总损失 \(\mathcal{L}_\text{app}\) 由分类损失 \(\mathcal{L}_{cls}^\text{app}\) 和回归损失 \(\mathcal{L}_{reg}^\text{app}\) 构成。
+对于外观分支，其总损失 \(\mathcal{L}^\text{app}\) 由分类损失 \(\mathcal{L}_{cls}^\text{app}\) 和回归损失 \(\mathcal{L}_{reg}^\text{app}\) 构成。
 模型的整体损失函数定义为外观分支与骨架分支损失之和。
 
 \textbf{推理阶段的预测融合}\quad 在模型推理阶段，我们分别获取外观和骨架分支的预测结果，并采用后期融合策略。
@@ -512,11 +512,11 @@ SE \cite{hu2018squeeze} & 115.9 & 116.9 & 82.5 & 74.0 & 57.8 & 36.0 & 63.7 \\
 对于多模态方法，Hyder 等人 \cite{hyder2024action} 简单地将热图特征与 RGB 特征进行拼接，并通过 \(1\times1\) 卷积融合，虽然取得了59.3\%的平均 mAP，
 但简单的线性融合难以充分挖掘跨模态的深层互补信息。
 
-相比之下，本章提出的 \sexyname 取得了64.3\% 的平均mAP，全面超越了上述三类方法：相较于最先进的TAL方法（ActionMamba） 提升了 \textbf{5.3\%}；
-相较于现有的 VFSS 特定优化策略（Ruan \etal）提升了 \textbf{14.4\%}；
-相较于骨架增强基线（Hyder \etal）提升了\textbf{5.0\%}。
+相比之下，本章提出的 \sexyname 取得了64.3\% 的平均mAP，全面超越了上述三类方法：相较于最先进的TAL方法（ActionMamba） 提升了 5.3\%；
+相较于现有的 VFSS 特定优化策略（Ruan \etal）提升了 14.4\%；
+相较于骨架增强基线（Hyder \etal）提升了5.0\%。
 值得注意的是，本章提出的框架具有良好的架构通用性，不局限于特定的检测器。
-如表~\ref{tab: main} 所示，\sexyname 在基于ActionFormer的架构上也取得了一致的性能提升，其平均表现优于ActionFormer基线 \textbf{7.8\%}。
+如表~\ref{tab: main} 所示，\sexyname 在基于ActionFormer的架构上也取得了一致的性能提升，其平均表现优于ActionFormer基线 7.8\%。
 附录中提供了各微动作类别的详细评估结果。
 
 
@@ -623,6 +623,47 @@ SE \cite{hu2018squeeze} & 115.9 & 116.9 & 82.5 & 74.0 & 57.8 & 36.0 & 63.7 \\
 其平均 mAP 较现有的 VFSS 方法提升了 9.0\%，较骨架增强基线提升了 5.9\%。
 这一结果有力证明了模型在应对异构采集设备、不同患者特征及复杂临床环境时，具有卓越的鲁棒性与泛化能力。
 基于上述算法，进一步开发了智能辅助诊断原型系统，初步验证了该方法在实际临床工作流中的应用潜力。
+
+
+\begin{table}[tp]
+\small
+\begin{minipage}{0.4\textwidth}
+\centering
+\renewcommand{\arraystretch}{1.0}
+\renewcommand{\tabcolsep}{1.5pt}
+\caption{不同骨架热图提取器的性能比较}
+\begin{tabular}{lccc}
+\toprule
+提取器  & FLOPs & 参数量 & PCK \\
+\midrule
+SimpleBaseline~\cite{xiao2018simple}  & 6.2 & 15.4 & 80.8\\
+HRNet~\cite{wang2020deep}  & 7.7 & 28.5 & 82.2 \\
+\bottomrule
+\end{tabular}
+\label{tab:extractor_performance}
+\end{minipage}
+\hfill
+\begin{minipage}{0.55\textwidth}
+\centering
+\renewcommand{\arraystretch}{1.0}
+\renewcommand{\tabcolsep}{4pt}
+\caption{不同提取器集成到骨架分支与本章方法后的性能对比}
+\begin{tabular}{llrrrrr}
+\toprule
+\multirow{2}{*}{提取器} & \multirow{2}{*}{方法} & \multicolumn{5}{c}{mAP@tIoU 阈值} \\
+ & & 0.1 & 0.3 & 0.5 & 0.7 & Avg.\\
+\midrule
+\multirow{2}{*}{\makecell[l]{Simple-\\Baseline}~\cite{xiao2018simple}} & 骨架分支 & 65.9 & 60.8 & 47.3 & 20.0 & 49.6 \\
+ & 本章方法 & 81.5 & 72.4 & 58.8 & 36.5 & 63.0 \\
+\midrule
+\multirow{2}{*}{HRNet~\cite{wang2020deep}} & 骨架分支 & 75.5 & 66.4 & 50.3 & 13.0 & 52.7 \\ 
+ & 本章方法 & \textbf{83.1} & \textbf{74.6} & \textbf{59.0} & \textbf{37.2} & \textbf{64.3}\\
+\bottomrule
+\end{tabular}
+\label{tab:framework_performance}
+\end{minipage}
+\end{table}
+
 \subsection{消融实验}
 \label{sec: ablation}
 本节旨在量化分析 \sexyname 中关键组件的贡献，主要评估指标包括 mAP@0.1、mAP@0.3、mAP@0.5、mAP@0.7 以及平均 mAP。
@@ -642,6 +683,32 @@ SE \cite{hu2018squeeze} & 115.9 & 116.9 & 82.5 & 74.0 & 57.8 & 36.0 & 63.7 \\
 将 mAP@Avg. 从 62.1\% 提升至 64.3\%。
 相较于简单的双分支基线，这 2.2\% 的增益有力地证明了 \crossblockshort 提供了有效的特征校准，
 而非仅仅进行单纯的模态集成。
+
+\begin{table}[tp]
+\small
+\renewcommand{\arraystretch}{1.0}
+\renewcommand{\tabcolsep}{5pt}
+\begin{center}
+\caption{使用/不使用卡尔曼滤波进行骨架稳定的性能}
+\begin{tabular}{lcrrrrr}
+\toprule
+\multirow{2}{*}{方法}&\multirow{2}{*}{卡尔曼滤波} & \multicolumn{5}{c}{mAP@tIoU 阈值} \\
+&& 0.1 & 0.3 & 0.5 & 0.7 & Avg.\\
+\midrule
+\multirow{2}{*}{骨架分支} & \XSolidBrush& 69.0 & 57.4 & 37.5 & 11.0 & 44.6 \\
+ & \Checkmark & 75.5& 66.4 & 50.3 & 13.0 & 52.7 \\
+ \midrule
+\multirow{2}{*}{\makecell[c]{双分支}} & \XSolidBrush& 80.4& 70.7 & 55.9 & 34.0 & 61.2 \\
+  & \Checkmark & 80.9& 72.1 & 57.5 & 34.2 & 62.1 \\
+\midrule
+\multirow{2}{*}{\makecell[c]{\sexyname （本章方法）}} & \XSolidBrush& 82.1& 72.7 & 57.3 & 35.9 & 62.9 \\
+  & \Checkmark & \textbf{83.1}& \textbf{74.6} & \textbf{59.0} & \textbf{37.2} & \textbf{64.3}\\
+\bottomrule
+\end{tabular}
+\label{tab: kalman}
+\end{center}
+%\vspace{-10pt}
+\end{table}
 
 % \begin{table}[tp]
 % \small
@@ -686,48 +753,7 @@ SE \cite{hu2018squeeze} & 115.9 & 116.9 & 82.5 & 74.0 & 57.8 & 36.0 & 63.7 \\
 % \end{center}
 % \end{table}
 
-\begin{table}[tp]
-\small
-\centering
-\begin{minipage}{0.43\textwidth}
-\centering
-\renewcommand{\arraystretch}{1.0}
-\renewcommand{\tabcolsep}{1.5pt}
-\caption{不同骨架热图提取器的性能比较}
-\begin{tabular}{lccc}
-\toprule
-提取器  & FLOPs & 参数量 & PCK \\
-\midrule
-SimpleBaseline~\cite{xiao2018simple}  & 6.2 & 15.4 & 80.8\\
-HRNet~\cite{wang2020deep}  & 7.7 & 28.5 & 82.2 \\
-\bottomrule
-\end{tabular}
-\label{tab:extractor_performance}
-\end{minipage}
-\hfill
-\begin{minipage}{0.52\textwidth}
-\centering
-\renewcommand{\arraystretch}{1.0}
-\renewcommand{\tabcolsep}{4pt}
-\caption{不同提取器集成到骨架分支与本章方法后的性能对比}
-\begin{tabular}{llrrrrr}
-\toprule
-\multirow{2}{*}{提取器} & \multirow{2}{*}{方法} & \multicolumn{5}{c}{mAP@tIoU 阈值} \\
- & & 0.1 & 0.3 & 0.5 & 0.7 & Avg.\\
-\midrule
-\multirow{2}{*}{\makecell[l]{Simple-\\Baseline}~\cite{xiao2018simple}} & 骨架分支 & 65.9 & 60.8 & 47.3 & 20.0 & 49.6 \\
- & 本章方法 & 81.5 & 72.4 & 58.8 & 36.5 & 63.0 \\
-\midrule
-\multirow{2}{*}{HRNet~\cite{wang2020deep}} & 骨架分支 & 75.5 & 66.4 & 50.3 & 13.0 & 52.7 \\ 
- & 本章方法 & \textbf{83.1} & \textbf{74.6} & \textbf{59.0} & \textbf{37.2} & \textbf{64.3}\\
-\bottomrule
-\end{tabular}
-\label{tab:framework_performance}
-\end{minipage}
-\end{table}
-
-
-\textbf{模块性能对比}\quad 表~\ref{tab: CCM ablation} 对比了不同交互机制的效果。“Self-Mamba”在公式~\ref{eq: ccm} 中对单一模态执行自注意力计算（而非跨模态交互），实验结果显示其性能低于双分支基线。尽管交叉注意力机制（Cross-Attention）相较于基线带来了微小的提升（mAP@Avg. +0.3\%），但本章提出的 \crossblockshort 实现了显著的性能飞跃（mAP@Avg. 提升 \textbf{2.2\%}）。
+\textbf{模块性能对比}\quad 表~\ref{tab: CCM ablation} 对比了不同交互机制的效果。“Self-Mamba”在公式~\ref{eq: ccm} 中对单一模态执行自注意力计算（而非跨模态交互），实验结果显示其性能低于双分支基线。尽管交叉注意力机制（Cross-Attention）相较于基线带来了微小的提升（mAP@Avg. +0.3\%），但本章提出的 \crossblockshort 实现了显著的性能飞跃（mAP@Avg. 提升 2.2\%）。
 值得注意的是，\crossblockshort 在实现上述性能突破的同时，保持了极高的计算效率：其参数量（109.2M）和计算量（116.9G FLOPs）分别比交叉注意力机制（188.7M Params, 163.3G FLOPs）降低了 42\% 和 28\%。这一结果有力地证明，模型的性能增益不仅源于有效的跨模态交互设计，更得益于 \crossblockshort 高效的计算架构，使其极具在资源受限临床场景下部署的潜力。
 
 \textbf{\channelblockshort 模块消融分析}\quad 表\ref{tab: CE ablation}探究了 \channelblockshort 的作用。
@@ -753,31 +779,6 @@ HRNet~\cite{wang2020deep}  & 7.7 & 28.5 & 82.2 \\
 这证实了 HRNet 能有效保留对微动作定位至关重要的细粒度空间信息。
 因此，本章选用 HRNet 作为默认的骨架提取器。
 
-\begin{table}[tp]
-\small
-\renewcommand{\arraystretch}{1.0}
-\renewcommand{\tabcolsep}{5pt}
-\begin{center}
-\caption{使用/不使用卡尔曼滤波进行骨架稳定的性能}
-\begin{tabular}{lcrrrrr}
-\toprule
-\multirow{2}{*}{方法}&\multirow{2}{*}{卡尔曼滤波} & \multicolumn{5}{c}{mAP@tIoU 阈值} \\
-&& 0.1 & 0.3 & 0.5 & 0.7 & Avg.\\
-\midrule
-\multirow{2}{*}{骨架分支} & \XSolidBrush& 69.0 & 57.4 & 37.5 & 11.0 & 44.6 \\
- & \Checkmark & 75.5& 66.4 & 50.3 & 13.0 & 52.7 \\
- \midrule
-\multirow{2}{*}{\makecell[c]{双分支}} & \XSolidBrush& 80.4& 70.7 & 55.9 & 34.0 & 61.2 \\
-  & \Checkmark & 80.9& 72.1 & 57.5 & 34.2 & 62.1 \\
-\midrule
-\multirow{2}{*}{\makecell[c]{\sexyname （本章方法）}} & \XSolidBrush& 82.1& 72.7 & 57.3 & 35.9 & 62.9 \\
-  & \Checkmark & \textbf{83.1}& \textbf{74.6} & \textbf{59.0} & \textbf{37.2} & \textbf{64.3}\\
-\bottomrule
-\end{tabular}
-\label{tab: kalman}
-\end{center}
-%\vspace{-10pt}
-\end{table}
 
 \textbf{针对骨架抖动的鲁棒性分析}\quad 如表\ref{tab: kalman}所示，
 在移除卡尔曼滤波 \cite{kalman1960new} 的情况下，
@@ -830,7 +831,7 @@ HRNet~\cite{wang2020deep}  & 7.7 & 28.5 & 82.2 \\
 
 \textbf{\crossblockshort 模块层数设定}\quad 通过调整层数来探索\crossblockshort 模块的最佳深度。
 如图表~\ref{fig:ccm_layers} 所示，
-堆叠 3 层模块可获得最佳结果（\textbf{64.3\%} mAP）。
+堆叠 3 层模块可获得最佳结果（64.3\% mAP）。
 增加层数反而导致性能下降，这暗示过深的网络可能引发过拟合或引入不必要的优化难度；反之，层数过少则不足以实现充分的特征融合。因此，3 层配置是在特征交互深度与模型复杂度之间权衡的最优解。
 
 \textbf{后期融合权重 \(\omega\) 分析}\quad 在 [0.0, 1.0] 区间内以 0.1 为步长评估模态融合权重 \(\omega\)，
@@ -840,6 +841,13 @@ HRNet~\cite{wang2020deep}  & 7.7 & 28.5 & 82.2 \\
 值得注意的是，经过\crossblockshort模块增强后，两个单模态分支的性能均获得了显著提升：
 骨架分支从 52.7\% 提升至 54.9\%，外观分支从 61.7\% 提升至 62.4\%。
 
+\begin{figure}[thp]
+    \centering
+    \includegraphics[width=0.85\linewidth]{fig/alg1/false_positive_analysis_zh.pdf}
+    \caption{误检分析}
+    \label{fig: false-positive}
+\end{figure}
+
 \textbf{错误分析}\quad 为深入剖析方法的局限性，对不同 tIoU 阈值（0.1 至 0.7）下的误报进行了定量的错误类型分解。
 如图~\ref{fig: false-positive} 所示。
 结果显示，按照结果的置信度进行排序分组，前1G预测中实现了较高的真正率，且定位误差相对较小。
@@ -848,12 +856,7 @@ HRNet~\cite{wang2020deep}  & 7.7 & 28.5 & 82.2 \\
 此外，“定位错误”占比较小，表明尽管框架整体边界检测能力较强，印证了本章所提出方法的有效性。
 该错误分析指明了未来的优化方向，例如优化锚点设计或引入更精细的边界回归机制，有望进一步提升微动作定位的准确性。
 
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=0.85\linewidth]{fig/alg1/false_positive_analysis_zh.pdf}
-    \caption{误检分析}
-    \label{fig: false-positive}
-\end{figure}
+
 
 \subsection{可视化定性分析}
 为直观评估模型性能，图~\ref{fig:qual_comparisons} 展示了两种不同复杂度场景下的定性对比结果：
