@@ -29,7 +29,7 @@
 且背景环境几乎恒定（如始终聚焦于眼球且组织不会发生显著形变）。
 例如，“液体清洗”与“粘弹剂注入”在视觉特征上可能仅表现为细微的流体质感差异或者器械深入长短的差距。
 在在线识别场景下，模型无法像“事后复盘”那样查看后续画面来反向印证当前动作，只能依赖已有的画面信息。
-当不同阶段的视觉表现高度雷同，仅凭画面的时序特征很难实现精确区分。
+当不同阶段的视觉表现高度雷同，仅凭画面的特征很难实现精确区分。
 2) \textbf{时序分布失衡，短时动作难以召回}：
 手术视频具有显著的数据分布不均衡，其流程通常由漫长的标准操作（如房角观察）和短暂的切换或精准交互操作组成。
 在这种分布不均的状态下，一些长阶段占据了数分钟时长，而决定阶段切换的关键动作（如注射粘弹剂）往往只有数秒。
@@ -293,26 +293,26 @@ NFSM\cite{ding2024neural}尝试将经典有限状态机与全局状态嵌入相�
 \section{本章方法}
 
 % \subsection{总体架构设计}
-\sexytwo 主要包括“时序特征提取-逻辑约束增强-双路融合决策-损失均衡优化”四大核心环节，
-框架的核心逻辑是通过\graphmoduleshort 将视觉特征提取与手术规程逻辑引导相结合，
+\sexytwo 核心逻辑是通过\graphmoduleshort 将视觉特征提取与手术规程逻辑引导相结合，
 通过捕捉历史动作信息、融入手术规程先验、实现视觉与逻辑信息的有效融合，
 在训练阶段，通过类别边界加权损失函数解决分布不平衡与边界模糊问题，确保模型对短动作、相似动作的检测性能。
 
 具体而言，框架首先通过骨干网络提取手术视频帧的时序视觉特征\(\matr{Z}_t\)，
-为动作检测提供基础视觉支撑；随后将视觉特征输入至\graphmoduleshort 模块，
+通过视觉分类头获取初步的动作预测 \(\mathbf{L}_\mathrm{vis}\)；
+随后将视觉特征输入与预测至\graphmoduleshort 模块，
 该模块包含\memoryunit、\evolution 两个核心子模块，
-分别实现历史动作逻辑状态\(S_t\) 的稳定记忆与手术规程引导下的逻辑演化，
-输出基于规程逻辑的动作预测结果 \(\mathbf{Logit}_\mathrm{logic}\)；
+分别实现历史动作逻辑状态\(\mathbf{S}_t\) 的稳定记忆与手术规程引导下的逻辑演化，
+输出基于规程逻辑的动作预测结果 \(\mathbf{L}_\mathrm{logic}\)；
 接着通过\fusion 子模块，
-对视觉特征得到的动作预测 \(\mathbf{Logit}_\mathrm{norm\_vis}\)与逻辑演化得到的动作预测 \(\mathbf{Logit}_{\mathrm{norm\_logic}}\)进行规范化融合，
-输出最终的动作预测结果\(\hat{y}_t\)；
+对视觉特征得到的动作预测 \(\bar{\mathbf{L}}_\mathrm{vis}\)与逻辑演化得到的动作预测 \(\bar{\mathbf{L}}_{\mathrm{logic}}\)进行规范化融合，
+输出最终的动作预测结果\(\hat{\mathbf{y}}_t\)；
 最后，采用\lossshort 损失函数计算预测结果与真实标签的误差，
 通过反向传播更新整个框架的参数，实现模型的端到端训练，确保模型在不平衡分布数据与相似动作场景下的检测性能。
 整体框架如图~\ref{fig: alg2_framework}所示。
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.9\textwidth]{fig/alg2/framework.png}
+    \includegraphics[width=0.9\textwidth]{fig/alg2/alg2-framework_zh.pdf}
     \caption{\sexytwo 框架设计示意图}
     \label{fig: alg2_framework}
 \end{figure}
@@ -345,7 +345,7 @@ NFSM\cite{ding2024neural}尝试将经典有限状态机与全局状态嵌入相�
 又能保障历史动作逻辑的稳定性，为转移矩阵的精准跳转奠定基础。
 
 为了实现状态的正确更新，
-首先计算当前时刻视觉分支预测概率分布 \(\mathbf{P}_{\mathrm{vis}, t}\) 的信息熵 \(H_t\)，作为量化视觉不确定性的指标：
+首先计算当前时刻视觉分类器预测概率分布 \(\mathbf{P}_{\mathrm{vis}, t}\) 的信息熵 \(H_t\)，作为量化视觉不确定性的指标：
 \begin{equation}
 H_t = \sum_{c=1}^C - \mathbf{P}_{\mathrm{vis}, t, c} \log \mathbf{P}_{\mathrm{vis}, t, c}
 \end{equation}
@@ -360,8 +360,8 @@ H_t = \sum_{c=1}^C - \mathbf{P}_{\mathrm{vis}, t, c} \log \mathbf{P}_{\mathrm{vi
 在初始时刻 \(t=1\) 时，\(\mathbf{S}_1 = \mathbf{P}_{\mathrm{vis}, 1}\)。
 
 该机制的物理意义在于：
-当视觉特征极度模糊时，状态向量 \(S_t\) 主要继承上一时刻的记忆 \(S_{t-1}\)，实现“逻辑锁定”，防止视觉噪声污染逻辑链条；
-当视觉特征清晰且可靠时，\(S_t\) 能够实时吸收当前的视觉预测 \(P_{vis, t}\)，确保逻辑状态与实际操作同步。
+当视觉特征极度模糊时，状态向量 \(\mathbf{S}_t\) 主要继承上一时刻的记忆 \(\mathbf{S}_{t-1}\)，实现“逻辑锁定”，防止视觉噪声污染逻辑链条；
+当视觉特征清晰且可靠时，\(\mathbf{S}_t\) 能够实时吸收当前的视觉预测 \(\mathbf{P}_{\mathrm{vis}, t}\)，确保逻辑状态与实际操作同步。
 通过这种动态更新机制，抗漂移记忆单元能够有效保留短动作的逻辑信息，
 避免短动作因持续帧数少、易被噪声干扰而被遗漏，为后续的逻辑演化提供稳定的历史支撑。
 
@@ -374,13 +374,14 @@ H_t = \sum_{c=1}^C - \mathbf{P}_{\mathrm{vis}, t, c} \log \mathbf{P}_{\mathrm{vi
 该模块核心逻辑是构建动态状态转移矩阵\(\mathcal{A}_t\)，其演化过程主要包含三个环节：
 
 首先是时长分布预测，本模块在主干网络后并联轻量级分布预测头，用于捕捉动作时长动态变化。
-该预测头以主干网络提取的时序特征 \(\mathbf{Z}_t\) 为输入， 
+该预测头以主干网络提取的时空特征 \(\mathbf{Z}_t\) 为输入， 
 通过递归神经网络层（如Mamba或GRU）捕捉操作时序规律， 为所有 \(C\) 个候选动作类别并行输出其对数时长分布参数向量 
-\(\boldsymbol{\mu}_t, \boldsymbol{\sigma}_t \in \mathbb{R}^C\)：
+\(\boldsymbol{\mu}_t, \boldsymbol{\phi}_t \in \mathbb{R}^C\)：
 \begin{equation}
-    \boldsymbol{\mu}_t, \boldsymbol{\sigma}_t = \mathrm{Softplus}\big(\mathrm{MLP}_{dur}(\mathrm{Recurrent}(\mathbf{Z}_t))\big)
+    \boldsymbol{\mu}_t, \boldsymbol{\phi}_t = 
+    \mathrm{Softplus}\big(\mathrm{MLP}_{dur}(\mathrm{Recurrent}(\mathbf{Z}_t))\big)
 \end{equation}
-其中，向量中的每个分量 \(\mu_{t,c}\) 与 \(\sigma_{t,c}\) 分别代表模型在当前上下文视觉信息下，
+其中，向量中的每个分量 \(\mu_{t,c}\) 与 \(\phi_{t,c}\) 分别代表模型在当前上下文视觉信息下，
 对类别 \(c\) 预期总时长的对数均值与不确定性。\(\text{MLP}_{dur}(\cdot)\) 表示用于时长分布预测的多层感知机，
 该设计允许模型针对不同熟练度的医生或不同的手术场景，
 动态调整对不同类别动作“生存时长”的心理预期。
@@ -392,7 +393,7 @@ H_t = \sum_{c=1}^C - \mathbf{P}_{\mathrm{vis}, t, c} \log \mathbf{P}_{\mathrm{vi
 则该类别的即时跳转风险 \(h_c(\Delta T_t)\) 定义为：
 \begin{equation}
     h_c(\Delta T_t) = \frac{f(\Delta T_t \mid \mu_{t,c}, 
-    \sigma_{t,c})}{1 - F(\Delta T_t \mid \mu_{t,c}, \sigma_{t,c})}
+    \phi_{t,c})}{1 - F(\Delta T_t \mid \mu_{t,c}, \phi_{t,c})}
 \end{equation}
 式中，\(f(\cdot)\) 与 \(F(\cdot)\) 分别为对数正态分布的概率密度函数与累积分布函数。
 据此，我们定义自环权重向量 
@@ -406,56 +407,58 @@ H_t = \sum_{c=1}^C - \mathbf{P}_{\mathrm{vis}, t, c} \log \mathbf{P}_{\mathrm{vi
 
 最终，动态状态转移矩阵 \(\mathbf{A}_t\) 融合“动作内”时长约束与“动作间”规程约束，其构建过程如下：
 \begin{equation}
-    \mathbf{A}_t = \mathrm{Softmax}\left( (\mathbf{A}_{\mathrm{stat}} \odot \mathbf{M}) + \mathrm{diag}(\boldsymbol{\tau}_t) \right)
+    \mathbf{A}_t = \mathrm{Softmax}\left( (\mathbf{A}_{\mathrm{s}} \odot \mathbf{M}) + \mathrm{diag}(\boldsymbol{\tau}_t) \right)
 \end{equation}
+其中，\(\mathbf{A}_{\mathrm{s}}\) 是可学习的转移矩阵，主要学习动作间的跳转
+，\(\mathbf{M}\) 是手术规程先验矩阵（元素为0或1，表示合法跳转）。
 基于动态转移矩阵 \(\mathbf{A}_t\)，输出融合规程与时长约束的预测对数概率：
 \begin{equation}
-    \mathbf{Logit}_{\mathrm{logic}} = \ln\big( \mathbf{A}_t \, \mathbf{S}_t + \varepsilon \big)
+    \mathbf{L}_{\mathrm{logic}} = \ln\big( \mathbf{A}_t \, \mathbf{S}_t + \varepsilon \big)
 \end{equation}
 
-其中\(S_t\) 为 \(t\) 时刻的状态概率分布， 
+其中\(\mathbf{S}_t\) 为 \(t\) 时刻的状态概率分布， 
 \(\epsilon\)为一个极小的数值（避免对数计算中出现 0 值）。
 该设计迫使概率流向符合手术规程且处于合理时间窗的下一个阶段，
 既解决了短时动作因视觉特征不足导致的召回延迟问题，
 又有效抑制了相似动作间的越级跳转，实现了时序稳定性与动态适应性的平衡。
 
-为了有效地监督时长分布参数 \(\boldsymbol{\mu}_t\) 与 \(\boldsymbol{\sigma}_t\) 的学习，
+为了有效地监督时长分布参数 \(\boldsymbol{\mu}_t\) 与 \(\boldsymbol{\phi}_t\) 的学习，
 本模块采用负对数似然（Negative Log-Likelihood, NLL）作为时长预测头的损失函数。
-在训练阶段，根据当前帧的真实类别标签 \(y_t\)，仅选取对应维度的预测参数 \(\mu_{t, y_t}\) 与 \(\sigma_{t, y_t}\) 进行反向传播。
+在训练阶段，根据当前帧的真实类别标签 \(y_t\)，仅选取对应维度的预测参数 \(\mu_{t, y_t}\) 与 \(\phi_{t, y_t}\) 进行反向传播。
 给定该动作段在视频中的真实总时长 \(D_{gt}\)，时长感知损失 \(\mathcal{L}_{dur}\) 定义为：
 \begin{equation}
-    \mathcal{L}_{dur} = \sum_{t=1}^T \left[ \ln \sigma_{t, y_t} + 
-    \frac{(\ln D_{gt} - \mu_{t, y_t})^2}{2\sigma_{t, y_t}^2} \right]
+    \mathcal{L}_{dur} = \sum_{t=1}^T \left[ \ln \phi_{t, y_t} + 
+    \frac{(\ln D_{gt} - \mu_{t, y_t})^2}{2\phi_{t, y_t}^2} \right]
 \end{equation}
 该损失函数的第一项用于惩罚过大的预测不确定性，防止模型输出无意义的宽泛分布；
 第二项则通过预测标准差对残差进行自适应加权，使得模型在视觉特征清晰时追求高精度回归，
-而在视觉模糊（如出血、遮挡）时能够通过增大 \(\sigma\) 来容忍偏差。
+而在视觉模糊（如出血、遮挡）时能够通过增大 \(\phi\) 来容忍偏差。
 通过该损失函数的约束，模型不仅能识别动作类别，
 还能学会在复杂的临床环境下评估自身对“手术进度”判断的信心。
 
 
 \textbf{\fusion}\quad
-视觉特征得到的动作预测（\(\mathbf{Logit}_{\mathrm{vis}}\)）与
-逻辑演化得到的动作预测（\(\mathbf{Logit}_{\mathrm{logic}}\)）存在量纲不一、分布不同的问题，
+视觉特征得到的动作预测（\(\mathbf{L}_{\mathrm{vis}}\)）与
+逻辑演化得到的动作预测（\(\mathbf{L}_{\mathrm{logic}}\)）存在量纲不一、分布不同的问题，
 若直接相加或相乘的融合方式容易导致其中一路信号被另一路淹没，影响最终的检测性能。
 本研究采用\fusion，通过归一化处理与动态门控机制，
 实现两路信号的有效融合，兼顾视觉信息的准确性与逻辑信息的可靠性。
 该融合方法首先引入逻辑干预强度门控 \(\lambda_t\)，用于动态调节逻辑信息在融合过程中的权重， 
 其中 \(\mathbf{Z}_t\) 为骨干网络提取的时序视觉特征， 
 \(\mathrm{MLP}_{vis}(\cdot)\) 表示感知视觉信号清晰的多层感知机， 
-用于对时序视觉特征进行编码， \(\sigma(\cdot)\) 为 Sigmoid 激活函数， 将 \(\lambda_t\) 映射至 [0,1] 区间。
+用于对时序视觉特征进行编码， \(\text{sigmoid}(\cdot)\) 为 Sigmoid 激活函数， 将 \(\lambda_t\) 映射至 [0,1] 区间。
 \begin{equation}
-    \lambda_t = \sigma(\mathrm{MLP}_{vis}(\mathbf{Z}_t))
+    \lambda_t = \text{sigmoid}(\mathrm{MLP}_{vis}(\mathbf{Z}_t))
 \end{equation}
 在融合过程中，为了确保两路信号的有效融合，避免量纲不一导致的信号淹没问题，
 对两路预测结果进行L2归一化处理，确保它们在同一尺度上进行融合：
 \begin{equation}
-\mathbf{Logit}_{\mathrm{norm\_vis}} = \frac{\mathbf{Logit}_{\mathrm{vis}}}{\|\mathbf{Logit}_{\mathrm{vis}}\|_2}, 
-\quad \mathbf{Logit}_{\mathrm{norm\_logic}} = \frac{\mathbf{Logit}_{\mathrm{logic}}}{\|\mathbf{Logit}_{\mathrm{logic}}\|_2}
+\bar{\mathbf{L}}_{\mathrm{vis}} = \frac{\mathbf{L}_{\mathrm{vis}}}{\|\mathbf{L}_{\mathrm{vis}}\|_2}, 
+\quad \bar{\mathbf{L}}_{\mathrm{logic}} = \frac{\mathbf{L}_{\mathrm{logic}}}{\|\mathbf{L}_{\mathrm{logic}}\|_2}
 \end{equation}
 最终的预测分布 \(\hat{\mathbf{y}}_t\) 通过下式计算：
 \begin{equation}
-\hat{\mathbf{y}}_t = \mathrm{Softmax}\left(s \cdot \big(\mathbf{Logit}_{\mathrm{norm\_vis}} + \lambda_t \cdot \mathbf{Logit}_{\mathrm{norm\_logic}}\big)\right)
+\hat{\mathbf{y}}_t = \mathrm{Softmax}\left(s \cdot \big(\bar{\mathbf{L}}_{\mathrm{vis}} + \lambda_t \cdot \bar{\mathbf{L}}_{\mathrm{logic}}\big)\right)
 \end{equation}
 其中 \(s\) 为可学习的缩放因子（初始化为 15.0），
 用于恢复 Softmax 函数在归一化后的判别力，避免概率分布过平滑，确保模型能够准确区分不同动作类别。
@@ -486,19 +489,19 @@ W_t = \omega_{y_t} \cdot \epsilon_t
 时序敏感权重 \(\epsilon_t\) 则侧重于优化动作边界的定位精度。
 通过引入指示函数 \(\mathbb{I}_{t \in \text{bound}}\) 判断当前帧是否处于预定义的动作切换窗口内，其定义如下：
 \begin{equation}
-    \epsilon_t = 1 + (\beta - 1) \cdot \exp\left(-\frac{\Delta t^2}{2\sigma^2}\right)
+    \epsilon_t = 1 + (\beta - 1) \cdot \exp\left(-\frac{\delta_t^2}{2\sigma^2}\right)
 \end{equation}
-其中，\(\Delta t\) 表示当前样本点 \(t\) 距离最近动作切换点的时序距离；
+其中，\(\delta_t\) 表示当前样本点 \(t\) 距离最近动作切换点的时序距离；
 \(\beta\) 为边界增强系数（取值 1.5 或 2）；
 \(\sigma\) 为标准差，用于控制边界增强的影响范围。
 当样本处于动作内部（远离边界）时，\(\epsilon_t\)接近1；
 当样本接近切换节点时，权重平滑上升至 \(\beta\)。
 基于动态总权重\(W_t\)，\lossshort 的最终表达式为：
 \begin{equation}
-    \mathcal{L}_{\text{\lshort}} = -\frac{1}{N} \sum_{t=1}^N W_t \cdot (1 - \hat{y}_t)^\gamma \cdot \log(\hat{y}_t)
+    \mathcal{L}_{\text{\lshort}} = -\frac{1}{N} \sum_{t=1}^N W_t \cdot (1 - \hat{\mathbf{y}}_t)^\gamma \cdot \log(\hat{\mathbf{y}}_t)
 \end{equation}
-其中\(N\)为训练样本的总数，\(y_t\)为样本点\(t\)的真实标签，\(\hat{y}_t\)为模型的预测概率，
-\((1 - \hat{y}_t)^\gamma\) 为难易样本调节因子，\(\gamma\) 为聚焦参数（通常取值为 2），
+其中\(N\)为训练样本的总数，\(\hat{\mathbf{y}}_t\)为模型的预测概率，
+\((1 - \hat{\mathbf{y}}_t)^\gamma\) 为难易样本调节因子，\(\gamma\) 为聚焦参数（通常取值为 2），
 降低易分类样本的损失贡献，进一步引导模型关注难分类样本。
 通过\lossshort 的设计，
 模型在训练过程中重点关注短动作样本与动作边界样本，
@@ -515,10 +518,10 @@ W_t = \omega_{y_t} \cdot \epsilon_t
 
 \textbf{模型推理}\quad
 推理阶段，因无法获取当前帧真实类别标签，该框架利用视觉分类器输出的类别置信度引导逻辑状态更新。
-模型输出分类对数概率 \(\mathbf{Logit}_{\mathrm{vis}}\) 与时长分布参数向量 \(\boldsymbol{\mu}_t, \boldsymbol{\sigma}_t\)；
+模型输出分类对数概率 \(\mathbf{L}_{\mathrm{vis}}\) 与时长分布参数向量 \(\boldsymbol{\mu}_t, \boldsymbol{\phi}_t\)；
 根据概率分布，提取置信度最高的该类别对应的预测参数 \([\hat{\mu}_{t, c^*}, \hat{\sigma}_{t, c^*}]\)，
 结合计时器维护的持续时长 \(\Delta T_t\) 计算该类别的风险概率。
-再根据小节~\ref{subsec: graph}中的公式，计算规程引导输出\(\mathbf{Logit}_\mathrm{logic}\)以及通过融合得到的最终预测\(\hat{y}_t\)。
+再根据小节~\ref{subsec: graph}中的公式，计算规程引导输出\(\mathbf{L}_\mathrm{logic}\)以及通过融合得到的最终预测\(\hat{\mathbf{y}}_t\)。
 
 
 \section{实验结果}

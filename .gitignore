@@ -32,3 +32,6 @@ sample_test.toc
 *.synctex*
 
 *.pdf
+
+_minted/
+*.data.minted
