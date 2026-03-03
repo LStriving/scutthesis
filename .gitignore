@@ -32,6 +32,8 @@ sample_test.toc
 *.synctex*
 
 *.pdf
+# except for the figures under fig/ and its subdirectories
+!fig/**/*.pdf
 
 _minted/
 *.data.minted
