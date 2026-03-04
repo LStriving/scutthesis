@@ -284,7 +284,8 @@
 
 \section{实验结果}
 \subsection{数据集与评价指标}
-\textbf{数据集}\quad 本章实验选用文献 \mycite{ruan2023temporal} 提供的 VFSS 造影视频数据集，该数据采集自中山大学附属第三医院。
+\textbf{数据集}\quad 本章实验选用文献 \mycite{ruan2023temporal} 提供的 VFSS 造影视频数据集，
+该数据采集自中山大学附属第三医院。
 数据集共包含来自 71 名受试者（其中男性 25 名，女性 46 名）的 847 个视频样本，总时长约为 508 分钟。
 实验设置基于受试者维度，将数据集按 4:1:1 的比例严格划分为训练集、验证集和测试集。
 该数据集涵盖了七类典型的吞咽微动作及完整吞咽过程的时序标注。
@@ -299,7 +300,7 @@
 在特征提取阶段，所有视频片段统一采用窗口长度为8帧、步长为3帧的配置进行采样。
 模型输入涵盖了双模态信息：外观分支的输入分辨率设定为 $224 \times 224$；
 骨架分支的输入尺寸设定为 $56 \times 56$。
-此外，为了消除吞咽过程中解剖结构运动产生的随机噪声，
+此外，为了稳定关键点预测结果，获取更加平滑的运动轨迹和骨架模态输入，
 本文引入了卡尔曼滤波算法\cite{kalman1960new}对运动轨迹进行平滑处理。
 
 \begin{table}[tb]
@@ -502,21 +503,25 @@ SE \cite{hu2018squeeze} & 115.9 & 116.9 & 82.5 & 74.0 & 57.8 & 36.0 & 63.7 \\
 
 \subsection{性能比较}
 如表 \ref{tab: main} 所示，本章将 \sexyname 与三类现有方法进行了全面的对比评估：
-(1) 不同架构的 SOTA 时序动作定位（TAL） 方法，涵盖基于 CNN 的 A2Net \cite{yang2020revisiting}、TriDet \cite{shi2023tridet}，基于 Transformer 的 ActionFormer \cite{zhang2022actionformer}、AdaTAD \cite{liu2024end}，以及基于 Mamba 的 ActionMamba \cite{chen2024video}；
+(1) 不同架构的时序动作定位（TAL） 方法，涵盖基于 CNN 的 A2Net \cite{yang2020revisiting}、TriDet \cite{shi2023tridet}，基于 Transformer 的 ActionFormer \cite{zhang2022actionformer}、AdaTAD \cite{liu2024end}，以及基于 Mamba 的 ActionMamba \cite{chen2024video}；
 (2) 针对 VFSS 优化的微动作定位方法~\cite{ruan2023temporal}\footnote{由于 Jeong \etal~\cite{jeong2023application} 提出的方法专用于裁剪后的视频且代码未开源，故未纳入本次比较。}；
 (3) 引入骨架增强的多模态微动作定位方法~\cite{hyder2024action}。
 
 在通用 TAL 方法中，ActionMamba 确立了最强的基准性能（平均 mAP 达 59.0\%）。
 针对 VFSS 特定方法，在同等实验设置下基于 ActionMamba 复现了文献 \mycite{ruan2023temporal} 的策略（表中标记为 \(\dagger\)）。
-实验结果表明，尽管该策略对 A2Net 有所改进，但将其迁移至 ActionMamba 后带来的性能增益十分有限，暴露出该方法对特定架构的依赖性及其泛化瓶颈。
-对于多模态方法，Hyder 等人 \cite{hyder2024action} 简单地将热图特征与 RGB 特征进行拼接，并通过 \(1\times1\) 卷积融合，虽然取得了59.3\%的平均 mAP，
+实验结果表明，尽管该策略对 A2Net 有所改进，但将其迁移至 ActionMamba 后带来的性能增益十分有限，
+暴露出该方法对特定架构的依赖性及其泛化瓶颈。
+对于多模态方法，Hyder 等人 \cite{hyder2024action} 简单地将热图特征与 RGB 特征进行拼接，
+并通过 \(1\times1\) 卷积融合，虽然取得了59.3\%的平均 mAP，
 但简单的线性融合难以充分挖掘跨模态的深层互补信息。
 
-相比之下，本章提出的 \sexyname 取得了64.3\% 的平均mAP，全面超越了上述三类方法：相较于最先进的TAL方法（ActionMamba） 提升了 5.3\%；
+相比之下，本章提出的 \sexyname 取得了64.3\% 的平均mAP，
+全面超越了上述三类方法：相较于最先进的TAL方法（ActionMamba） 提升了 5.3\%；
 相较于现有的 VFSS 特定优化策略（Ruan \etal）提升了 14.4\%；
 相较于骨架增强基线（Hyder \etal）提升了5.0\%。
 值得注意的是，本章提出的框架具有良好的架构通用性，不局限于特定的检测器。
-如表~\ref{tab: main} 所示，\sexyname 在基于ActionFormer的架构上也取得了一致的性能提升，其平均表现优于ActionFormer基线 7.8\%。
+如表~\ref{tab: main} 所示，\sexyname 在基于ActionFormer的架构上也取得了一致的性能提升，
+其平均表现优于ActionFormer基线 7.8\%。
 附录中提供了各微动作类别的详细评估结果。
 
 
@@ -616,7 +621,8 @@ SE \cite{hu2018squeeze} & 115.9 & 116.9 & 82.5 & 74.0 & 57.8 & 36.0 & 63.7 \\
 为验证模型的泛化能力与临床鲁棒性，本章引入了采集自不同医疗中心（明心康复中心）的独立外部数据集进行测试。
 该数据集包含 8 名受试者的影像资料，采用 Athena Plus 7500 动态平板型 DR 机（深圳蓝韵医学影像有限公司）进行 VFSS 检查，
 由吞咽功能影像数字化采集系统（广州龙之杰股份有限公司）进行视频图像采集
-所有视频（总时长 95 分钟）均由两名资深临床医生独立评估，最终依据文献 \mycite{ruan2023temporal} 的标准筛选并标注了 48 个微动作片段，平均持续时间为 1.1 秒。
+所有视频（总时长 95 分钟）均由两名资深临床医生独立评估，
+最终依据文献 \mycite{ruan2023temporal} 的标准筛选并标注了 48 个微动作片段，平均持续时间为 1.1 秒。
 实验采用直接推理模式，即直接使用在源域 \cite{ruan2023temporal} 训练的模型对该外部数据集进行评估，过程中未进行任何微调或重新训练。
 
 如表~\ref{tab: external} 所示，\sexyname（基于 ActionMamba）在大多数 tIoU 阈值下均表现出显著优势。
@@ -770,11 +776,17 @@ HRNet~\cite{wang2020deep}  & 7.7 & 28.5 & 82.2 \\
 如表~\ref{tab: heatmap encoder ablation} 所示，VideoMamba展现出卓越的性能优势，其平均mAP达到 52.7\%，
 显著优于I3D（42.7\%）和 MViT（49.1\%）。这一结果充分验证了选用 VideoMamba 作为骨架特征主干网络的合理性。
 
-\textbf{骨架输入形式分析}\quad 表\ref{tab: heatmap input ablation}评估了不同热图表现形式（仅关键点、仅连线、骨架热图）对性能的影响。如表~\ref{tab: heatmap input ablation} 所示，完整的骨架热图（融合关键点与连线）性能最佳，仅连线热图次之，仅关键点热图表现最差。实验结果证实，融合关键点定位与连线结构信息能够产生显著的协同增益。
+\textbf{骨架输入形式分析}\quad 表\ref{tab: heatmap input ablation}评估了不同热图表现形式
+（仅关键点、仅连线、骨架热图）对性能的影响。
+如表~\ref{tab: heatmap input ablation} 所示，
+完整的骨架热图（融合关键点与连线）性能最佳，仅连线热图次之，仅关键点热图表现最差。
+实验结果证实，融合关键点定位与连线结构信息能够产生显著的协同增益。
 
 \textbf{关键点检测器影响评估}\quad 表\ref{tab: heatmap encoder ablation}对比了不同关键点检测器对最终性能的影响。
-实验表明，HRNet~\cite{wang2020deep} 在关键点正确概率（PCK）上优于以 ResNet-18 \cite{he2016deep} 为主干的 SimpleBaseline~\cite{xiao2018simple}。
-对于独立的骨架分支，HRNet 在所有阈值下均表现出更强的解剖特征捕捉能力。当集成至 \sexyname 框架时，基于 HRNet 的模型进一步刷新了最佳结果，
+实验表明，HRNet~\cite{wang2020deep} 在关键点正确概率（PCK）上优于以 
+ResNet-18 \cite{he2016deep} 为主干的 SimpleBaseline~\cite{xiao2018simple}。
+对于独立的骨架分支，HRNet 在所有阈值下均表现出更强的解剖特征捕捉能力。
+当集成至 \sexyname 框架时，基于 HRNet 的模型进一步刷新了最佳结果，
 在计算增量可控的前提下，平均 mAP 超出 SimpleBaseline 1.3\%。
 这证实了 HRNet 能有效保留对微动作定位至关重要的细粒度空间信息。
 因此，本章选用 HRNet 作为默认的骨架提取器。
@@ -789,7 +801,6 @@ HRNet~\cite{wang2020deep}  & 7.7 & 28.5 & 82.2 \\
 这种鲁棒性归因于 \crossblockshort 模块能够自适应地抑制模态噪声并对齐多模态特征。
 而当引入卡尔曼滤波后，\sexyname 达到了峰值性能（64.3\% mAP@Avg.）。
 这表明，虽然卡尔曼滤波起到了辅助优化作用，但 \sexyname 的架构设计本身保证了模型在不同骨架质量下的性能下限与持续增益。
-
 \begin{figure}[t]
     \centering
     % Standard Deviation Effect
@@ -860,13 +871,12 @@ HRNet~\cite{wang2020deep}  & 7.7 & 28.5 & 82.2 \\
 
 \subsection{可视化定性分析}
 为直观评估模型性能，图~\ref{fig:qual_comparisons} 展示了两种不同复杂度场景下的定性对比结果：
-一是动作模式清晰的常规场景，二是包含运动模糊的高难度场景。
 对比方法包括：Ruan \etal~\cite{ruan2023temporal} 提出的原始微动作检测算法、基于 ActionMamba 复现的基线模型，以及本章提出的 \sexyname 框架。
 
 在视觉特征清晰的示例中（见图~\ref{fig:qual_comparisons} 左半部分），
 尽管所有方法均能成功检出微动作，但本章方法在时序边界的回归精度上表现更为出色，预测结果与真值更加贴合。
 
-而在包含运动模糊的复杂场景下（见图~\ref{fig:qual_comparisons} 右半部分），各方法的性能差异更为显著。
+而在复杂场景下（见图~\ref{fig:qual_comparisons} 右半部分），各方法的性能差异更为显著。
 基线方法~\cite{ruan2023temporal} 漏检了大多数微动作，其 ActionMamba 变体也未能识别“口腔运送”阶段；
 相比之下，本章框架的检测结果与标签值保持了高度重叠，准确覆盖了所有关键动作。
 这一结果有力证明了模型对模糊视频的鲁棒性，而这正是应对临床实际场景中频繁出现的运动伪影的关键能力。
@@ -892,6 +902,24 @@ HRNet~\cite{wang2020deep}  & 7.7 & 28.5 & 82.2 \\
     \label{fig:qual_comparisons}
     % \vspace{-5pt}
 \end{figure}
+
+\subsection{原型临床应用系统}
+本章算法已集成于一套用于辅助吞咽障碍诊断的吞咽造影视频分析的半自动化原型系统中。
+如图 \ref{fig:system} 所示，该系统支持视频上传，并能以自动检测微动作的时序起始与终止点。
+针对边缘案例或失效实例，系统提供了交互式接口以支持时序边界的手动微调。
+初步实验评估显示，该系统显著降低了时序标注的计算与人工成本，
+使临床医生得以从繁琐的重复性任务中解脱，专注于医学诊断分析。
+为验证算法的实际应用性能，本系统已在中山大学附属第三医院进行部署。
+通过与院方的深度合作，根据一线临床反馈持续迭代优化模型，
+以确保其在真实临床环境中的稳定性与实用性。
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\textwidth]{fig/alg1/system-snapshot.jpg}
+    \caption{智能 VFSS 视频分析原型系统界面}
+    \label{fig:system}
+\end{figure}
+
+
 
 \section{本章小结}
 本章提出了\fullname，一个吞咽造影视频 （VFSS0） 场景下的时序微动作定位 （TMAL） 任务设计的全新框架。
