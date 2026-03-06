@@ -158,7 +158,10 @@
 为兼顾标注成本与实用性，我们仅对部分训练数据进行了人工标注，
 随后训练了一个基于 HRNet 的关键点检测器 \cite{wang2020deep}，用于在模型训练与测试阶段自动提取时序关键点。
 
-为增强关键点序列的时间稳定性，本章引入卡尔曼滤波（Kalman filter）\cite{kalman1960new} 对检测结果进行后处理，通过平滑运动轨迹有效降低了噪声干扰，从而提升了吞咽过程中的追踪精度。
+为增强关键点序列的时间稳定性，
+本章引入卡尔曼滤波（Kalman filter）\cite{kalman1960new} 对检测结果进行后处理，
+通过平滑运动轨迹有效降低了噪声干扰，
+提升了吞咽过程中对关键解剖结果的追踪精度。
 
 在获取视频帧级的关键点后，通过将其编码为热图（Heatmap）以增强微动作定位的鲁棒性。
 每个 2D 关键点表示为三元组 \(\{(x_k, y_k, c_k)\}\)，其中 \((x_k, y_k)\) 为第 \(k\) 个关键点的坐标，\(c_k\) 为置信度分数。
@@ -503,8 +506,11 @@ SE \cite{hu2018squeeze} & 115.9 & 116.9 & 82.5 & 74.0 & 57.8 & 36.0 & 63.7 \\
 
 \subsection{性能比较}
 如表 \ref{tab: main} 所示，本章将 \sexyname 与三类现有方法进行了全面的对比评估：
-(1) 不同架构的时序动作定位（TAL） 方法，涵盖基于 CNN 的 A2Net \cite{yang2020revisiting}、TriDet \cite{shi2023tridet}，基于 Transformer 的 ActionFormer \cite{zhang2022actionformer}、AdaTAD \cite{liu2024end}，以及基于 Mamba 的 ActionMamba \cite{chen2024video}；
-(2) 针对 VFSS 优化的微动作定位方法~\cite{ruan2023temporal}\footnote{由于 Jeong \etal~\cite{jeong2023application} 提出的方法专用于裁剪后的视频且代码未开源，故未纳入本次比较。}；
+(1) 不同架构的时序动作定位（TAL） 方法，涵盖基于 CNN 的 A2Net \cite{yang2020revisiting}、
+TriDet \cite{shi2023tridet}，基于 Transformer 的 ActionFormer \cite{zhang2022actionformer}、
+AdaTAD \cite{liu2024end}，以及基于 Mamba 的 ActionMamba \cite{chen2024video}；
+(2) 针对 VFSS 优化的微动作定位方法~\cite{ruan2023temporal}\footnote{由于 Jeong \etal~\cite{jeong2023application} 
+提出的方法专用于裁剪后的视频且代码未开源，故未纳入本次比较。}；
 (3) 引入骨架增强的多模态微动作定位方法~\cite{hyder2024action}。
 
 在通用 TAL 方法中，ActionMamba 确立了最强的基准性能（平均 mAP 达 59.0\%）。
@@ -767,7 +773,8 @@ HRNet~\cite{wang2020deep}  & 7.7 & 28.5 & 82.2 \\
 % TODO: 这里说明为什么要比较SE
 虽然引入 SE 模块 \cite{hu2018squeeze} 能带来轻微改善，但本章设计的 \channelblockshort 在所有增强变体中，
 以最低的参数量（109.2M）和微乎其微的额外计算成本，实现了最佳精度（64.3\% mAP@Avg.）。
-关键在于，\channelblockshort 采用的减法操作优于加法变体（CE-Add，mAP 高出 0.8\%），这进一步验证了本章抑制共享背景噪声的设计动机。
+关键在于，\channelblockshort 采用的减法操作优于加法变体（CE-Add，mAP 高出 0.8\%），
+这进一步验证了本章抑制共享背景噪声的设计动机。
 
 \textbf{骨架编码器架构探究}\quad 表\ref{tab: heatmap encoder ablation}评估了三种不同架构的骨架特征提取器：
 基于 CNN 的 I3D \cite{carreira2017quo}、多尺度Vision Transformer（MViT）\cite{fan2021multiscale}
@@ -886,14 +893,16 @@ ResNet-18 \cite{he2016deep} 为主干的 SimpleBaseline~\cite{xiao2018simple}。
     % 并排显示两个子图（无需 subcaption）
     \begin{minipage}[t]{0.49\textwidth} % 单栏宽度占比
         \centering
-        \includegraphics[width=\textwidth]{fig/alg1/results-vis/xlarge_fontsize/result-visual-8_96.0_2021082501_liu2meng2_jian4kang1cha2ti3_2021_08_25_152802_32.png}
+        % \includegraphics[width=\textwidth]{fig/alg1/results-vis/xlarge_fontsize/result-visual-8_96.0_2021082501_liu2meng2_jian4kang1cha2ti3_2021_08_25_152802_32.png}
+        \includegraphics[width=\textwidth]{fig/alg1/results-vis/可视化结果-1-crop.pdf}
         % \captionof{subfigure}{(a) Clear video results}
         % \label{fig:vis_clear}
     \end{minipage}
     \hfill
     \begin{minipage}[t]{0.49\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{fig/alg1/results-vis/xlarge_fontsize/result-visual-3_112.0_2021063001_li3wei3qiang2_jian4kang1cha2ti3_2021_06_30_114059_64.png}
+        % \includegraphics[width=\textwidth]{fig/alg1/results-vis/xlarge_fontsize/result-visual-3_112.0_2021063001_li3wei3qiang2_jian4kang1cha2ti3_2021_06_30_114059_64.png}
+        \includegraphics[width=\textwidth]{fig/alg1/results-vis/可视化结果-2-crop.pdf}
         % \captionof{subfigure}{(b) Blurred video results}
         % \label{fig:vis_blurred}
     \end{minipage}
@@ -904,7 +913,7 @@ ResNet-18 \cite{he2016deep} 为主干的 SimpleBaseline~\cite{xiao2018simple}。
 \end{figure}
 
 \subsection{原型临床应用系统}
-本章算法已集成于一套用于辅助吞咽障碍诊断的吞咽造影视频分析的半自动化原型系统中。
+本章算法已集成于一套用于辅助吞咽障碍诊断的吞咽造影视频智能分析原型系统中。
 如图 \ref{fig:system} 所示，该系统支持视频上传，并能以自动检测微动作的时序起始与终止点。
 针对边缘案例或失效实例，系统提供了交互式接口以支持时序边界的手动微调。
 初步实验评估显示，该系统显著降低了时序标注的计算与人工成本，
