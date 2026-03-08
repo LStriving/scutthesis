@@ -380,7 +380,7 @@ TriDet \cite{shi2023tridet} & TriDet & & 79.6 & 76.6 & 72.4 & 63.7 & 53.1 & 40.9
 AdaTAD \cite{liu2024end} & ActionFormer & & 81.0 & 77.4 & 70.0 & 62.3 & 54.4 & 42.1 & 24.8 & 58.9 \\
 ActionMamba \cite{chen2024video} & ActionMamba & & 82.0	& 79.3 & 74.3 &	67.4 &	53.1	&37.1&	19.9&	59.0 \\
 % AdaTAD \cite{liu2024end} & AdaTAD & 81.1 & 76.8 & 70.4 & 62.7 & 49.9 & 36.4 & 19.4 & 56.7 \\ %1e-4 small adapter
-% \todo{add AdaTAD}
+%
 \midrule
 Ruan 等人 \cite{ruan2023temporal} & A2Net  &  & 70.9 & 67.5 & 62.5 & 55.0 & 46.1 & 31.6 & 15.8 & 49.9\\
 Ruan 等人\(^\dagger\) \cite{ruan2023temporal} & ActionMamba  &  & 77.9& 75.0& 69.5& 62.2&  54.8& 45.2& 28.9& 59.1\\
@@ -785,11 +785,10 @@ HRNet~\cite{wang2020deep}  & 7.7 & 28.5 & 82.2 \\
 
 \textbf{\channelblockshort 模块消融分析}\quad 表~\ref{tab: CE ablation}探究了 \channelblockshort 的作用。
 去除\channelblockshort 模块（w/o \channelblockshort）导致性能显著衰减（mAP@Avg. 下降 1.0\%），充分验证了该组件的必要性。
-% TODO: 这里说明为什么要比较SE
 本实验同时比对了通道增强机制模块SE\cite{hu2018squeeze}，
 虽然引入 SE 模块能带来轻微改善，但本章设计的 \channelblockshort 在所有增强模块中，
 以最低的参数量（109.2M）和微乎其微的额外计算成本，实现了最佳精度（64.3\% mAP@Avg.）。
-关键在于，\channelblockshort 采用的减法操作优于加法变体（CE-Add，mAP 高出 0.8\%），
+关键在于，\channelblockshort 采用的减法操作优于加法变体（\channelblockshort-Add，mAP 高出 0.8\%），
 这进一步验证了本章抑制共享背景噪声的设计动机。
 
 \textbf{骨架编码器架构探究}\quad 表~\ref{tab: heatmap encoder ablation}评估了三种不同架构的骨架特征提取器：
