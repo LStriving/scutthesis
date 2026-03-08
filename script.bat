@@ -5,4 +5,4 @@ bibtex main
 bibtex main 
 xelatex -no-pdf -shell-escape --interaction=nonstopmode main 
 xelatex -shell-escape --interaction=nonstopmode main 
-start main.pdf
+code main.pdf

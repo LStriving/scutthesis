@@ -30,7 +30,7 @@ sample_test.toc
 *.run.xml
 *.bcf
 *.synctex*
-
+*.lo?
 *.pdf
 # except for the figures under fig/ and its subdirectories
 !fig/**/*.pdf

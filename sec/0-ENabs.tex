@@ -1,29 +1,29 @@
 \begin{abstractEN}
-In recent years, deep learning has achieved remarkable progress in various medical image analysis tasks, 
-with breakthrough results in surgical phase recognition and anatomical structure tracking. 
-However, the success of deep learning in medical vision tasks often relies on large-scale, high-quality datasets with expert annotations. 
-In clinical practice, the construction of medical video datasets is frequently hindered by low contrast, 
+In recent years, deep learning has achieved remarkable progress in general video action understanding and analysis tasks.
+However, a pronounced domain gap persists when migrating these technologies to the healthcare sector.
+In clinical practice, the analysis of medical video compared to natural video is frequently hindered by low contrast, 
 subtle motion amplitudes, and highly imbalanced data distributions, 
 making it difficult for deep models to learn effective visual representations for precise action understanding. 
-Therefore, exploring how to deeply integrate medical domain priors to achieve more efficient action representation learning 
+Therefore, exploring how to deeply integrate medical domain priors to achieve more efficient action understanding 
 for medical videos is of great significance for the practical deployment of smart healthcare systems. 
-Nevertheless, for two typical types of visual data—Video Fluoroscopic Swallowing Study 
-for auxiliary diagnosis and microsurgical video for intraoperative navigation—efficient representation 
-learning still faces the following challenges: 
+Focusing on two typical types of medical video datam, 
+videofluoroscopic swallowing study (VFSS) for auxiliary diagnosis and 
+glaucoma surgery videos for intraoperative navigation,
+this paper deeply explores the common bottlenecks and specific challenges 
+of medical action understanding in complex clinical scenarios:
 (1) In temporal micro-action localization for VFSS, 
 the low contrast of X-ray images and the blurring or occlusion of key structures 
 cause weak action signals to be easily submerged by static background noise,
 making it difficult for models to capture precise temporal boundaries; 
 (2) In online action detection for microsurgical videos, 
 the significant imbalance in the duration of surgical phases and the high visual similarity 
-between different operations lead to missed and wrong detections during real-time inference. 
+between different operations lead to missed detections and misjudgments during real-time inference. 
 To address these challenges, the research contents of this dissertation are as follows:
 
 For Video Fluoroscopic Swallowing Study, 
-this dissertation explores anatomical structure calibration mechanisms 
+this dissertation proposes a novel framework named \sexyname
 to address the problems of blurred anatomical structures 
-and submerged weak target features in temporal micro-action localization. 
-A novel framework named \sexyname is proposed, 
+and submerged weak target features in temporal micro-action localization,
 which introduces a skeleton heatmap modality based on clinical priors to provide a robust geometric reference for the model, 
 thereby guiding the learning of more interference-resistant visual representations. 
 Furthermore, to ensure efficient calibration and enhancement of multimodal features, 
@@ -36,10 +36,9 @@ proposed method achieves a 5.3\% improvement in mean Average Precision (mAP)
 compared to state-of-the-art methods and confirms its superior generalization in external validation sets.
 
 For glaucoma intraoperative navigation, 
-this dissertation explores surgical procedure logic coordination mechanisms 
+this dissertation proposes an online action detection framework named \sexytwo 
 to address the issues of temporal logic confusion and uneven data distribution 
 in online surgical action recognition. 
-An action detection framework named \sexytwo is proposed. 
 This method aims to utilize structural priors of surgical procedures 
 through a Dynamic Logic Evolution module (\graphmoduleshort) 
 to improve the model's perception of surgical state transitions and action durations, 

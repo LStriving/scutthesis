@@ -1,32 +1,34 @@
-\chapter{基于解剖结构校准的吞咽造影视频分析}
+\chapter{基于解剖结构校准的吞咽微动作时序定位方法研究}
 \section{引言}
 吞咽障碍（Dysphagia）~\cite{rommel2016oropharyngeal} 多发于儿童及老年群体，
 据统计，65岁及以上人群的患病率超过 30\% \cite{lee2019automatic}。
-该症状通常也是帕金森病 \cite{pflug2018critical} 和食管癌 \cite{hughes2011management} 等多种疾病的早期指征。
+该症状通常也是帕金森病 \cite{pflug2018critical} 和食管癌 \cite{hughes2011management} 等多种疾病的早期征兆。
 因此，对高危人群进行早期且精准的吞咽功能评估，对于实现及时的临床干预至关重要。
 目前，视频吞咽造影检查（VFSS）被公认为评估吞咽障碍的“金标准”，
 其能够记录吞咽过程中口腔期、咽期及食管期的动态 X 射线影像。
-在 VFSS 分析中，对微动作（如舌骨运动）进行精确的时序定位对于异常检测具有重要意义 \cite{molfenter2012temporal, kendall2000timing}。
+在 VFSS 分析中，对微动作（如舌骨运动）进行精确的时序定位与分析具有重要意义 \cite{molfenter2012temporal, kendall2000timing}。
 
-相较于常规的时序动作定位（TAL）任务，VFSS 中的时序微动作定位（TMAL）受限于成像原理及吞咽生理机制的双重特性，面临更为严峻的挑战：
+相较于常规的时序动作定位（TAL）任务，
+VFSS 中的时序微动作定位（TMAL）受限于成像原理及吞咽生理机制的双重特性，面临更为严峻的挑战：
 1) \textbf{关键解剖结构的模糊性}：
 微动作的精确定位依赖于对关键解剖结构（如舌骨）运动的持续追踪。
 然而，X 射线成像中成像对比度低 \cite{zheng2004automated, amiot2016spatio} ，关键结构轮廓模糊；
 此外，结构性遮挡经常致使关键轮廓不可见（如下颌骨对舌骨的遮挡），进一步提高了动作时序边界定位的难度。
 2) \textbf{关键运动结构体积微小}：
-医疗视频中的往往关键运动目标往往体积极小（如细窄的舌骨结构、微小的手术器械尖端）\cite{ruan2023temporal}，
+医疗视频中的关键运动目标往往体积极小（如细窄的舌骨结构、微小的手术器械尖端）\cite{ruan2023temporal}，
 且动作幅度有限，导致不同动作模式难以区分。这意味着在整个视频画面中，有效运动区域的像素占比极低，
 绝大部分区域被静态的解剖背景（如颅骨、脊柱）所占据。
-这中“强背景、弱目标”分布特征，使得微动作的判别信号极易淹没在噪声中，从而影响微动作边界的定位。
+这种“强背景、弱目标”分布特征，使得微动作的判别信号极易淹没在噪声中，从而影响微动作边界的定位。
 
 传统的临床工作流程主要依赖专家进行逐帧人工标注 \cite{kellen2010computer}，
-由于吞咽过程分析涉及多个靶器官和众多参数计算，加之造影视频本身清晰度不高且吞咽动作变化细小，人工标记过程极为耗时费力。
+由于吞咽过程分析涉及多个靶器官和众多参数计算，
+加之造影视频本身清晰度不高且吞咽动作变化细小，人工标记过程极为耗时费力。
 为缓解这一负担，自动化分析方法随之发展 \cite{ruan2023temporal, jeong2023application}。
-现有研究通常采取先检测整体吞咽事件 \cite{ruan2023temporal} 或对视频进行裁剪以聚焦相关片段 \cite{jeong2023application} 的策略，
-来应对吞咽微动作的发生迅速的问题。
+现有研究通常采取先检测整体吞咽事件 \cite{ruan2023temporal} 或对视频进行裁剪以聚焦相关片段 \cite{jeong2023application} 的策略
+来应对吞咽微动作发生迅速的问题。
 尽管这些方法在处理短时动作方面取得了一定进展，但仍存在明显局限：
 它们主要依赖于外观特征（即 RGB 图像和光流），极易受到模糊成像和无关部位的干扰影响。
-例如，如图~\ref{fig: motivation}(a) 上方子图所示，
+例如，如图~\ref{fig: motivation}~a) 子图上方所示，
 作为追踪微动作的关键解剖标志，
 舌骨在 RGB 帧中常因模糊或下颌等邻近结构的遮挡而难以辨识。
 直觉上，显式引入解剖结构先验有望缓解这一问题。
@@ -34,12 +36,12 @@
 首先，学术界对于如何有效且鲁棒地表征解剖结构尚未达成共识；
 其次，将解剖引导信息与外观特征结合以进行高效的时空建模并非易事。
 简单的策略（如特征拼接或基础的后期融合）往往效果不佳，
-需要解决噪声外观特征与稀疏骨架热图之间的语义对齐问题。
+需要解决噪声外观特征与外部引导信息之间的语义对齐问题。
 
 \begin{figure*}[ht]
     \centering
     \vspace{-5pt}
-    \includegraphics[width=1\linewidth]{fig/alg1/sg-mamba-motivation (cropped) .pdf}
+    \includegraphics[width=1\linewidth]{fig/alg1/motivation-zh.pdf}
     \caption{框架对比示意图}
     \label{fig: motivation}
 \end{figure*}
@@ -48,17 +50,19 @@
 该框架旨在增强VFSS场景下TMAL任务的时空建模能力。
 基于临床先验知识，关键解剖学区域（如软腭、椎骨和舌骨）对于量化吞咽运动学特征至关重要\cite{goldfield2010premature,zhang2021automatic,hsiao2023deep}。
 为此，本章引入“骨架”\footnote{本章中的“骨架”一词指由选定的解剖关键点（例如舌骨、椎骨角、软腭）构建的结构化表征，而非传统意义上的人体骨骼系统。}
-模态以增强解剖学表征（如图~\ref{fig: motivation}(b) 所示）。
+模态以增强解剖学表征（如图~\ref{fig: motivation}~b) 所示）。
 具体而言，本章算法将与吞咽微动作相关的关键点进行标注与连接，并将其编码为热图序列。
-与外观数据不同，这种表征天然地过滤了无关的背景细节，从而能够显式追踪具有临床意义部位的运动以实现微动作时序的精确定位。
+与外观数据不同，这种表征天然地过滤了无关的背景细节，从而能够显式追踪具有临床意义部位的运动以辅助微动作时序的精确定位。
 
 随着骨架模态的引入，如何实现模态间的高效交互成为关键。
-为了有效集成这些模态，设计了一个双分支架构来并行处理外观特征和骨架特征。
-我们提出了\crossblockfull（\crossblockfullen, \crossblockshort）模块来促进两个分支间的特征层面上的校准。
-具体而言，为解决 X 射线图像中的空间模糊性，该模块利用骨架轨迹作为空间置信度门控，帮助模型关注吞咽过程重要的区域来动态校准外观特征，从而利用和学习临床的相关先验。
+为了有效集成这一模态，本章设计了一个双分支架构来并行处理外观特征和骨架特征，
+提出了\crossblockfull（\crossblockfullen, \crossblockshort）模块来促进两个分支间的特征层面上的校准。
+具体而言，为解决 X 射线图像中的空间模糊性，该模块利用骨架轨迹作为空间置信度门控，
+帮助模型关注吞咽过程重要的区域来动态校准外观特征，从而利用和学习临床的相关先验。
 另一方面，骨架特征通过外观特征的上下文信息进行增强，以补偿其固有的稀疏性。
 
-鉴于微小目标易被背景淹没，本章在\crossblockshort 中提出的\channelblockfull（\channelblockfullen, \channelblockshort）模块进一步增强了特征的判别能力。
+鉴于微小目标易被背景淹没，本章在\crossblockshort 中提出的
+\channelblockfull（\channelblockfullen, \channelblockshort）模块进一步增强了特征的判别能力。
 利用通道间的相关性显式建模并剔除静态背景信息。
 这一操作类似于背景抑制，显著提升了微小运动目标在特征空间中的信噪比。
 通过上述设计，\sexyname 框架能够有效地融合解剖结构先验与外观特征，从而实现 VFSS 视频中吞咽微动作的精准时序定位。
@@ -66,39 +70,43 @@
 \section{问题定义}
 
 时序微动作定位（TMAL）任务旨在精准预测视频中微动作的起止时间，并识别其具体类别。
-给定一个未裁剪的吞咽视频 \( \vect{V} \)，令标签集合 \(\matr{Z}=\{\vect{z}_1, \vect{z}_2, \dots, \vect{z}_{N}\}\) 表示视频中包含的微动作实例，其中 \(N\) 为实例总数。
+给定一个未裁剪的吞咽视频 \( \vect{V} \)，令标签集合 \(\matr{Z}=\{\vect{z}_1, \vect{z}_2, \dots, \vect{z}_{N}\}\) 
+表示视频中包含的微动作实例，其中 \(N\) 为实例总数。
 每个实例定义为 \(\vect{z}_i=(s_i, e_i, a_i)\)，
-其中 \(s_i\) 和 \(e_i\) 分别表示动作的开始与结束时间（满足 \(s_i < e_i\)），\(a_i \in \{1, \dots, C\}\) 为动作类别标签，\(C\) 表示预定义的类别总数。
+其中 \(s_i\) 和 \(e_i\) 分别表示动作的开始与结束时间
+（满足 \(s_i < e_i\)），\(a_i \in \{1, \dots, C\}\) 为动作类别标签，\(C\) 表示预定义的类别总数。
 
 该任务面临严峻的时空挑战：
 在时间维度上，微动作持续时间极短且存在重叠；
-在空间维度上，细微的运动幅度、复杂的背景噪声以及模糊的解剖轮廓，严重干扰了对关键解剖结构的识别及动作边界的精准定位。
+在空间维度上，细微的运动幅度、复杂的背景噪声以及模糊的解剖轮廓，
+严重干扰了对关键解剖结构的识别及动作边界的精准定位。
 
 \begin{figure*}[tp]
     % \vspace{-5pt}
     \centering
-    \includegraphics[width=1.0\textwidth]{fig/alg1/framework_v6 (cropped).pdf}
+    \includegraphics[width=1.0\textwidth]{fig/alg1/framework-zh.pdf}
     \caption{本章所提出的{\sexyname}框架示意图}
     \label{fig:framework}
 \end{figure*}
 
 \section{本章方法}
 
-本章提出了\fullname （sexyname） 框架。
+本章提出了\fullname （\sexyname） 框架。
 遵循 Ruan 等人~\cite{ruan2023temporal} 的思路，
 本章采用“由粗到细”（Coarse-to-Fine）的策略以降低微动作定位的难度并提升模型性能。
 具体而言，首先在粗定位阶段利用现有检测器
 （如 ActionFormer~\cite{zhang2022actionformer} 或 ActionMamba\cite{chen2024video}）提取完整吞咽事件的候选区间（Proposals）；
 随后在精细定位阶段，以候选区间的中心为基准向外扩展固定时长（如 4 秒）对视频进行裁剪。
-粗定位阶段的标签集记为 \(\matr{Z}^{1}=\{\vect{z}^1_1,\vect{z}^1_2,\ldots,\vect{z}^1_M\}\)，其中 \(M = N/C\) 表示吞咽事件的总数。
+粗定位阶段的标签集记为 \(\matr{Z}^{1}=\{\vect{z}^1_1,\vect{z}^1_2,\ldots,\vect{z}^1_M\}\)，
+每个吞咽事件包含 C 类微动作，\(M = N/C\) 表示吞咽事件的总数。
 每个事件 \(\vect{z}^1_i=(s_i,e_i)\) 仅包含起止时间 \(s_i\) 与 \(e_i\)。
 第二阶段的标签集则表示为 \(\matr{Z}^2 = \{\vect{z}^2_1, \dots, \vect{z}^2_C\}\)。
 由于粗定位阶段本质上是一个二分类时序动作定位任务，后续不再赘述。
 
 针对精细定位阶段，本章引入骨架热图作为一种编码了解剖学先验的新模态。
 通过追踪八个吞咽强相关的关键点并构建结构化骨架序列，
-我们增强模型对解剖结构的关注度，显式抑制背景噪声，克服了仅依赖外观数据的局限性。
-基于提取的外观与骨架特征，我们设计了\crossblockfull（\crossblockshort）模块以实现多模态特征的对比校准和特征融合。
+本章所提框架增强了模型对解剖结构的关注度，显式抑制背景噪声，克服了仅依赖外观数据的局限性。
+基于提取的外观与骨架特征，本章设计了\crossblockfull（\crossblockshort）模块以实现多模态特征的对比校准和特征融合。
 校准后的特征被送入并行检测器，其输出的分类得分（Logits）与边界偏移量（Offsets）经组合后，
 生成最终的微动作定位预测结果。
 \sexyname 的整体框架如图~\ref{fig:framework} 所示。
@@ -129,7 +137,7 @@
                 
                 \STATE \textit{// 3. 微动作预测}
                 \STATE 利用公式~\ref{eq: output} 预测微动作：
-                \STATE \quad \( \{(\hat{s}_i^{\text{app}}, \hat{e}_i^{\text{app}},  \theta_i^{\text{app}})\}_{i=1}^T\) 和 \(\{(\hat{s}_i^{\text{ske}}, \hat{e}_i^{\text{ske}}, \theta_i^{\text{ske}})\}_{i=1}^T\)；
+                \STATE \quad \( \{(\hat{s}_i^{\text{app}}, \hat{e}_i^{\text{app}},  \mathbf{\theta}_i^{\text{app}})\}_{i=1}^T\) 和 \(\{(\hat{s}_i^{\text{ske}}, \hat{e}_i^{\text{ske}}, \mathbf{\theta}_i^{\text{ske}})\}_{i=1}^T\)；
                 
                 \STATE \textit{// 4. 参数优化}
                 \STATE 计算总损失 \( \mathcal{L} = \mathcal{L}^\text{app} + \mathcal{L}^\text{ske} \)，其中：
@@ -147,13 +155,14 @@
 为突破 VFSS 影像中外观特征的固有局限性，本章引入解剖结构先验构建“骨架”模态。
 该模态显式编码了临床关键解剖结构（如舌骨），将其作为吞咽微动作的解剖学参照，
 显式抑制 X 射线成像噪声并消除结构模糊性（如图~\ref{fig: heatmap illu} 所示）。
-与仅依赖外观数据的现有方法不同，通过整合特定领域的解剖先验，
+与仅依赖外观数据的现有方法不同，通过整合解剖先验，
 模型能够聚焦于那些虽短暂却对临床诊断至关重要的细微运动。
 
 本章通过构建骨架关键点序列来实现解剖先验的集成。
 具体而言，本章参考了吞咽分析中运动学参数分析中常利用的结构~\cite{zhang2021automatic, hsiao2023deep, goldfield2010premature}，
 定义并标注了八个对吞咽功能评估至关重要的关键点，
-覆盖舌骨、软腭及颈椎区域（见图~\ref{fig: motivation}(b)）。
+覆盖舌骨、软腭及颈椎区域（见图~\ref{fig: motivation}(b)），
+包括舌骨前上点、舌骨千点、舌骨下点、第二颈椎前下角、第四颈椎前下角、软腭前点、软腭中点、软腭下点。
 标注工作由两名资深专家独立完成并进行交叉核验，以确保数据的可靠性与一致性。
 为兼顾标注成本与实用性，我们仅对部分训练数据进行了人工标注，
 随后训练了一个基于 HRNet 的关键点检测器 \cite{wang2020deep}，用于在模型训练与测试阶段自动提取时序关键点。
@@ -161,34 +170,34 @@
 为增强关键点序列的时间稳定性，
 本章引入卡尔曼滤波（Kalman filter）\cite{kalman1960new} 对检测结果进行后处理，
 通过平滑运动轨迹有效降低了噪声干扰，
-提升了吞咽过程中对关键解剖结果的追踪精度。
+提升了吞咽过程中对关键解剖结构的追踪精度。
 
 在获取视频帧级的关键点后，通过将其编码为热图（Heatmap）以增强微动作定位的鲁棒性。
 每个 2D 关键点表示为三元组 \(\{(x_k, y_k, c_k)\}\)，其中 \((x_k, y_k)\) 为第 \(k\) 个关键点的坐标，\(c_k\) 为置信度分数。
 这些关键点被转换为热图张量 \(\matr{h} \in \mathbb{R}^{W \times H \times K}\)，其中 \(W, H\) 为分辨率，\(K=8\) 为关键点数量。
 具体地，基于关键点的高斯热图 \(\matr{h}^J\) 定义如下：
 \begin{equation}\label{eq: heatmap_k}
-    \matr{h}^J_{ijk} = \exp\left(-\frac{(i - x_k)^2 + (j - y_k)^2}{2 \sigma^2}\right) \cdot c_k.
+    \matr{h}^J_{ijk} = \exp\left(-\frac{(i - x_k)^2 + (j - y_k)^2}{2 \sigma^2}\right) \cdot c_k
 \end{equation}
-% （注：热图张量名为 \matr{h}，元素索引保持原样）
 此外，本章还构建了骨架连线热图 \(\matr{h}^L \in \mathbb{R}^{W \times H \times L}\)，其中 \(L\) 为关键点连线数量，计算公式为：
 \begin{equation}\label{eq: heatmap_l}
-\matr{h}^L_{ijl} = \exp\left(-\frac{{\rm dist}((i, j), {\rm seg}(\alpha, \beta))}{2 \sigma^2}\right) \cdot \min(c_{\alpha}, c_{\beta}),
+\matr{h}^L_{ijl} = \exp\left(-\frac{{\rm dist}((i, j), {\rm seg}(\alpha, \beta))}{2 \sigma^2}\right) \cdot \min(c_{\alpha}, c_{\beta})
 \end{equation}
 其中第 \(l\) 条连线对应关键点 \(\alpha\) 和 \(\beta\) 之间的线段 \({\rm seg}(\alpha, \beta)\)，\({\rm dist}\) 表示像素点 \((i, j)\) 到线段的欧氏距离。
 为去除热图冗余，参考 Hyder 等人 \cite{hyder2024action} 的方法，对关键点热图 \(\matr{h}^J\) 和连线热图 \(\matr{h}^L\) 在通道维度进行聚合。
 实验表明（见表~\ref{tab: heatmap input ablation}），融合关键点与连线热图的策略效果最优。
-因此，对于帧 \(f_i\)，最终的“骨架”热图 \(\matr{h}_i \in \mathbb{R}^{W \times H}\) 定义为：\(\matr{h}_i = (\matr{h}_i^J + \matr{h}_i^L)/{2}\)。
+因此，对于帧 \(\matr{f}_i\)，最终的“骨架”热图 \(\matr{h}_i \in \mathbb{R}^{W \times H}\) 定义为：
+\(\matr{h}_i = (\matr{h}_i^J + \matr{h}_i^L)/{2}\)。
 图~\ref{fig: heatmap illu} 展示了上述三种热图的示例。
-为进一步去除空间冗余背景，本章算法将骨架热图裁剪为覆盖所有时序关键点的最小包围盒（Bounding Box），并统一调整至目标分辨率（如 \(56 \times 56\)）。
-最终的热图序列由在时间维度堆叠处理后的 2D 热图构建而成。
+为进一步去除空间冗余背景，本章算法将骨架热图进一步按照能所有时序关键点的覆盖区域进行裁剪，并统一调整至目标分辨率（如 \(56 \times 56\)）。
+最终的热图序列\(\matr{h}^{3D}\)由在时间维度堆叠处理后的 2D 热图\(\matr{h}\)构建而成。
 
 针对视频片段 \(\matr{v}_i\) 的 3D 骨架热图 \(\matr{h}^{3D}_i\)，利用 VideoMamba~\cite{li2025videomamba} 中的三个双向 Mamba 块提取特征。
 首先，\(\matr{h}^{3D}_i\) 经由 3D 卷积 Patch Embedding 进行序列化（Tokenization），并融合时空位置编码。
 随后，序列 Token 依次通过三个双向 Mamba 层进行建模。
 最后，对第三层输出的所有 Token 进行全局平均池化，得到骨架特征向量 \(\vect{f}^{\text{ske}}_i \in \mathbb{R}^d\)：
 \begin{equation}\label{eq: heatmap feature}
-\vect{f}^{\text{ske}}_i = {\rm AvgPooling}(\mathcal{F}_{\text{BM}}(\matr{h}^{3D}_i)),
+\vect{f}^{\text{ske}}_i = {\rm AvgPooling}(\mathcal{F}_{\text{BM}}(\matr{h}^{3D}_i))
 \end{equation}
 其中 \(\mathcal{F}_{\text{BM}}(\cdot)\) 表示三层双向 Mamba 模块。
 
@@ -203,20 +212,20 @@
 \textbf{外观特征表示}\quad 本章采用预训练的 I3D 模型 \cite{carreira2017quo} 提取视频片段的外观特征，
 具体设置遵循文献 \mycite{ruan2023temporal}。外观特征定义如下：
 \begin{equation}\label{eq: app feature}
-\vect{f}^{\text{app}}_i = [\mathcal{F}_{\text{rgb}}(\vect{v}_i)\,\|\,\mathcal{F}_{\text{flow}}(\vect{v}_i^{\text{flow}})],
+\vect{f}^{\text{app}}_i = [\mathcal{F}_{\text{rgb}}(\vect{v}_i)\,\|\,\mathcal{F}_{\text{flow}}(\vect{v}_i^{\text{flow}})]
 \end{equation}
 其中 \(\|\) 表示特征拼接操作，\(\mathcal{F}_{\text{rgb}}\) 和 \(\mathcal{F}_{\text{flow}}\) 分别表示用于提取 RGB 和光流特征的 I3D 分支，\(\vect{v}_i^{\text{flow}}\) 为光流输入。
 
 \textbf{\crossblockfull}\quad 本章提出\crossblockfull（\crossblockshort） 模块，
-旨在对齐和校准外观特征与骨架特征，增强两个模态的特征。
-该模块引入选择性扫描机制（Selective Scan Mechanism, S6）以建模跨模态的时序上下文依赖。
+旨在对齐和校准外观特征与骨架特征，增强两个模态的特征表征能力。
+该模块引入基于状态空间模型（SSM）的选择性扫描机制（Selective Scan Mechanism, S6）以建模跨模态的时序上下文依赖（后文统称为SSM)。
 给定来自 \(T\) 个片段的外观特征序列 \(\vect{F}^{\text{app}} = [\vect{f}_i^{\text{app}}]_{i=1}^T\) 和骨架特征序列 \(\vect{F}^{\text{ske}} = [\vect{f}_i^{\text{ske}}]_{i=1}^T\)，
 \crossblockshort 通过双向 SSM 实现跨模态交互增强。
 以增强 \(\vect{F}^{\text{app}}\) 为例，利用前向和后向 SSM 生成的中间特征形式化定义如下：
 \begin{align}\label{eq:fw_ssm}
     \vect{F}^{\text{app}}_{\text{fw}} &= \mathcal{F}_{\text{fw}}(\vect{F}^{\text{app}},\vect{F}^{\text{ske}})\\
-    &= {\rm SSM}\left({\rm SiLU}({\rm Conv}(\psi(\vect{F}^{\text{app}})))\right) \odot {\rm SiLU}(\psi(\vect{F}^{\text{ske}})),\nonumber\\
-    \vect{F}^{\text{app}}_{\text{bw}}&={\rm flip}\left(\mathcal{F}_{\text{fw}}({\rm flip}(\vect{F}^{\text{app}}),{\rm flip}(\vect{F}^{\text{ske}}))\right),
+    &= {\rm SSM}\left({\rm SiLU}({\rm Conv}(\psi(\vect{F}^{\text{app}})))\right) \odot {\rm SiLU}(\psi(\vect{F}^{\text{ske}}));\nonumber\\
+    \vect{F}^{\text{app}}_{\text{bw}}&={\rm flip}\left(\mathcal{F}_{\text{fw}}({\rm flip}(\vect{F}^{\text{app}}),{\rm flip}(\vect{F}^{\text{ske}}))\right)
 \end{align}
 其中 \(\vect{F}^{\text{app}}_{\text{fw}}\) 和 \(\vect{F}^{\text{app}}_{\text{bw}}\) 分别表示前向和后向 SSM 的输出特征。
 \({\rm SiLU}\) 为 Sigmoid 线性单元激活函数 \cite{elfwing2018sigmoid}，
@@ -257,12 +266,12 @@
 在获取增强后的外观特征 \(\vect{E}^{\text{app}}\) 与骨架特征 \(\vect{E}^{\text{ske}}\) 后，
 将其分别输入下游微动作检测器 \(\mathcal{G}\)（例如 ActionMamba \cite{chen2024video}）。
 以外观分支为例，检测器 \(\mathcal{G}^{\text{app}}\) 接收 \(\vect{E}^{\text{app}}\) 作为输入，
-并为每个时间 \(t\) 输出预测的动作起始时间 \(\hat{s}_t^{\text{app}}\)、结束时间 \(\hat{e}_t^{\text{app}}\) 以及预测置信度 \(\theta_t^{\text{app}}\)。
+并为每个时间 \(t\) 输出预测的动作起始时间 \(\hat{s}_t^{\text{app}}\)、结束时间 \(\hat{e}_t^{\text{app}}\) 以及预测分数 \(\mathbf{\theta}_t^{\text{app}}\)。
 该过程可形式化定义为：
 \begin{equation}\label{eq: output}
-\{(\hat{s}_i^{\text{app}}, \hat{e}_i^{\text{app}}, \theta_i^{\text{app}})\}_{i = 1}^T=\mathcal{G}^{\text{app}}(\vect{E}^{\text{app}})
+\{(\hat{s}_i^{\text{app}}, \hat{e}_i^{\text{app}}, \mathbf{\theta}_i^{\text{app}})\}_{i = 1}^T=\mathcal{G}^{\text{app}}(\vect{E}^{\text{app}})
 \end{equation}
-同理，骨架分支亦生成相应的预测结果 \(\{(\hat{s}_i^{\text{ske}}, \hat{e}_i^{\text{ske}}, \theta_i^{\text{ske}})\}_{i = 1}^T=\mathcal{G}^{\text{ske}}(\vect{E}^{\text{ske}})\)。
+同理，骨架分支亦生成相应的预测结果 \(\{(\hat{s}_i^{\text{ske}}, \hat{e}_i^{\text{ske}}, \mathbf{\theta}_i^{\text{ske}})\}_{i = 1}^T=\mathcal{G}^{\text{ske}}(\vect{E}^{\text{ske}})\)。
 鉴于吞咽微动作具有高度重叠的特性，单一检测器往往难以捕捉复杂的时序细节 \cite{ruan2023temporal}。
 为此，本章遵循文献\mycite{ruan2023temporal} 的策略，部署多个独立的微动作检测头以提升整体检测性能。
 
@@ -273,22 +282,22 @@
 模型的整体损失函数定义为外观分支与骨架分支损失之和。
 
 \textbf{推理阶段的预测融合}\quad 在模型推理阶段，我们分别获取外观和骨架分支的预测结果，并采用后期融合策略。
-融合后的预测起始时间 \(\hat{s}_t\)、结束时间 \(\hat{e}_t\) 及类别概率 \(\hat{p}_t\) 计算如下：
+融合后的预测起始时间 \(\hat{s}_t\)、结束时间 \(\hat{e}_t\) 及类别概率 \(\hat{\mathbf{p}}_t\) 计算如下：
 \begin{align}\label{eq: late fusion}
-\notag\hat{s}_i &= \omega \hat{s}_i^{\text{app}} + \left(1-\omega\right) \hat{s}_i^{\text{ske},}\quad
+\notag\hat{s}_i &= \omega \hat{s}_i^{\text{app}} + \left(1-\omega\right) \hat{s}_i^{\text{ske}},\quad
 \hat{e}_i = \omega \hat{e}_i^{\text{app}} + \left(1-\omega\right) \hat{e}_i^{\text{ske}}, \\
-\hat{\theta}_i &= \omega \hat{\theta}_i^{\text{app}} + \left(1-\omega\right) \hat{\theta}_i^{\text{ske}},\quad
-\hat{p}_i = {\rm Sigmoid}(\hat{\theta}_i),
+\hat{\mathbf{\theta}}_i &= \omega \hat{\mathbf{\theta}}_i^{\text{app}} + \left(1-\omega\right) \hat{\mathbf{\theta}}_i^{\text{ske}},\quad
+\hat{\mathbf{p}}_i = {\rm Sigmoid}(\hat{\mathbf{\theta}}_i),
 \end{align}
 其中 \(\omega \) 为控制模态贡献度的加权超参数，\({\rm Sigmoid}\) 激活函数用于将 Logits 映射为类别概率。
 在获得融合预测结果后，应用 Soft-NMS \cite{bodla2017soft} 算法以剔除冗余的重叠候选框。
-最终，序边界预测值叠加粗定位阶段获取的时间偏移量进行坐标还原。
+最终，时序边界预测值叠加粗定位阶段获取的时间偏移量进行坐标还原。
 通过整合上述损失设计、推理融合策略及后处理步骤，\sexyname 框架能够有效实现 VFSS 视频中时序微动作的精准定位。
 
 \section{实验结果}
 \subsection{数据集与评价指标}
 \textbf{数据集}\quad 本章实验选用文献 \mycite{ruan2023temporal} 提供的 VFSS 造影视频数据集，
-该数据采集自中山大学附属第三医院。
+该数据集由中山大学附属第三医院采集。
 数据集共包含来自 71 名受试者（其中男性 25 名，女性 46 名）的 847 个视频样本，总时长约为 508 分钟。
 实验设置基于受试者维度，将数据集按 4:1:1 的比例严格划分为训练集、验证集和测试集。
 该数据集涵盖了七类典型的吞咽微动作及完整吞咽过程的时序标注。
@@ -303,8 +312,8 @@
 在特征提取阶段，所有视频片段统一采用窗口长度为8帧、步长为3帧的配置进行采样。
 模型输入涵盖了双模态信息：外观分支的输入分辨率设定为 $224 \times 224$；
 骨架分支的输入尺寸设定为 $56 \times 56$。
-此外，为了稳定关键点预测结果，获取更加平滑的运动轨迹和骨架模态输入，
-本文引入了卡尔曼滤波算法\cite{kalman1960new}对运动轨迹进行平滑处理。
+% 此外，为了稳定关键点预测结果，获取更加平滑的运动轨迹和骨架模态输入，
+% 本文引入了卡尔曼滤波算法\cite{kalman1960new}对运动轨迹进行平滑处理。
 
 \begin{table}[tb]
     \small
@@ -336,17 +345,17 @@
 \textbf{评价指标}\quad 本章采用平均精度均值 （mean Average Precision, mAP）作为衡量 TMAL 任务性能的核心指标 \cite{ruan2023temporal, zhang2023locating}。
 具体而言，检测结果的精度（Precision） 与召回率 （Recall） 定义如下：
 \begin{equation}
-\text{Precision} = \frac{TP}{TP + FP}, \quad \text{Recall} = \frac{TP}{TP + FN},
+\text{Precision} = \frac{TP}{TP + FP}, \quad \text{Recall} = \frac{TP}{TP + FN}
 \end{equation}
 其中 \( TP \)、\( FP \) 和 \( FN \) 分别代表真阳性、假阳性和假阴性样本数。通过调整置信度阈值可构建精度-召回率（PR） 曲线，平均精度（AP）在数值上近似等于该曲线下的面积积分：
 \begin{equation}
-AP = \int_{0}^{1} p(r) \, dr,
+AP = \int_{0}^{1} p(r) \, dr
 \end{equation}
 其中 \( p(r) \) 为精度-召回率函数。
 在多阈值评估设置中，参考文献 \mycite{ruan2023temporal} 的标准，计算不同时序交并比 （tIoU）阈值 \(\tau \in \{0.1, 0.2, \dots, 0.7\}\) 下的 mAP。
 特定阈值 \(\tau\) 下的 mAP 通过对所有 \(N_{\text{class}}\) 个类别的 AP 值取平均获得：
 \begin{equation}
-AP_\tau = \frac{1}{N_{\text{class}}} \sum_{c=1}^{N_{\text{class}}} AP_\tau^{(c)}.
+AP_\tau = \frac{1}{N_{\text{class}}} \sum_{c=1}^{N_{\text{class}}} AP_\tau^{(c)}
 \end{equation}
 
 此外，针对关键点提取精度的评估，本章采用关键点正确概率（Probability of Correct Keypoint, PCK）指标 \cite{yang2012articulated, moskvyak2021semi}。
@@ -441,7 +450,7 @@ ActionMamba~\cite{chen2024video} & 单阶段 &  82.0&74.3 & 53.1 & 19.9& 59.0\\
 在特征提取方面，采用 VideoMamba \cite{li2025videomamba}（特征维度为 576）提取端到端的骨架特征，
 并结合 3 层本章提出的\crossblockshort 模块，以强化外观特征与骨架特征间的深层交互。
 针对下游微动作检测任务，参照 ActionMamba \cite{chen2024video} 的设置构建检测头。
-考虑到原主干网络末端层主要针对长时动作设计，对微动作定位增益有限，故予以移除。
+考虑到原主干网络末端层主要针对长时动作设计，对微动作定位的增益有限，故将其予以移除。
 优化器选择、学习率设定、权重衰减（Weight Decay）及预热（Warm-up）策略等超参数配置均保持不变。
 参考 Ruan 等人 \cite{ruan2023temporal} 的研究，本章沿用了“由粗到细”的定位机制及针对 VFSS 的单类别分类策略。
 在粗定位阶段，为保证对比公平性，实验采用相同的预训练 I3D \cite{carreira2017quo} 模型提取外观特征。
@@ -505,7 +514,7 @@ SE \cite{hu2018squeeze} & 115.9 & 116.9 & 82.5 & 74.0 & 57.8 & 36.0 & 63.7 \\
 
 
 \subsection{性能比较}
-如表 \ref{tab: main} 所示，本章将 \sexyname 与三类现有方法进行了全面的对比评估：
+如表 ~\ref{tab: main} 所示，本章将 \sexyname 与三类现有方法进行了全面的对比评估：
 (1) 不同架构的时序动作定位（TAL） 方法，涵盖基于 CNN 的 A2Net \cite{yang2020revisiting}、
 TriDet \cite{shi2023tridet}，基于 Transformer 的 ActionFormer \cite{zhang2022actionformer}、
 AdaTAD \cite{liu2024end}，以及基于 Mamba 的 ActionMamba \cite{chen2024video}；
@@ -603,11 +612,11 @@ AdaTAD \cite{liu2024end}，以及基于 Mamba 的 ActionMamba \cite{chen2024vide
     \end{minipage}
     \hfill % 这里的 hfill 负责把两个 minipage 撑开到两边
     % --- 第二个表格 (右侧) ---
-    \begin{minipage}[t]{0.48\linewidth}
+    \begin{minipage}[t]{0.49\linewidth}
         \centering
         \caption{不同热图输入的影响}
         % 针对该表格的列间距设置
-        \setlength{\tabcolsep}{2pt}
+        \setlength{\tabcolsep}{2.2pt}
         
         \begin{tabular}{ccrrrrr}
             \toprule
@@ -626,7 +635,7 @@ AdaTAD \cite{liu2024end}，以及基于 Mamba 的 ActionMamba \cite{chen2024vide
 \subsection{外部验证与泛化性分析}
 为验证模型的泛化能力与临床鲁棒性，本章引入了采集自不同医疗中心（明心康复中心）的独立外部数据集进行测试。
 该数据集包含 8 名受试者的影像资料，采用 Athena Plus 7500 动态平板型 DR 机（深圳蓝韵医学影像有限公司）进行 VFSS 检查，
-由吞咽功能影像数字化采集系统（广州龙之杰股份有限公司）进行视频图像采集
+由吞咽功能影像数字化采集系统（广州龙之杰股份有限公司）进行视频图像采集。
 所有视频（总时长 95 分钟）均由两名资深临床医生独立评估，
 最终依据文献 \mycite{ruan2023temporal} 的标准筛选并标注了 48 个微动作片段，平均持续时间为 1.1 秒。
 实验采用直接推理模式，即直接使用在源域 \cite{ruan2023temporal} 训练的模型对该外部数据集进行评估，过程中未进行任何微调或重新训练。
@@ -765,31 +774,39 @@ HRNet~\cite{wang2020deep}  & 7.7 & 28.5 & 82.2 \\
 % \end{center}
 % \end{table}
 
-\textbf{模块性能对比}\quad 表~\ref{tab: CCM ablation} 对比了不同交互机制的效果。“Self-Mamba”在公式~\ref{eq: ccm} 中对单一模态执行自注意力计算（而非跨模态交互），实验结果显示其性能低于双分支基线。尽管交叉注意力机制（Cross-Attention）相较于基线带来了微小的提升（mAP@Avg. +0.3\%），但本章提出的 \crossblockshort 实现了显著的性能飞跃（mAP@Avg. 提升 2.2\%）。
-值得注意的是，\crossblockshort 在实现上述性能突破的同时，保持了极高的计算效率：其参数量（109.2M）和计算量（116.9G FLOPs）分别比交叉注意力机制（188.7M Params, 163.3G FLOPs）降低了 42\% 和 28\%。这一结果有力地证明，模型的性能增益不仅源于有效的跨模态交互设计，更得益于 \crossblockshort 高效的计算架构，使其极具在资源受限临床场景下部署的潜力。
+\textbf{模块性能对比}\quad 表~\ref{tab: CCM ablation} 对比了不同交互机制的效果。
+“Self-Mamba”在公式~\ref{eq: ccm} 中对单一模态执行自注意力计算（而非跨模态交互），
+实验结果显示其性能低于双分支基线。尽管交叉注意力机制（Cross-Attention）相较于基线带来了微小的提升（mAP@Avg. +0.3\%），
+但本章提出的 \crossblockshort 实现了显著的性能飞跃（mAP@Avg. 提升 2.2\%）。
+值得注意的是，\crossblockshort 在实现上述性能突破的同时，保持了极高的计算效率：
+其参数量（109.2M）和计算量（116.9G FLOPs）分别比交叉注意力机制（188.7M Params, 163.3G FLOPs）降低了 42\% 和 28\%。
+这一结果表明，模型的性能增益不仅源于有效的跨模态交互设计，
+更得益于 \crossblockshort 高效的计算架构，使其极具在资源受限临床场景下部署的潜力。
 
-\textbf{\channelblockshort 模块消融分析}\quad 表\ref{tab: CE ablation}探究了 \channelblockshort 的作用。
+\textbf{\channelblockshort 模块消融分析}\quad 表~\ref{tab: CE ablation}探究了 \channelblockshort 的作用。
 去除\channelblockshort 模块（w/o \channelblockshort）导致性能显著衰减（mAP@Avg. 下降 1.0\%），充分验证了该组件的必要性。
 % TODO: 这里说明为什么要比较SE
-虽然引入 SE 模块 \cite{hu2018squeeze} 能带来轻微改善，但本章设计的 \channelblockshort 在所有增强变体中，
+本实验同时比对了通道增强机制模块SE\cite{hu2018squeeze}，
+虽然引入 SE 模块能带来轻微改善，但本章设计的 \channelblockshort 在所有增强模块中，
 以最低的参数量（109.2M）和微乎其微的额外计算成本，实现了最佳精度（64.3\% mAP@Avg.）。
 关键在于，\channelblockshort 采用的减法操作优于加法变体（CE-Add，mAP 高出 0.8\%），
 这进一步验证了本章抑制共享背景噪声的设计动机。
 
-\textbf{骨架编码器架构探究}\quad 表\ref{tab: heatmap encoder ablation}评估了三种不同架构的骨架特征提取器：
+\textbf{骨架编码器架构探究}\quad 表~\ref{tab: heatmap encoder ablation}评估了三种不同架构的骨架特征提取器：
 基于 CNN 的 I3D \cite{carreira2017quo}、多尺度Vision Transformer（MViT）\cite{fan2021multiscale}
 以及最先进的基于状态空间模型的VideoMamba\cite{li2025videomamba}。
 考虑到热图数据的空间稀疏性，对MViT和VideoMamba均采用了 3 层的浅层架构设计。
 如表~\ref{tab: heatmap encoder ablation} 所示，VideoMamba展现出卓越的性能优势，其平均mAP达到 52.7\%，
 显著优于I3D（42.7\%）和 MViT（49.1\%）。这一结果充分验证了选用 VideoMamba 作为骨架特征主干网络的合理性。
 
-\textbf{骨架输入形式分析}\quad 表\ref{tab: heatmap input ablation}评估了不同热图表现形式
+\textbf{骨架输入形式分析}\quad 表~\ref{tab: heatmap input ablation}评估了不同热图表现形式
 （仅关键点、仅连线、骨架热图）对性能的影响。
 如表~\ref{tab: heatmap input ablation} 所示，
 完整的骨架热图（融合关键点与连线）性能最佳，仅连线热图次之，仅关键点热图表现最差。
 实验结果证实，融合关键点定位与连线结构信息能够产生显著的协同增益。
 
-\textbf{关键点检测器影响评估}\quad 表\ref{tab: heatmap encoder ablation}对比了不同关键点检测器对最终性能的影响。
+\textbf{关键点检测器影响评估}\quad 表~\ref{tab:extractor_performance}和表~\ref{tab:framework_performance}
+分别对比了不同关键点检测器各自性能及对最终性能的影响。
 实验表明，HRNet~\cite{wang2020deep} 在关键点正确概率（PCK）上优于以 
 ResNet-18 \cite{he2016deep} 为主干的 SimpleBaseline~\cite{xiao2018simple}。
 对于独立的骨架分支，HRNet 在所有阈值下均表现出更强的解剖特征捕捉能力。
@@ -799,7 +816,7 @@ ResNet-18 \cite{he2016deep} 为主干的 SimpleBaseline~\cite{xiao2018simple}。
 因此，本章选用 HRNet 作为默认的骨架提取器。
 
 
-\textbf{针对骨架抖动的鲁棒性分析}\quad 如表\ref{tab: kalman}所示，
+\textbf{针对骨架抖动的鲁棒性分析}\quad 如表~\ref{tab: kalman}所示，
 在移除卡尔曼滤波 \cite{kalman1960new} 的情况下，
 骨架分支表现出严重的性能退化（mAP@Avg. 从 52.7\% 降至 44.6\%），
 表明关键点的不稳定性会引入破坏性的噪声。
@@ -833,7 +850,7 @@ ResNet-18 \cite{he2016deep} 为主干的 SimpleBaseline~\cite{xiao2018simple}。
         \caption{融合权重 \(\omega\) 的影响}
         \label{fig:fusion_weight}
     \end{minipage}
-    \caption{对所提出方法不同组件的超参数分析}
+    % \caption{对所提出方法不同组件的超参数分析}
     \label{fig:ablation_studies}
 \end{figure}
 
@@ -842,19 +859,20 @@ ResNet-18 \cite{he2016deep} 为主干的 SimpleBaseline~\cite{xiao2018simple}。
 \label{sec:hyper}
 % In this section, we study the effect of different hyperparameters.
 \textbf{高斯标准差 \(\sigma\) 的选择}\quad 调整公式~\ref{eq: heatmap_k} 和公式~\ref{eq: heatmap_l} 中的高斯标准差 \(\sigma\) 以评估其对性能的影响，
-如图表 \ref{fig:std_dev} 所示，当 \(\sigma=4\) 时模型达到最佳性能（平均 mAP 为 52.7\%）。
+如图 ~\ref{fig:std_dev} 所示，当 \(\sigma=4\) 时模型达到最佳性能（平均 mAP 为 52.7\%）。
 较小的 \(\sigma\) 值 (\(\sigma=1,2\)) 会导致热图在空间上过度收敛，丢失必要的空间上下文信息，从而降低性能；
 而较大的 \(\sigma\) 值 (\(\sigma=6,8\)) 虽然表现稳定，但未能提供进一步的增益。
 因此，本章选取 \(\sigma=4\)，以在聚焦关键解剖结构与抑制背景噪声之间取得最佳平衡，这对处理高噪 VFSS 数据至关重要。
 
 \textbf{\crossblockshort 模块层数设定}\quad 通过调整层数来探索\crossblockshort 模块的最佳深度。
-如图表~\ref{fig:ccm_layers} 所示，
+如图~\ref{fig:ccm_layers} 所示，
 堆叠 3 层模块可获得最佳结果（64.3\% mAP）。
-增加层数反而导致性能下降，这暗示过深的网络可能引发过拟合或引入不必要的优化难度；反之，层数过少则不足以实现充分的特征融合。因此，3 层配置是在特征交互深度与模型复杂度之间权衡的最优解。
+增加层数反而导致性能下降，这暗示过深的网络可能引发过拟合或引入不必要的优化难度；反之，层数过少则不足以实现充分的特征融合。
+因此，3 层配置是在特征交互深度与模型复杂度之间权衡的最优解。
 
 \textbf{后期融合权重 \(\omega\) 分析}\quad 在 [0.0, 1.0] 区间内以 0.1 为步长评估模态融合权重 \(\omega\)，
 其中 \(\omega=0.0\) 对应仅骨架分支，\(\omega=1.0\) 对应仅外观分支。
-如图表~\ref{fig:fusion_weight} 所示，
+如图~\ref{fig:fusion_weight} 所示，
 模型在 \(\omega=0.6\) 时达到峰值性能。
 值得注意的是，经过\crossblockshort模块增强后，两个单模态分支的性能均获得了显著提升：
 骨架分支从 52.7\% 提升至 54.9\%，外观分支从 61.7\% 提升至 62.4\%。
@@ -868,7 +886,7 @@ ResNet-18 \cite{he2016deep} 为主干的 SimpleBaseline~\cite{xiao2018simple}。
 
 \textbf{错误分析}\quad 为深入剖析方法的局限性，对不同 tIoU 阈值（0.1 至 0.7）下的误报进行了定量的错误类型分解。
 如图~\ref{fig: false-positive} 所示。
-结果显示，按照结果的置信度进行排序分组，前1G预测中实现了较高的真正率，且定位误差相对较小。
+结果显示，按照结果的置信度进行排序分组，前 100 万（1G）个预测中实现了较高的真正率，且定位误差相对较小。
 占比最大的错误类型为“背景误检”，即模型将无关的时间片段误判为微动作。
 与 BasicTAD \cite{yang2023basictad} 和 ViT-TAD \cite{yang2024adapting} 的结论相似，其主要成因在于回归锚点设计的固有局限性。
 此外，“定位错误”占比较小，表明尽管框架整体边界检测能力较强，印证了本章所提出方法的有效性。
@@ -885,7 +903,7 @@ ResNet-18 \cite{he2016deep} 为主干的 SimpleBaseline~\cite{xiao2018simple}。
 
 而在复杂场景下（见图~\ref{fig:qual_comparisons} 右半部分），各方法的性能差异更为显著。
 基线方法~\cite{ruan2023temporal} 漏检了大多数微动作，其 ActionMamba 变体也未能识别“口腔运送”阶段；
-相比之下，本章框架的检测结果与标签值保持了高度重叠，准确覆盖了所有关键动作。
+相比之下，本章框架的检测结果与标签值保持了高度重叠，准确检测出所有关键微动作。
 这一结果有力证明了模型对模糊视频的鲁棒性，而这正是应对临床实际场景中频繁出现的运动伪影的关键能力。
 
 \begin{figure}[t] % 使用 figure* 环境
@@ -914,7 +932,7 @@ ResNet-18 \cite{he2016deep} 为主干的 SimpleBaseline~\cite{xiao2018simple}。
 
 \subsection{原型临床应用系统}
 本章算法已集成于一套用于辅助吞咽障碍诊断的吞咽造影视频智能分析原型系统中。
-如图 \ref{fig:system} 所示，该系统支持视频上传，并能以自动检测微动作的时序起始与终止点。
+如图 ~\ref{fig:system} 所示，该系统支持视频上传，并能自动检测微动作的时序起始与终止时间点。
 针对边缘案例或失效实例，系统提供了交互式接口以支持时序边界的手动微调。
 初步实验评估显示，该系统显著降低了时序标注的计算与人工成本，
 使临床医生得以从繁琐的重复性任务中解脱，专注于医学诊断分析。
@@ -931,12 +949,13 @@ ResNet-18 \cite{he2016deep} 为主干的 SimpleBaseline~\cite{xiao2018simple}。
 
 
 \section{本章小结}
-本章提出了\fullname，一个吞咽造影视频 （VFSS0） 场景下的时序微动作定位 （TMAL） 任务设计的全新框架。
+本章提出了\fullname，一个吞咽造影视频 （VFSS） 场景下的时序微动作定位 （TMAL） 任务设计的全新框架。
 针对 X 射线影像中解剖结构模糊及成像噪声带来的定位难题，
 本章首先引入了基于临床先验的骨架热图模态，为模型提供了鲁棒的几何结构参照，显著增强了模型在低对比度环境下的特征表征能力。
 进一步地，针对吞咽关键器官（如舌骨）目标极小、运动幅度微弱且极易被大面积静态背景淹没的挑战，
 本章设计了\crossblockfull （\crossblockshort） 模块。
 该模块创新性地融合了\channelblockfull （\channelblockshort） 机制，
+首次将解剖骨架热图与跨模态校准结合用于 VFSS 微动作定位，
 通过显式剥离冗余的静态背景信息，有效放大了微弱的动态特征信号；
 同时结合骨架特征作为空间注意力门控，实现了对细微解剖运动区域的精准聚焦与特征校准。
 在基准数据集上的系统性实验表明，\sexyname 取得了目前最先进的性能，大幅超越了现有方法。
