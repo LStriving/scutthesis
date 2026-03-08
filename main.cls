@@ -305,6 +305,17 @@
     \thecontentslabel\quad{}}{}{%
     \hspace{.5em}\titlerule*[5pt]{$\cdot$}\contentspage}%
 
+% 给表格目录和图片目录加上字
+% --- 表格目录格式定制 ---
+\titlecontents{table}[0pt]{\tocsectionfont}{%
+    表\thecontentslabel\quad{}}{}{%
+    \hspace{.5em}\titlerule*[5pt]{$\cdot$}\contentspage}
+
+% --- 图片目录格式定制 ---
+\titlecontents{figure}[0pt]{\tocsectionfont}{%
+    图\thecontentslabel\quad{}}{}{%
+    \hspace{.5em}\titlerule*[5pt]{$\cdot$}\contentspage}
+
 % 设定章节深度和目录深度
 \setcounter{secnumdepth}{4}
 \setcounter{tocdepth}{2}
@@ -538,7 +549,7 @@
 %允许公式换页显示,否则大型推导公式都在一页内，
 %一页显示不下放到第二页，导致很大的空白空间，很不好看
 \allowdisplaybreaks[4]
-%\setlength\jot{1pt} %公式之间的距离,TODO
+%\setlength\jot{1pt} %公式之间的距离
 
 \newtheoremstyle{definition}% name
   {0pt}%      Space above, empty = `usual value'
@@ -579,6 +590,24 @@
 %%%%%%%%%%%%%%%%%   end of 定理环境
 \setlength\abovedisplayskip{4pt}
 \setlength\belowdisplayskip{4pt}
+
+% \makeatletter
+% % Prevent extra vertical space between groups in list of figures/tables
+% % Some classes or packages insert \addvspace into the .lof/.lot files
+% % which can produce visible blank lines between figures/tables from
+% % different chapters. Temporarily disable \addvspace when printing
+% % the lists to remove that extra space.
+% \renewcommand{\listoffigures}{%
+%   \chapter*{\listfigurename}%
+%   \@mkboth{\listfigurename}{\listfigurename}%
+%   \begingroup\let\addvspace\@gobble\@starttoc{lof}\endgroup
+% }
+% \renewcommand{\listoftables}{%
+%   \chapter*{\listtablename}%
+%   \@mkboth{\listtablename}{\listtablename}%
+%   \begingroup\let\addvspace\@gobble\@starttoc{lot}\endgroup
+% }
+% \makeatother
 
 \endinput
 %% End of file `scutthesis.cls'.

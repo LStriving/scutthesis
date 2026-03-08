@@ -1,4 +1,4 @@
-\chapter{基于解剖结构校准的吞咽微动作时序定位方法研究}
+\chapter{基于解剖结构校准的吞咽微动作时序定位研究}
 \section{引言}
 吞咽障碍（Dysphagia）~\cite{rommel2016oropharyngeal} 多发于儿童及老年群体，
 据统计，65岁及以上人群的患病率超过 30\% \cite{lee2019automatic}。
@@ -89,6 +89,39 @@ VFSS 中的时序微动作定位（TMAL）受限于成像原理及吞咽生理�
     \label{fig:framework}
 \end{figure*}
 
+\section{相关理论基础}
+由于本章使用了 Mamba 模块，
+首先介绍基于状态空间模型（State-Space Models, SSMs）的模型，
+特别是 S4 \cite{gu2021efficiently} 和 Mamba \cite{gu2023mamba}。
+SSMs 是一类数学框架，旨在通过隐藏状态 $h(t) \in \mathbb{R}^N$ 将输入序列 $x(t)$ 映射到输出序列 $y(t)$。
+形式上，SSMs 由常微分方程（ODEs）控制：
+\begin{equation}
+    h'(t) = \mathbf{A}h(t) + \mathbf{B}x(t), \quad y(t) = \mathbf{C}h(t),
+\end{equation}
+其中 $\mathbf{A} \in \mathbb{R}^{N \times N}$ 是状态转移矩阵，$\mathbf{B} \in \mathbb{R}^{N \times 1}$ 和 $\mathbf{C} \in \mathbb{R}^{1 \times N}$ 是投影矩阵。SSM 独立应用于 $x(t)\in \mathbb{R}^D$ 的每个通道。
+
+Mamba~\cite{gu2023mamba} 是离散 SSM 的一种变体，
+它包含一个时间尺度参数 $\Delta$，
+通过零阶保持（Zero-Order Hold, ZOH）将连续参数 $\mathbf{A}$ 和 $\mathbf{B}$ 转换为离散对应项 $\overline{\mathbf{A}}$ 和 $\overline{\mathbf{B}}$：
+\begin{equation}
+    \overline{\mathbf{A}} = \exp(\Delta \mathbf{A}),\quad
+    \overline{\mathbf{B}} = (\Delta \mathbf{A})^{-1}(\exp(\Delta \mathbf{A}) - \mathbf{I}) \cdot \Delta \mathbf{B}.
+\end{equation}
+这些变换使得隐藏状态 \(h_t\) 可以通过离散化的状态空间公式迭代计算：
+\begin{equation}
+    h_t = \overline{\mathbf{A}} h_{t-1} + \overline{\mathbf{B}} x_t, \quad y_t = \mathbf{C} h_t.
+\end{equation}
+上述操作可以通过全局卷积范式高效实现：
+\begin{equation}\label{eq:ssm}
+    \overline{\mathbf{K}}=(\mathbf{C}\overline{\mathbf{B}},\mathbf{C}\overline{\mathbf{A}\mathbf{B}},\ldots,\mathbf{C}\overline{\mathbf{A}}^{S-1}\overline{\mathbf{B}}),\quad\mathbf{Y}=\mathbf{X}*\overline{\mathbf{K}}
+\end{equation}
+其中 $S$ 表示序列的长度，$\mathbf{X} \in \mathbb{R}^{S \times D}$ 和 $\mathbf{Y} \in \mathbb{R}^{S \times D}$ 分别是输入和输出序列。
+与依赖静态参数的传统 SSM 不同，
+Mamba 引入了选择性扫描机制（Selective Scan Mechanism, S6）作为其核心算子，
+引入了动态上下文敏感性和自适应权重调制。
+在这里，$\mathbf{B}\in\mathbb{R}^{S \times D \times N}$，$\mathbf{C}\in\mathbb{R}^{S \times D \times N}$ 和 $\Delta\in\mathbb{R}^{S \times D}$ 是直接从输入 $\mathbf{X}\in \mathbb{R}^{S \times D}$ 推断出来的，从而能够有效处理不同的输入分布。
+为方便起见，本章使用 $\mathbf{Y}={\rm SSM}(\mathbf{X})$ 来表示公式~\ref{eq:ssm}。该公式也可在公式~\ref{eq:fw_ssm} 中复用。
+
 \section{本章方法}
 
 本章提出了\fullname （\sexyname） 框架。
@@ -162,7 +195,7 @@ VFSS 中的时序微动作定位（TMAL）受限于成像原理及吞咽生理�
 具体而言，本章参考了吞咽分析中运动学参数分析中常利用的结构~\cite{zhang2021automatic, hsiao2023deep, goldfield2010premature}，
 定义并标注了八个对吞咽功能评估至关重要的关键点，
 覆盖舌骨、软腭及颈椎区域（见图~\ref{fig: motivation}(b)），
-包括舌骨前上点、舌骨千点、舌骨下点、第二颈椎前下角、第四颈椎前下角、软腭前点、软腭中点、软腭下点。
+包括舌骨前上点、舌骨前点、舌骨下点、第二颈椎前下角、第四颈椎前下角、软腭前点、软腭中点、软腭下点。
 标注工作由两名资深专家独立完成并进行交叉核验，以确保数据的可靠性与一致性。
 为兼顾标注成本与实用性，我们仅对部分训练数据进行了人工标注，
 随后训练了一个基于 HRNet 的关键点检测器 \cite{wang2020deep}，用于在模型训练与测试阶段自动提取时序关键点。
@@ -189,7 +222,7 @@ VFSS 中的时序微动作定位（TMAL）受限于成像原理及吞咽生理�
 因此，对于帧 \(\matr{f}_i\)，最终的“骨架”热图 \(\matr{h}_i \in \mathbb{R}^{W \times H}\) 定义为：
 \(\matr{h}_i = (\matr{h}_i^J + \matr{h}_i^L)/{2}\)。
 图~\ref{fig: heatmap illu} 展示了上述三种热图的示例。
-为进一步去除空间冗余背景，本章算法将骨架热图进一步按照能所有时序关键点的覆盖区域进行裁剪，并统一调整至目标分辨率（如 \(56 \times 56\)）。
+为进一步去除空间冗余背景，本章算法将骨架热图进一步按照能覆盖所有时序关键点的覆盖区域进行裁剪，并统一调整至目标分辨率（如 \(56 \times 56\)）。
 最终的热图序列\(\matr{h}^{3D}\)由在时间维度堆叠处理后的 2D 热图\(\matr{h}\)构建而成。
 
 针对视频片段 \(\matr{v}_i\) 的 3D 骨架热图 \(\matr{h}^{3D}_i\)，利用 VideoMamba~\cite{li2025videomamba} 中的三个双向 Mamba 块提取特征。
@@ -873,7 +906,7 @@ ResNet-18 \cite{he2016deep} 为主干的 SimpleBaseline~\cite{xiao2018simple}。
 其中 \(\omega=0.0\) 对应仅骨架分支，\(\omega=1.0\) 对应仅外观分支。
 如图~\ref{fig:fusion_weight} 所示，
 模型在 \(\omega=0.6\) 时达到峰值性能。
-值得注意的是，经过\crossblockshort模块增强后，两个单模态分支的性能均获得了显著提升：
+值得注意的是，经过\crossblockshort 模块增强后，两个单模态分支的性能均获得了显著提升：
 骨架分支从 52.7\% 提升至 54.9\%，外观分支从 61.7\% 提升至 62.4\%。
 
 \begin{figure}[thp]
