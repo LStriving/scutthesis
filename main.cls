@@ -17,7 +17,7 @@
 %% v2.1.0, Jun 20, 2015,启用pdfcover选项，修改代码区显示方式，附录页眉，去除草稿水印，lyx模板
 
 \NeedsTeXFormat{LaTeX2e}[1999/12/01]
-\ProvidesClass{scutthesis}[2011/03/31 2.0.1 The LaTeX class for the thesis of South China University of Technology]
+\ProvidesClass{main}[2011/03/31 2.0.1 The LaTeX class for the thesis of South China University of Technology]
 
 %% import global options
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -287,11 +287,13 @@
 %参考文献bibi style
 \RequirePackage[nottoc]{tocbibind} % 将参考文献、索引、表格目录和图形
 \renewcommand{\bibname}{参考文献}
+\AddToHook{package/hyperref/after}{\RequirePackage{bookmark}} % 修正书签层级嵌套问题
 
 % 设置目录
 %%%%%%%%%%%%%%%%%
 \RequirePackage{titletoc} 
-\renewcommand\contentsname{\centerline{\toctitlefont{目\quad{}录}}}
+\providecommand{\texorpdfstring}[2]{#1}
+\renewcommand\contentsname{\texorpdfstring{\centerline{\toctitlefont{目\quad{}录}}}{目录}}
 \titlecontents{chapter}[0ex]{\tocchapterfont}{%
     第\CJKnumber{\thecontentslabel}章\quad{}}{}{%
     \hspace{.5em}\titlerule*[5pt]{$\cdot$}\contentspage}%
@@ -369,11 +371,13 @@
 % 	\normalsize
 % } 
 \renewcommand{\bibliography}[1]{%
-    \cleardoublepage          % 强制新页，结束上一章的层级
+    \cleardoublepage
     \phantomsection
+    \bookmarksetup{startatroot}%
+    \chapterxtrue
+    \chapterxname{\bibname}
     \begingroup
     \refbodyfont
-    \chapterxtrue
     \let\ps@plain=\ps@revtitlestyle
     \let\ps@headings=\ps@revtitlestyle
     \orig@bibliography{#1}
@@ -411,6 +415,12 @@
     \makeindex%
     \normalsize%正文字体格式
     \linespacing{1.682}% 主行距～1.5倍
+    % 在所有宏包加载完毕后包装 \tableofcontents，保证 startatroot 生效
+    \let\scut@orig@tableofcontents=\tableofcontents
+    \renewcommand{\tableofcontents}{%
+      \bookmarksetup{startatroot}%
+      \scut@orig@tableofcontents
+    }%
   }
 \AtEndDocument{}
 
@@ -450,12 +460,14 @@
 %一种是采用\abstractCN和\abstractEN方式以“摘要”和“Abstract”为页标题
 %另一种采用研究报告的标题为摘要页的标题，这时使用\charpter*{报告中文或英文标题}和\chapterx{摘要或Abstract}
 \newenvironment{abstractCN}{
+  \bookmarksetup{startatroot}%
   \chapter*{摘\quad 要}
   \addcontentsline{toc}{chapter}{摘要} 
 }{}
 
 \newenvironment{abstractEN}
 {
+  \bookmarksetup{startatroot}%
   \chapter*{Abstract}
   \addcontentsline{toc}{chapter}{Abstract}
 }{}
@@ -486,6 +498,7 @@
 \newcommand{\chapterx}[1]
 {
   \chapterxtrue
+  \bookmarksetup{startatroot}%
   \chapter*{#1}
   \chapterxname{#1}
   \addcontentsline{toc}{chapter}{#1}
@@ -506,6 +519,7 @@
   % \chaptertitle is not available for those chapters without label number.
  %  \cleardoublepage 
    \chapterxtrue
+   \bookmarksetup{startatroot}%
    \chapter*{#1}
    \chapterxname{#1}
    \addcontentsline{toc}{chapter}{#1}
@@ -591,23 +605,25 @@
 \setlength\abovedisplayskip{4pt}
 \setlength\belowdisplayskip{4pt}
 
-% \makeatletter
-% % Prevent extra vertical space between groups in list of figures/tables
-% % Some classes or packages insert \addvspace into the .lof/.lot files
-% % which can produce visible blank lines between figures/tables from
-% % different chapters. Temporarily disable \addvspace when printing
-% % the lists to remove that extra space.
-% \renewcommand{\listoffigures}{%
-%   \chapter*{\listfigurename}%
-%   \@mkboth{\listfigurename}{\listfigurename}%
-%   \begingroup\let\addvspace\@gobble\@starttoc{lof}\endgroup
-% }
-% \renewcommand{\listoftables}{%
-%   \chapter*{\listtablename}%
-%   \@mkboth{\listtablename}{\listtablename}%
-%   \begingroup\let\addvspace\@gobble\@starttoc{lot}\endgroup
-% }
-% \makeatother
+\makeatletter
+% Prevent extra vertical space between groups in list of figures/tables
+% Some classes or packages insert \addvspace into the .lof/.lot files
+% which can produce visible blank lines between figures/tables from
+% different chapters. Temporarily disable \addvspace when printing
+% the lists to remove that extra space.
+\renewcommand{\listoffigures}{%
+  \bookmarksetup{startatroot}%
+  \chapter*{\listfigurename}%
+  \@mkboth{\listfigurename}{\listfigurename}%
+  \begingroup\let\addvspace\@gobble\@starttoc{lof}\endgroup
+}
+\renewcommand{\listoftables}{%
+  \bookmarksetup{startatroot}%
+  \chapter*{\listtablename}%
+  \@mkboth{\listtablename}{\listtablename}%
+  \begingroup\let\addvspace\@gobble\@starttoc{lot}\endgroup
+}
+\makeatother
 
 \endinput
 %% End of file `scutthesis.cls'.

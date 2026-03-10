@@ -3,9 +3,6 @@
 \documentclass[unicode,master]{main}
 \usepackage{fontspec}
 \usepackage{color}
-\usepackage{array}
-\usepackage{longtable}
-\usepackage{graphicx}
 \usepackage[unicode=true,
  bookmarks=true,bookmarksnumbered=true,bookmarksopen=false,
  breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=true]
@@ -13,22 +10,15 @@
 % table
 \usepackage{xspace}
 % \usepackage{enumitem}
-\usepackage{amsmath,amsfonts}
+\usepackage{amsfonts}
 \usepackage{algorithmic}
-% \usepackage{algorithm}
-% \usepackage{array}
 % \usepackage{textcomp}
 % \usepackage{stfloats}
 % % \usepackage{url}
 % \usepackage{verbatim}
-% \usepackage{graphicx}
-% \usepackage{graphicx}
 % \usepackage[table]{xcolor}
-% \usepackage{amssymb}
-% \usepackage{booktabs}
 
 % \usepackage{paralist}
-% \usepackage{colortbl} % 和longtable冲突
 \usepackage{multicol}
 \usepackage{multirow}
 % \usepackage{subcaption}
@@ -49,7 +39,7 @@
 
 % 全局将名字改为中文“算法”
 \floatname{algorithm}{算法}
-\renewcommand{\thealgorithm}{\thechapter-\arabic{algorithm}}
+% \renewcommand{\thealgorithm}{\thechapter-\arabic{algorithm}}
 
 \newcommand{\theHalgorithm}{\arabic{algorithm}}
 \newcommand{\vect}[1]{\mathbf{#1}} % 向量/矩阵：加粗正体
@@ -103,7 +93,6 @@
 
 \makeatother
 
-\usepackage{listings}
 \usepackage{xunicode}
 \renewcommand{\lstlistingname}{列表}
 
@@ -141,7 +130,8 @@
 \bibliographystyle{gbt7714-numerical-scut}
 \bibliography{main}
 % \include{sec/appendix}
-\include{sec/7-pub}
+% \include{sec/7-pub}
+\include{sec/7-pub-an}
 % \include{sec/8-thanks}
 
 \end{document}

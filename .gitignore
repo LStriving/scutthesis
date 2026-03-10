@@ -37,3 +37,5 @@ sample_test.toc
 
 _minted/
 *.data.minted
+
+build/

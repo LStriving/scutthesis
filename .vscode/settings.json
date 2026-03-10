@@ -1,5 +1,60 @@
 {
     "python-envs.defaultEnvManager": "ms-python.python:conda",
     "python-envs.defaultPackageManager": "ms-python.python:conda",
-    "python-envs.pythonProjects": []
+    "python-envs.pythonProjects": [],
+    "latex-workshop.latex.outDir": "%DIR%/build",
+    "latex-workshop.latex.tools": [
+        {
+            "name": "dedup-bib",
+            "command": "python",
+            "args": [
+                "dedup_bib.py",
+                "--input",
+                "%DOCFILE%.bib"
+            ]
+        },
+        {
+            "name": "xelatex-outdir",
+            "command": "xelatex",
+            "args": [
+                "-synctex=1",
+                "-interaction=nonstopmode",
+                "-file-line-error",
+                "-shell-escape",
+                "-output-directory=build",
+                "%DOC%"
+            ]
+        },
+        {
+            "name": "bibtex-outdir",
+            "command": "cmd",
+            "args": [
+                "/c",
+                "cd /d %DIR%\\build && set BIBINPUTS=.;..; && set BSTINPUTS=.;..; && bibtex %DOCFILE%"
+            ]
+        },
+        {
+            "name": "copy-pdf-back",
+            "command": "cmd",
+            "args": [
+                "/c",
+                "copy /Y build\\%DOCFILE%.pdf %DOCFILE%.pdf >nul"
+            ]
+        }
+    ],
+    "latex-workshop.latex.recipes": [
+        {
+            "name": "xelatex -> bibtex -> xelatex*2 (outdir)",
+            "tools": [
+                "dedup-bib",
+                "xelatex-outdir",
+                "bibtex-outdir",
+                "xelatex-outdir",
+                "xelatex-outdir",
+                "copy-pdf-back"
+            ]
+        }
+    ],
+    "latex-workshop.latex.recipe.default": "lastUsed",
+    "latex-workshop.latex.autoBuild.run": "onSave"
 }
