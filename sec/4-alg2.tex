@@ -611,8 +611,8 @@ OphNet数据集主要采集来自Youtube平台等公开渠道的眼科手术视�
 而在OphNet数据集上，为了比较的公平性，输入视频帧的分辨率为 250\( \times \)250，采样率1帧/秒。
 对于时空特征编码，本章选取E2E-LOAD\cite{cao2023e2e}模型进行端到端的特征读取，同时将该方法作为基线方法用于公平比较。
 % 补充非端到端的编码方式（查看spr怎么弄的）
-在训练过程中，我们采用AdamW优化器，初始学习率为\(10^{-3}\)，权重衰减为0.05，动量为0.9，批处理大小为8，共训练50轮。
-所有实验均基于PyTorch框架实现，并基于型号为NVIDIA GeForce TITAN Xp的显卡上进行训练与评估。
+在训练过程中，我们采用AdamW优化器，初始学习率为\(10^{-3}\)，权重衰减为0.05，动量为0.9，批处理大小为64，共训练50轮。
+所有实验均基于PyTorch框架实现，并基于型号为8张 NVIDIA GeForce TITAN Xp的显卡上进行训练与评估。
 对于\evolution 模块中的递归神经网络层，我们采用单层Mamba结构，输入输出维度保持一致；
 
 \textbf{评价指标}\quad
@@ -626,7 +626,7 @@ OphNet数据集主要采集来自Youtube平台等公开渠道的眼科手术视�
 平均精确度指标: 首先将所有帧按预测置信度从高到低进行排序。
 对于某一特定类别，在排序列表截断位置 \(k\) 处的精确率计算为：
 \begin{equation}
-\text{Prec}(k) = \frac{TP(k)}{TP(k) + FP(k)} 
+\text{Prec}(k) = \frac{\text{TP}(k)}{\text{TP}(k) + \text{FP}(k)} 
 \end{equation} 
 其中 \(TP(k)\) 和 \(FP(k)\) 分别表示前 \(k\) 帧预测中的真阳性（True Positive）与假阳性（False Positive）帧数。
 随后，该类别的平均精确率（AP）定义为：
@@ -639,19 +639,19 @@ OphNet数据集主要采集来自Youtube平台等公开渠道的眼科手术视�
 
 准确率： 所有分类正确的帧数占视频总帧数的比例，计算公式为：
 \begin{equation}
- \text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN} 
+ \text{Accuracy} = \frac{\text{TP} + \text{TN}}{\text{TP} + \text{TN} + \text{FP} + \text{FN}} 
 \end{equation}
 
 精确率与召回率： 精确率衡量了模型预测为目标类别的帧中，真实属于该类别的比例；
 召回率则衡量了所有真实属于该类别的帧中，被模型正确识别出的比例：
 \begin{equation}
-\text{Precision} = \frac{TP}{TP + FP}, \quad \text{Recall} = \frac{TP}{TP + FN} 
+\text{Precision} = \frac{\text{TP}}{\text{TP} + \text{FP}}, \quad \text{Recall} = \frac{\text{TP}}{\text{TP} + \text{FN}} 
 \end{equation} 
 
 Jaccard 指数： 也被称为交并比（IoU），
 用于衡量模型预测的时间区间与真实动作区间之间的重叠程度，计算公式为：
 \begin{equation}
- \text{Jaccard} = \frac{TP}{TP + FP + FN}
+ \text{Jaccard} = \frac{\text{TP}}{\text{TP} + \text{FP} + \text{FN}}
 \end{equation}
 
 \subsection{性能比较}
@@ -732,6 +732,7 @@ E2E-LOAD \cite{cao2023e2e}、CMeRT\cite{pang2025context}、BioMamba\cite{wang202
 \subsection{消融分析}
 为了评估本章所提出方法的各个模块的有效性和实际贡献，
 本章在MIGS数据集上设计了消融实验并进行结果分析。
+
 %todo：根据新的数据重新生成描述
 \textbf{模块有效性消融实验}\quad
 为了深入探讨 \graphmoduleshort 模块中各子模块对于手术动作检测性能的影响，
@@ -862,7 +863,7 @@ Mamba & \textbf{84.1} & \textbf{81.0} & \textbf{81.2} & \textbf{68.7} \\
 \memoryunit 的核心在于如何根据视觉置信度动态调节历史信息的占比。
 本实验对比了三种策略：(1) 仅依赖单帧预测（\(\alpha_t=1\)）；(2) 固定比例 （\(\alpha_t=0.5\)）；(3) 基于信息熵的动态权重更新。
 如表~\ref{tab:ablation_mu_strategy} 所示，固定比例 （\(\alpha_t=0.5\)）表现最差，无法根据画面内容灵活决策，
-导致状态表达具有一定的之后性，因为状态更新的延迟，导致 Accuracy 反而降至 83.6\%。
+导致状态表达具有一定的滞后性，因为状态更新的延迟，导致 Accuracy 反而降至 83.6\%。
 相比之下，本章方法通过信息熵对比仅依赖单帧和固定比例的方法，
 实现了“看清时快速更新，模糊时锁定逻辑”的动态平衡，在保留动作连续性的同时维持了最高的边界判别精度。
 
@@ -975,7 +976,7 @@ Mamba & \textbf{84.1} & \textbf{81.0} & \textbf{81.2} & \textbf{68.7} \\
 针对手术室高并发环境，系统内置了显存感知的资源调度机制与任务状态机，
 在确保算法推理稳定性的同时，能够动态生成包含手术进度时间轴、
 阶段耗时分布及实时导航建议的结构化报表。
-在 TITAN XP 服务器上的实测结果表明，本章动作检测算法的推理速度达到 17.01 帧/秒，
+在单张 TITAN XP 服务器上的实测结果表明，本章动作检测算法的推理速度达到 17.01 帧/秒，
 其高实时性与低延迟表现完全满足临床术中导航的性能需求。
 该原型系统已部署于中山大学中山眼科中心并应用于临床教学培训。
 通过将系统输出的导航建议与专家小组标注进行对比验证，

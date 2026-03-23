@@ -390,17 +390,20 @@ $\mathbf{C}\in\mathbb{R}^{S \times D \times N}$ 和 $\Delta\in\mathbb{R}^{S \tim
 \textbf{评价指标}\quad 本章采用平均精度均值 （mean Average Precision, mAP）作为衡量 TMAL 任务性能的核心指标 \cite{ruan2023temporal, zhang2023locating}。
 具体而言，检测结果的精度（Precision） 与召回率 （Recall） 定义如下：
 \begin{equation}
-\text{Precision} = \frac{TP}{TP + FP}, \quad \text{Recall} = \frac{TP}{TP + FN}
+\text{Precision} = \frac{\text{TP}}{\text{TP} + \text{FP}}, \quad \text{Recall} = \frac{\text{TP}}{\text{TP} + \text{FN}}
 \end{equation}
-其中 \( TP \)、\( FP \) 和 \( FN \) 分别代表真阳性、假阳性和假阴性样本数。通过调整置信度阈值可构建精度-召回率（PR） 曲线，平均精度（AP）在数值上近似等于该曲线下的面积积分：
+其中 \(\text{TP}\)、\(\text{FP}\) 和 \(\text{FN}\) 分别代表真阳性、假阳性和假阴性样本数。
+通过调整置信度阈值可构建精度-召回率（PR） 曲线，
+平均精度（AP）为该曲线下的面积：
 \begin{equation}
-AP = \int_{0}^{1} p(r) \, dr
+\text{AP} = \int_{0}^{1} p(r) \, dr
 \end{equation}
 其中 \( p(r) \) 为精度-召回率函数。
-在多阈值评估设置中，参考文献 \mycite{ruan2023temporal} 的标准，计算不同时序交并比 （tIoU）阈值 \(\tau \in \{0.1, 0.2, \dots, 0.7\}\) 下的 mAP。
+在多阈值评估设置中，参考文献 \mycite{ruan2023temporal} 的标准，
+计算不同时序交并比 （tIoU）阈值 \(\tau \in \{0.1, 0.2, \dots, 0.7\}\) 下的 mAP。
 特定阈值 \(\tau\) 下的 mAP 通过对所有 \(N_{\text{class}}\) 个类别的 AP 值取平均获得：
 \begin{equation}
-AP_\tau = \frac{1}{N_{\text{class}}} \sum_{c=1}^{N_{\text{class}}} AP_\tau^{(c)}
+\text{mAP}_\tau = \frac{1}{N_{\text{class}}} \sum_{c=1}^{N_{\text{class}}} \text{AP}_\tau^{(c)}
 \end{equation}
 
 此外，针对关键点提取精度的评估，本章采用关键点正确概率（Probability of Correct Keypoint, PCK）指标 \cite{yang2012articulated, moskvyak2021semi}。
@@ -933,7 +936,7 @@ ResNet-18 \cite{he2016deep} 为主干的 SimpleBaseline~\cite{xiao2018simple}。
 结果显示，按照结果的置信度进行排序分组，前 100 万（1G）个预测中实现了较高的真正率，且定位误差相对较小。
 占比最大的错误类型为“背景误检”，即模型将无关的时间片段误判为微动作。
 与 BasicTAD \cite{yang2023basictad} 和 ViT-TAD \cite{yang2024adapting} 的结论相似，其主要成因在于回归锚点设计的固有局限性。
-此外，“定位错误”占比较小，表明尽管框架整体边界检测能力较强，印证了本章所提出方法的有效性。
+此外，“定位错误”占比较小，表明框架整体边界检测能力较强，印证了本章所提出方法的有效性。
 该错误分析指明了未来的优化方向，例如优化锚点设计或引入更精细的边界回归机制，有望进一步提升微动作定位的准确性。
 
 
