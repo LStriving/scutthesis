@@ -614,12 +614,14 @@
 \renewcommand{\listoffigures}{%
   \bookmarksetup{startatroot}%
   \chapter*{\listfigurename}%
+  \addcontentsline{toc}{chapter}{\listfigurename}%
   \@mkboth{\listfigurename}{\listfigurename}%
   \begingroup\let\addvspace\@gobble\@starttoc{lof}\endgroup
 }
 \renewcommand{\listoftables}{%
   \bookmarksetup{startatroot}%
   \chapter*{\listtablename}%
+  \addcontentsline{toc}{chapter}{\listtablename}%
   \@mkboth{\listtablename}{\listtablename}%
   \begingroup\let\addvspace\@gobble\@starttoc{lot}\endgroup
 }

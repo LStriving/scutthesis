@@ -3,7 +3,7 @@ In recent years, deep learning has achieved remarkable progress in general video
 However, a pronounced domain gap persists when migrating these technologies to the healthcare sector.
 In clinical practice, the analysis of medical video compared to natural video is frequently hindered by low contrast, 
 subtle motion amplitudes, and highly imbalanced data distributions, 
-making it difficult for deep models to learn effective visual representations for precise action understanding. 
+making it difficult for deep models to learn effective visual representations for precise action analysis. 
 Therefore, exploring how to deeply integrate medical domain priors to achieve more efficient action understanding 
 for medical videos is of great significance for the practical deployment of smart healthcare systems. 
 Focusing on two typical types of medical video datam, 
@@ -31,9 +31,9 @@ the method utilizes a Cross-modal Feature Calibration module (\crossblockshort)
 and a Channel-level Enhancement mechanism (\channelblockshort). 
 These modules guide spatial focus via skeleton features and explicitly strip redundant static 
 background signals to achieve effective amplification of subtle action signals. 
-Extensive experiments on the VFSS benchmark dataset demonstrate that the 
-proposed method achieves a 5.3\% improvement in mean Average Precision (mAP) 
-compared to state-of-the-art methods and confirms its superior generalization in external validation sets.
+Experiments on the VFSS benchmark dataset demonstrate that the proposed method 
+achieves a 5.3\% improvement in mean Average Precision (mAP) over existing methods, 
+and its superior generalization capability is further validated on an external validation set.
 
 For glaucoma intraoperative navigation, 
 this dissertation proposes an online action detection framework named \sexytwo 
