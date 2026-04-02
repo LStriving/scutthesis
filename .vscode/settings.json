@@ -26,11 +26,11 @@
             ]
         },
         {
-            "name": "bibtex-outdir",
-            "command": "cmd",
+            "name": "biber-outdir",
+            "command": "biber",
             "args": [
-                "/c",
-                "cd /d %DIR%\\build && set BIBINPUTS=.;..; && set BSTINPUTS=.;..; && bibtex %DOCFILE%"
+                "--output-directory=build",
+                "%DOCFILE%"
             ]
         },
         {
@@ -44,11 +44,11 @@
     ],
     "latex-workshop.latex.recipes": [
         {
-            "name": "xelatex -> bibtex -> xelatex*2 (outdir)",
+            "name": "xelatex -> biber -> xelatex*2 (outdir)",
             "tools": [
                 "dedup-bib",
                 "xelatex-outdir",
-                "bibtex-outdir",
+                "biber-outdir",
                 "xelatex-outdir",
                 "xelatex-outdir",
                 "copy-pdf-back"

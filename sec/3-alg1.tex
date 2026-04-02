@@ -255,7 +255,7 @@ $\mathbf{C}\in\mathbb{R}^{S \times D \times N}$ 和 $\Delta\in\mathbb{R}^{S \tim
 
 \subsection{基于\crossblockshort 的特征校准}
 \textbf{外观特征表示}\quad 本章采用预训练的 I3D 模型 \cite{carreira2017quo} 提取视频片段的外观特征，
-具体设置遵循文献 \mycite{ruan2023temporal}。外观特征定义如下：
+具体设置遵循文献 \parencite{ruan2023temporal}。外观特征定义如下：
 \begin{equation}\label{eq: app feature}
 \vect{f}^{\text{app}}_i = [\mathcal{F}_{\text{rgb}}(\vect{v}_i)\,\|\,\mathcal{F}_{\text{flow}}(\vect{v}_i^{\text{flow}})]
 \end{equation}
@@ -318,9 +318,9 @@ $\mathbf{C}\in\mathbb{R}^{S \times D \times N}$ 和 $\Delta\in\mathbb{R}^{S \tim
 \end{equation}
 同理，骨架分支亦生成相应的预测结果 \(\{(\hat{s}_i^{\text{ske}}, \hat{e}_i^{\text{ske}}, \mathbf{\theta}_i^{\text{ske}})\}_{i = 1}^T=\mathcal{G}^{\text{ske}}(\vect{E}^{\text{ske}})\)。
 鉴于吞咽微动作具有高度重叠的特性，单一检测器往往难以捕捉复杂的时序细节 \cite{ruan2023temporal}。
-为此，本章遵循文献\mycite{ruan2023temporal} 的策略，部署多个独立的微动作检测头以提升整体检测性能。
+为此，本章遵循文献\parencite{ruan2023temporal} 的策略，部署多个独立的微动作检测头以提升整体检测性能。
 
-在训练优化方面，参考文献\mycite{zhang2022actionformer}和\mycite{chen2024video}的设定，
+在训练优化方面，参考文献\parencite{zhang2022actionformer}和\parencite{chen2024video}的设定，
 本章采用 Focal Loss \cite{tian2019fcos} 优化二分类任务，
 并利用 DIoU Loss \cite{rezatofighi2019generalized} 进行边界回归，以显著提升时序定位精度。
 对于外观分支，其总损失 \(\mathcal{L}^\text{app}\) 由分类损失 \(\mathcal{L}_{cls}^\text{app}\) 和回归损失 \(\mathcal{L}_{reg}^\text{app}\) 构成。
@@ -341,7 +341,7 @@ $\mathbf{C}\in\mathbb{R}^{S \times D \times N}$ 和 $\Delta\in\mathbb{R}^{S \tim
 
 \section{实验结果}
 \subsection{数据集与评价指标}
-\textbf{数据集}\quad 本章实验选用文献 \mycite{ruan2023temporal} 提供的 VFSS 造影视频数据集，
+\textbf{数据集}\quad 本章实验选用文献 \parencite{ruan2023temporal} 提供的 VFSS 造影视频数据集，
 该数据集由中山大学附属第三医院采集。
 数据集共包含来自 71 名受试者（其中男性 25 名，女性 46 名）的 847 个视频样本，总时长约为 508 分钟。
 实验设置基于受试者维度，将数据集按 4:1:1 的比例严格划分为训练集、验证集和测试集。
@@ -349,7 +349,7 @@ $\mathbf{C}\in\mathbb{R}^{S \times D \times N}$ 和 $\Delta\in\mathbb{R}^{S \tim
 各微动作类别的平均持续时间统计详见表~\ref{tab:avg_duration}。
 
 \textbf{数据预处理}\quad 
-本文参照文献 \mycite{ruan2023temporal} 的工作，
+本文参照文献 \parencite{ruan2023temporal} 的工作，
 采用滑动窗口策略对原始吞咽造影视频进行切分。
 具体的预处理与实验参数配置如下：
 在粗粒度定位阶段，为了覆盖完整的吞咽过程，设置滑动窗口长度分别为32s和64s，滑动步长取窗口长度的1/4；
@@ -399,7 +399,7 @@ $\mathbf{C}\in\mathbb{R}^{S \times D \times N}$ 和 $\Delta\in\mathbb{R}^{S \tim
 \text{AP} = \int_{0}^{1} p(r) \, dr
 \end{equation}
 其中 \( p(r) \) 为精度-召回率函数。
-在多阈值评估设置中，参考文献 \mycite{ruan2023temporal} 的标准，
+在多阈值评估设置中，参考文献 \parencite{ruan2023temporal} 的标准，
 计算不同时序交并比 （tIoU）阈值 \(\tau \in \{0.1, 0.2, \dots, 0.7\}\) 下的 mAP。
 特定阈值 \(\tau\) 下的 mAP 通过对所有 \(N_{\text{class}}\) 个类别的 AP 值取平均获得：
 \begin{equation}
@@ -571,7 +571,7 @@ AdaTAD \cite{liu2024end}，以及基于 Mamba 的 ActionMamba \cite{chen2024vide
 (3) 引入骨架增强的多模态微动作定位方法~\cite{hyder2024action}。
 
 在通用 TAL 方法中，ActionMamba 确立了最强的基准性能（平均 mAP 达 59.0\%）。
-针对 VFSS 特定方法，在同等实验设置下基于 ActionMamba 复现了文献 \mycite{ruan2023temporal} 的策略（表中标记为 \(\dagger\)）。
+针对 VFSS 特定方法，在同等实验设置下基于 ActionMamba 复现了文献 \parencite{ruan2023temporal} 的策略（表中标记为 \(\dagger\)）。
 实验结果表明，尽管该策略对 A2Net 有所改进，但将其迁移至 ActionMamba 后带来的性能增益十分有限，
 暴露出该方法对特定架构的依赖性及其泛化瓶颈。
 对于多模态方法，Hyder 等人 \cite{hyder2024action} 简单地将热图特征与 RGB 特征进行拼接，
@@ -685,7 +685,7 @@ AdaTAD \cite{liu2024end}，以及基于 Mamba 的 ActionMamba \cite{chen2024vide
 该数据集包含 8 名受试者的影像资料，采用 Athena Plus 7500 动态平板型 DR 机（深圳蓝韵医学影像有限公司）进行 VFSS 检查，
 由吞咽功能影像数字化采集系统（广州龙之杰股份有限公司）进行视频图像采集。
 所有视频（总时长 95 分钟）均由两名资深临床医生独立评估，
-最终依据文献 \mycite{ruan2023temporal} 的标准筛选并标注了 48 个微动作片段，平均持续时间为 1.1 秒。
+最终依据文献 \parencite{ruan2023temporal} 的标准筛选并标注了 48 个微动作片段，平均持续时间为 1.1 秒。
 实验采用直接推理模式，即直接使用在源域 \cite{ruan2023temporal} 训练的模型对该外部数据集进行评估，过程中未进行任何微调或重新训练。
 
 如表~\ref{tab: external} 所示，\sexyname（基于 ActionMamba）在大多数 tIoU 阈值下均表现出显著优势。
@@ -738,7 +738,7 @@ HRNet~\cite{wang2020deep}  & 7.7 & 28.5 & 82.2 \\
 本节旨在量化分析 \sexyname 中关键组件的贡献，主要评估指标包括 mAP@0.1、mAP@0.3、mAP@0.5、mAP@0.7 以及平均 mAP。
 
 \textbf{模态分析}\quad 如表~\ref{tab: modality ablation} 所示，
-与文献 \mycite{ruan2023temporal} 的结论一致，
+与文献 \parencite{ruan2023temporal} 的结论一致，
 采用单类别分类的“由粗到细”定位策略显著优于单阶段多类别分类方法（mAP@Avg. 从 59.0\% 提升至 61.7\%），
 证明了级联定位在处理短时微动作时的有效性。
 “双分支（后期融合）”与表~\ref{tab: CCM ablation} 中的“双分支基线”指代相同的含义，

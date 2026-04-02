@@ -246,7 +246,7 @@
 \setdefaultenum{1)}{a)}{i.}{A.}% 设置列表模式,for \enumerate
 \setdefaultleftmargin{4ex}{}{}{}{}{}%standard \itemize :• – ∗ ·
 
-\RequirePackage[numbers,super,square,sort&compress]{natbib} % 修改引用参考文献格式
+% \RequirePackage[numbers,super,square,sort&compress]{natbib} % 修改引用参考文献格式
 
 %% 程序代码格式
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -351,20 +351,20 @@
   \setheadrule{1.5pt}%设置横线粗细
 }
 
-\let\orig@bibliography=\bibliography
-\renewcommand{\bibliography}[1]{%
-    \cleardoublepage
-    \phantomsection
-    \bookmarksetup{startatroot}%
-    \chapterxtrue
-    \chapterxname{\bibname}
-    \begingroup
-    \refbodyfont
-    \let\ps@plain=\ps@revtitlestyle
-    \let\ps@headings=\ps@revtitlestyle
-    \orig@bibliography{#1}
-    \endgroup
-}
+% \let\orig@bibliography=\bibliography
+% \renewcommand{\bibliography}[1]{%
+%     \cleardoublepage
+%     \phantomsection
+%     \bookmarksetup{startatroot}%
+%     \chapterxtrue
+%     \chapterxname{\bibname}
+%     \begingroup
+%     \refbodyfont
+%     \let\ps@plain=\ps@revtitlestyle
+%     \let\ps@headings=\ps@revtitlestyle
+%     \orig@bibliography{#1}
+%     \endgroup
+% }
 
 \renewcommand\frontmatter{ %标题之后，开始中英文摘要，目录
     \pagenumbering{Roman}% Roman style page number

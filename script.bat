@@ -7,6 +7,8 @@ set "OUTDIR=build"
 if not exist "%OUTDIR%" mkdir "%OUTDIR%"
 
 del /q "%MAIN%.pdf" 2>nul
+del /q "%OUTDIR%\%MAIN%.bbl" 2>nul
+del /q "%OUTDIR%\%MAIN%.bcf" 2>nul
 
 python dedup_bib.py --input "%MAIN%.bib"
 if errorlevel 1 goto :end
@@ -14,11 +16,7 @@ if errorlevel 1 goto :end
 xelatex -no-pdf -shell-escape --interaction=nonstopmode -output-directory="%OUTDIR%" "%MAIN%.tex"
 if errorlevel 1 goto :end
 
-pushd "%OUTDIR%"
-set "BIBINPUTS=.;..;"
-set "BSTINPUTS=.;..;"
-bibtex "%MAIN%"
-popd
+biber --output-directory="%OUTDIR%" "%MAIN%"
 if errorlevel 1 goto :end
 
 xelatex -no-pdf -shell-escape --interaction=nonstopmode -output-directory="%OUTDIR%" "%MAIN%.tex"

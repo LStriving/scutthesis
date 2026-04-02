@@ -9,10 +9,8 @@
  {hyperref}
 % table
 \usepackage{xspace}
-% \usepackage{enumitem}
 \usepackage{amsfonts}
 \usepackage{algorithmic}
-% \usepackage{textcomp}
 % \usepackage{stfloats}
 % % \usepackage{url}
 % \usepackage{verbatim}
@@ -33,10 +31,18 @@
 % \usepackage{stfloats}
 % \usepackage{mathtools}
 \usepackage{bbding}
-% \usepackage[backend=biber,style=gb7714-2015]{biblatex}
-\setlength{\bibsep}{0pt plus 2pt minus 1pt}%参考文献间距
+\RequirePackage[
+  backend=biber,
+  style=gb7714-2015,
+  gbalign=gb7714-2015,
+  gbpub=false,
+  gbnamefmt = lowercase
+]{biblatex} %
+\addbibresource{main.bib}
+
+% \setlength{\bibsep}{0pt plus 2pt minus 1pt}%参考文献间距
 % 定义一个新的正文引用命令
-\newcommand{\mycite}[1]{{\setcitestyle{numbers,square,sort&compress}\cite{#1}}}
+% \newcommand{\mycite}[1]{{\setcitestyle{numbers,square,sort&compress}\cite{#1}}}
 
 % 全局将名字改为中文“算法”
 \floatname{algorithm}{算法}
@@ -75,7 +81,6 @@
 % Duration-Aware Boundary Enhancement Loss
 \definecolor{mygray}{rgb}{0.9,0.9,0.9}
 \def\etal{\emph{et~al}.}
-% \usepackage[table]{xcolor}
 % \newcommand{\cell}{\cellcolor[rgb]{0.92,0.92,0.92}}
 \hypersetup{
   pdftitle={医疗场景下的视频动作定位与识别研究},
@@ -128,11 +133,24 @@
 \include{sec/4-alg2}
 % \include{sec/5-plt}
 \include{sec/6-con}
-\bibliographystyle{gbt7714-numerical-scut}
-\bibliography{main}
+\makeatletter
+\defbibheading{mybib}[\bibname]{%
+  \cleardoublepage
+  \phantomsection
+  \bookmarksetup{startatroot}%
+  \chapterxtrue
+  \chapter*{#1}%
+  \chapterxname{#1}%
+  \addcontentsline{toc}{chapter}{#1}%
+  \refbodyfont
+  \let\ps@plain=\ps@revtitlestyle
+  \let\ps@headings=\ps@revtitlestyle
+}
+\makeatother
+\printbibliography[heading=mybib]
 % \include{sec/appendix}
 % \include{sec/7-pub}
-\include{sec/7-pub-an}  
+\include{sec/7-pub-an}
 % \include{sec/8-thanks}
 
 \end{document}
