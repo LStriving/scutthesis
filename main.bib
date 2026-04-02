@@ -81,12 +81,6 @@
   year    = {2000}
 }
 
- @misc{proceedings,
-  author       = {{IJCAI Proceedings}},
-  title        = {{IJCAI} Camera Ready Submission},
-  howpublished = {\url{https://proceedings.ijcai.org/info}}
-}
-
 %mybib
 @article{lee2019automatic,
   title     = {Automatic detection of the pharyngeal phase in raw videos for the videofluoroscopic swallowing study using efficient data collection and 3d convolutional networks},
@@ -159,12 +153,16 @@
   publisher = {Springer}
 }
 @article{ruan2023temporal,
-  title     = {Temporal Micro-Action Localization for Videofluoroscopic Swallowing Study},
+  title     = {Temporal micro-action localization for videofluoroscopic swallowing study},
   author    = {Ruan, Xianghui and Dai, Meng and Chen, Zhuokun and You, Zeng and Zhang, Yaowen and Li, Yuanqing and Dou, Zulin and Tan, Mingkui},
   journal   = {IEEE Journal of Biomedical and Health Informatics},
+  volume    = {27},
+  number    = {12},
+  pages     = {5904--5913},
   year      = {2023},
   publisher = {IEEE}
 }
+
 @article{jeong2023application,
   title     = {Application of deep learning technology for temporal analysis of videofluoroscopic swallowing studies},
   author    = {Jeong, Seong Yun and Kim, Jeong Min and Park, Ji Eun and Baek, Seung Jun and Yang, Seung Nam},
@@ -183,12 +181,13 @@
   year         = {2021},
   organization = {IEEE}
 }
-@article{gu2023mamba,
-  title   = {Mamba: Linear-time sequence modeling with selective state spaces},
-  author  = {Gu, Albert and Dao, Tri},
-  journal = {arXiv preprint arXiv:2312.00752},
-  year    = {2023}
+@inproceedings{gu2023mamba,
+  title     = {Mamba: Linear-time sequence modeling with selective state spaces},
+  author    = {Gu, Albert and Dao, Tri},
+  booktitle = {First conference on language modeling},
+  year      = {2024}
 }
+
 @inproceedings{daotransformers,
   title     = {Transformers are SSMs: Generalized Models and Efficient Algorithms Through Structured State Space Duality},
   author    = {Dao, Tri and Gu, Albert},
@@ -204,11 +203,16 @@
   organization = {Springer}
 }
 @article{chen2024video,
-  title   = {Video mamba suite: State space model as a versatile alternative for video understanding},
-  author  = {Chen, Guo and Huang, Yifei and Xu, Jilan and Pei, Baoqi and Chen, Zhe and Li, Zhiqi and Wang, Jiahao and Li, Kunchang and Lu, Tong and Wang, Limin},
-  journal = {arXiv preprint arXiv:2403.09626},
-  year    = {2024}
+  title     = {Video mamba suite: State space model as a versatile alternative for video understanding},
+  author    = {Chen, Guo and Huang, Yifei and Xu, Jilan and Pei, Baoqi and Wang, Jiahao and Chen, Zhe and Li, Zhiqi and Lu, Tong and Wang, Limin},
+  journal   = {International Journal of Computer Vision},
+  volume    = {134},
+  number    = {1},
+  pages     = {20},
+  year      = {2026},
+  publisher = {Springer}
 }
+
 @article{zhu2020deformable,
   title   = {Deformable detr: Deformable transformers for end-to-end object detection},
   author  = {Zhu, Xizhou and Su, Weijie and Lu, Lewei and Li, Bin and Wang, Xiaogang and Dai, Jifeng},
@@ -256,14 +260,17 @@
 }
 @article{vaswani2017attention,
   title   = {Attention is all you need},
-  author  = {Vaswani, A},
-  journal = {Advances in Neural Information Processing Systems},
+  author  = {Vaswani, Ashish and Shazeer, Noam and Parmar, Niki and Uszkoreit, Jakob and Jones, Llion and Gomez, Aidan N and Kaiser, {\L}ukasz and Polosukhin, Illia},
+  journal = {Advances in neural information processing systems},
+  volume  = {30},
   year    = {2017}
 }
+
 @article{kalman1960new,
   title  = {A new approach to linear filtering and prediction problems},
   author = {Kalman, Rudolph Emil},
-  year   = {1960}
+  year   = {1960},
+  pages  = {35--45}
 }
 @article{wang2020deep,
   title     = {Deep high-resolution representation learning for visual recognition},
@@ -282,11 +289,11 @@
   pages     = {6299--6308},
   year      = {2017}
 }
-@article{gu2021efficiently,
-  title   = {Efficiently modeling long sequences with structured state spaces},
-  author  = {Gu, Albert and Goel, Karan and R{\'e}, Christopher},
-  journal = {arXiv preprint arXiv:2111.00396},
-  year    = {2021}
+
+@inproceedings{gu2021efficiently,
+  title     = {Efficiently Modeling Long Sequences with Structured State Spaces},
+  author    = {Gu, Albert and Goel, Karan and Re, Christopher},
+  booktitle = {International Conference on Learning Representations}
 }
 
 @article{elfwing2018sigmoid,
@@ -354,11 +361,12 @@
   pages     = {5561--5569},
   year      = {2017}
 }
-@article{tian2019fcos,
-  title   = {FCOS: Fully convolutional one-stage object detection. arXiv 2019},
-  author  = {Tian, Z and Shen, C and Chen, H and He, T},
-  journal = {arXiv preprint arXiv:1904.01355},
-  year    = {2019}
+@inproceedings{tian2019fcos,
+  title     = {Fcos: Fully convolutional one-stage object detection},
+  author    = {Tian, Zhi and Shen, Chunhua and Chen, Hao and He, Tong},
+  booktitle = {Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
+  pages     = {9627--9636},
+  year      = {2019}
 }
 @inproceedings{rezatofighi2019generalized,
   title     = {Generalized intersection over union: A metric and a loss for bounding box regression},
@@ -971,12 +979,6 @@
   year      = {2016},
   publisher = {IEEE}
 }
-@online{calflops,
-  author = {Xiaoju ye},
-  title  = {calflops: a FLOPs and Params calculate tool for neural networks in pytorch framework},
-  year   = {2023},
-  url    = {https://github.com/MrYxJ/calculate-flops.pytorch}
-}
 @inproceedings{zhao2019m2det,
   title     = {M2det: A single-shot object detector based on multi-level feature pyramid network},
   author    = {Zhao, Qijie and Sheng, Tao and Wang, Yongtao and Tang, Zhi and Chen, Ying and Cai, Ling and Ling, Haibin},
@@ -1032,12 +1034,12 @@
   pages     = {770--778},
   year      = {2016}
 }
-@article{moskvyak2021semi,
-  title   = {Semi-supervised keypoint localization},
-  author  = {Moskvyak, Olga and Maire, Frederic and Dayoub, Feras and Baktashmotlagh, Mahsa},
-  journal = {arXiv preprint arXiv:2101.07988},
-  year    = {2021}
+@inproceedings{moskvyak2021semi,
+  title     = {Semi-supervised Keypoint Localization},
+  author    = {Moskvyak, Olga and Maire, Frederic and Dayoub, Feras and Baktashmotlagh, Mahsa},
+  booktitle = {International Conference on Learning Representations}
 }
+
 @article{luo2020ultra,
   title     = {Ultra-dense denoising network: application to cardiac catheter-based X-ray procedures},
   author    = {Luo, Yimin and Majoe, Sophie and Kui, Jiang and Qi, Haikun and Pushparajah, Kuberan and Rhode, Kawal},

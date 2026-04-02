@@ -247,10 +247,6 @@
 \setdefaultleftmargin{4ex}{}{}{}{}{}%standard \itemize :• – ∗ ·
 
 \RequirePackage[numbers,super,square,sort&compress]{natbib} % 修改引用参考文献格式
-% 用natbib代替下面的一些设置
-%\let\originalcite=\cite
-%\renewcommand{\cite}[1]{\textsuperscript{\originalcite{#1}}}
-%\renewcommand{\citet}[1]{\originalcite{#1}}
 
 %% 程序代码格式
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -279,7 +275,7 @@
   captionpos=t,
   framextopmargin=1pt,framexbottommargin=1pt,abovecaptionskip=-1pt,belowcaptionskip=1pt,
   %xleftmargin=4em,xrightmargin=4em, % 设定listing左右的空白
- extendedchars=false,columns=flexible,mathescape=false
+  extendedchars=false,columns=flexible,mathescape=false
   breakautoindent=true
 }
 \renewcommand{\lstlistingname}{代码} %% 重命名Listings标题头 added by Guan
@@ -356,20 +352,6 @@
 }
 
 \let\orig@bibliography=\bibliography
-% \renewcommand{\bibliography}[1]{
-% 	\cleardoublepage % 使参考文献使用 seunolabel 页面样式
-% 	\refbodyfont
-%         \chapterxtrue % 改变页眉标题方式
-%         \chapterxname{\bibname}
-% 	\let\ps@plain=\ps@revtitlestyle
-% 	\pagestyle{revtitlestyle} % here and continue 
-%   \pdfbookmark[0]{\bibname}{bibliography}
-% 	\begingroup
-%         \renewcommand{\chapter}[2]{} % 临时屏蔽原始命令里的 chapter 调用
-%         \orig@bibliography{#1}
-%     \endgroup
-% 	\normalsize
-% } 
 \renewcommand{\bibliography}[1]{%
     \cleardoublepage
     \phantomsection

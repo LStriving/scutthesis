@@ -355,8 +355,8 @@ $\mathbf{C}\in\mathbb{R}^{S \times D \times N}$ 和 $\Delta\in\mathbb{R}^{S \tim
 在粗粒度定位阶段，为了覆盖完整的吞咽过程，设置滑动窗口长度分别为32s和64s，滑动步长取窗口长度的1/4；
 在细粒度定位阶段，为了精确捕获微动作的边界，窗口长度设置为4s，步长设置为3帧。
 在特征提取阶段，所有视频片段统一采用窗口长度为8帧、步长为3帧的配置进行采样。
-模型输入涵盖了双模态信息：外观分支的输入分辨率设定为 $224 \times 224$；
-骨架分支的输入尺寸设定为 $56 \times 56$。
+模型输入涵盖了双模态信息：外观分支的输入分辨率设定为 224$ \times$ 224；
+骨架分支的输入尺寸设定为 56 $\times$ 56。
 % 此外，为了稳定关键点预测结果，获取更加平滑的运动轨迹和骨架模态输入，
 % 本文引入了卡尔曼滤波算法\cite{kalman1960new}对运动轨迹进行平滑处理。
 
@@ -510,7 +510,7 @@ ActionMamba~\cite{chen2024video} & 单阶段 &  82.0&74.3 & 53.1 & 19.9& 59.0\\
 详细的超参数敏感性分析见第~\ref{sec:hyper} 节。
 此外，训练过程中引入了指数移动平均（EMA）\cite{huang2017snapshot} 及梯度裁剪机制以增强训练稳定性。
 所有实验均基于 PyTorch 深度学习框架，并在搭载 7 张 NVIDIA GeForce RTX 3090 GPU（24GB 显存）的计算平台上完成。
-模型的参数量（Params）与浮点运算次数（FLOPs）均使用 calflops \cite{calflops} 库进行统计。
+模型的参数量（Params）与浮点运算次数（FLOPs）均使用 calflops \footnote{https://github.com/MrYxJ/calculate-flops.pytorch} 库进行统计。
 
 
 \begin{table}[tp]
