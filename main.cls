@@ -504,7 +504,7 @@
    \bookmarksetup{startatroot}%
    \chapter*{#1}
    \chapterxname{#1}
-   \addcontentsline{toc}{chapter}{#1}
+   \addcontentsline{toc}{chapter}{结论}
    \pagestyle{revtitlestyle}
 }
 
