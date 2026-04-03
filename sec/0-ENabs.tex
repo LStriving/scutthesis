@@ -1,46 +1,45 @@
 \begin{abstractEN}
-In recent years, deep learning has achieved remarkable progress in video action understanding and analysis tasks within the general domain.
-However, a pronounced domain gap persists when migrating such technologies to the healthcare sector.
-In clinical practice, compared with natural video analysis, medical video analysis is frequently plagued by low image contrast, subtle motion amplitudes, and highly imbalanced data distributions,
-which make it difficult for deep models to learn effective visual representations for accurate action analysis.
-Therefore, exploring how to deeply integrate medical domain priors to realize more efficient medical video action understanding is of great significance for the practical deployment of smart healthcare systems.
-Focusing on two typical types of medical video data,
-namely videofluoroscopic swallowing study (VFSS) videos for auxiliary diagnosis and glaucoma surgery videos for intraoperative navigation,
-this paper thoroughly investigates the core challenges of medical video action understanding in complex clinical scenarios as follows:
-(1) For temporal micro-action localization in VFSS videos,
-the low contrast of X-ray images and the blurring and occlusion of key anatomical structures
-easily cause weak motion signals to be overwhelmed by static background noise,
-making it hard for models to capture precise temporal boundaries;
-(2) For online action recognition in glaucoma surgery videos,
-the significant imbalance in the duration of surgical phases and the high visual similarity among different surgical operations
-easily lead to missed detections and false judgments during real-time inference.
+In recent years, deep learning has achieved remarkable progress in general video action understanding and analysis.
+However, migrating these technologies to the healthcare sector reveals a pronounced domain gap.
+Unlike natural video analysis, clinical medical video analysis frequently suffers from low image contrast, subtle motion amplitudes, and highly imbalanced data distributions. 
+These challenges impair the ability of deep models to learn effective visual representations for accurate action analysis.
+Therefore, deeply integrating medical domain priors to achieve more efficient medical video action understanding significantly 
+facilitates the practical deployment of smart healthcare systems.
 
-To address the above challenges, the research contents of this dissertation are presented as follows:
+Focusing on two typical types of medical video data, 
+videofluoroscopic swallowing study (VFSS) videos for auxiliary diagnosis and glaucoma surgery videos 
+for intraoperative navigation, 
+this dissertation thoroughly investigates the core challenges of medical video action understanding in complex clinical scenarios:
+(1) In temporal micro-action localization for VFSS videos, 
+the low contrast of X-ray images and the blurring and occlusion of key anatomical structures easily overwhelm weak motion signals with static background noise. 
+This makes it difficult for models to capture precise temporal boundaries.
+(2) In online action recognition for glaucoma surgery videos, 
+the significant imbalance in surgical phase durations and the high visual similarity 
+among different operations frequently cause missed detections and false judgments during real-time inference.
 
-For VFSS video analysis,
-this dissertation proposes a novel framework named \sexyname
-to tackle the problems of blurred anatomical structures and obscured weak target features in temporal micro-action localization tasks.
-This framework introduces a skeleton heatmap modality based on clinical priors to provide the model with robust geometric structural references,
-thus guiding it to learn more interference-resistant visual representations.
-Furthermore, to ensure efficient calibration and enhancement of multimodal features,
-the proposed method employs a Cross-modal Feature Calibration module (\crossblockshort)
-and a Channel-level Enhancement mechanism (\channelblockshort).
-These modules guide spatial focus through skeleton features and explicitly strip redundant static background signals,
-thereby achieving effective amplification of subtle motion signals.
-Experimental results on the VFSS benchmark dataset demonstrate that the proposed method
-improves the mean Average Precision (mAP) by 5.3\% compared with state-of-the-art methods,
-and it exhibits excellent generalization performance on an external validation set.
+To address these challenges, this dissertation presents the following research:
 
-For glaucoma intraoperative navigation,
-this dissertation proposes an online action detection framework named \sexytwo
-to address the issues of temporal logic confusion and imbalanced data distribution in online surgical action recognition tasks.
-By leveraging the structural priors of surgical procedures through a Dynamic Logic Evolution module (\graphmoduleshort),
-this method enhances the model's ability to perceive surgical state transitions and action durations,
-thus guiding it to learn more logically coherent scene representations.
-Additionally, a Class Boundary Weighted Loss (\lossshort) is proposed to realize balanced learning of features for long and short-duration actions.
-Extensive experiments on the self-constructed MIGS dataset and the public OphNet dataset
-show that the proposed method achieves an improvement of 0.9\% and 1.9\% in online recognition accuracy,
-compared with state-of-the-art methods on the two datasets respectively.
+For VFSS video analysis, this dissertation proposes a novel framework, \sexyname, 
+to tackle blurred anatomical structures and obscured weak target features in temporal micro-action localization.
+By introducing a skeleton heatmap modality based on clinical priors, 
+the framework provides the model with robust geometric structural references, 
+guiding it to learn highly interference-resistant visual representations.
+Furthermore, the proposed method employs a \crossblockfullen (\crossblockshort) 
+and a \channelblockfullen (\channelblockshort) to efficiently calibrate and enhance multimodal features.
+These modules use skeleton features to guide spatial focus and explicitly strip redundant static background signals, 
+effectively amplifying subtle motion signals.
+Experimental results on the VFSS benchmark dataset show that 
+the proposed method improves the mean Average Precision (mAP) by 5.3\% over state-of-the-art methods 
+and exhibits excellent generalization on an external validation set.
+
+For glaucoma intraoperative navigation, this dissertation proposes \sexytwo, 
+an online action detection framework that addresses temporal logic confusion and imbalanced data distribution in online surgical action recognition.
+By leveraging the structural priors of surgical procedures through a \graphmodulefullen (\graphmoduleshort), 
+the method enhances the model's perception of surgical state transitions and action durations,
+guiding it to learn logically coherent scene representations.
+Additionally, the framework introduces a \lossfullen(\lossshort) to balance feature learning for long- and short-duration actions.
+Extensive experiments demonstrate that the proposed method outperforms state-of-the-art approaches, 
+achieving online recognition accuracy improvements of 0.9\% on the self-constructed MIGS dataset and 1.9\% on the public OphNet dataset.
 
 \end{abstractEN}
 
