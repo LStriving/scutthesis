@@ -54,6 +54,14 @@
 \RequirePackage{amssymb} %this package conflicts with xeCJK, place it before xeCJK to avoid the coflict.
 \RequirePackage[final]{pdfpages}
 \RequirePackage{color}
+
+\RequirePackage[
+  backend=biber,
+  style=gb7714-2015,
+  gbalign=gb7714-2015,
+  gbpub=false,
+  gbnamefmt = lowercase
+]{biblatex} %
 %\RequirePackage{prettyref} %不需要
 
 %% 设置页面布局
@@ -374,7 +382,7 @@
 
 \renewcommand\mainmatter{%
  \@mainmattertrue
-  \chapterxfalse % 改变页眉标题方式
+  \chapterxfalse % 改变页眉标题方songti式
   \ifodd \arabic{page} % 目录后如果是奇数页结尾，则插入一个无页码空白页
    \clearpage
    \pagestyle{empty}
@@ -608,6 +616,9 @@
   \begingroup\let\addvspace\@gobble\@starttoc{lot}\endgroup
 }
 \makeatother
+
+% \renewcommand*{\bibfont}{\refbodyfont\setstretch{1.5}}
+\setlength{\bibitemsep}{3pt} % 条目间垂直间距，单位pt/mm/em
 
 \endinput
 %% End of file `scutthesis.cls'.
