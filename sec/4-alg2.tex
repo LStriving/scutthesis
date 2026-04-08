@@ -87,11 +87,11 @@ NFSM\cite{ding2024neural}尝试将经典有限状态机与全局状态嵌入相�
 进一步丰富了青光眼手术导航领域的数据资源，
 为算法研究提供坚实的数据基础。
 在算法层面上，本章提出了\fulltwo（\sexytwo）。具体而言，
-针对语义混淆挑战，本章提出了\graphmodulefull（\graphmodulefullen, \graphmoduleshort）。
+针对语义混淆挑战，本章提出了\graphmodulefull（\graphmodulefullen, ~\graphmoduleshort）。
 该模块将手术逻辑转化为可学习的图表征，并配合时长分布感知，
 通过对当前环境置信度的实时评估，模型能自适应地利用逻辑先验对视觉判别进行纠偏，
 模拟医生的手术经验，增强在线识别的准确率。
-针对分布不平衡问题，我们设计了\lossfull（\lossfullen, \lossshort）。
+针对分布不平衡问题，我们设计了\lossfull（\lossfullen, ~\lossshort）。
 该损失函数通过引入动态权重调整机制，关注短时动作与动作切换边界，
 有效缓解了短时动作在训练过程中的被忽略问题。
 % 通过上述设计，本章构建了一个轻量、高效的在线手术阶段识别框架。
@@ -822,7 +822,7 @@ E2E-LOAD \cite{cao2023e2e}、CMeRT\cite{pang2025context}、BioMamba\cite{wang202
 \centering
 \caption{\sexytwo 框架各核心模块的消融实验结果 }
 \label{tab:ablation_module}
-\begin{tabular}{l|cccc}
+\begin{tabular}{lcccc}
 \toprule
 方案 & Accuracy & Precision & Recall & Jaccard \\
 \midrule
@@ -856,9 +856,9 @@ w/o \text{FN} & 83.7 & 80.7 & 80.9 & 68.4 \\
 \centering
 \caption{不同损失函数在MIGS上的实验结果}
 \label{tab:ablation_loss}
-\begin{tabular}{lcc|ccc}
+\begin{tabular}{lccccc}
 \toprule
-\multicolumn{3}{c|}{损失组成} & \multicolumn{3}{c}{性能指标（\%）} \\
+\multicolumn{3}{c}{损失组成} & \multicolumn{3}{c}{性能指标（\%）} \\
 \midrule
 分类损失 & \(\omega_{y_t}\) & \(\epsilon_t\) & Accuracy & mAP & Jaccard \\
 \midrule
@@ -885,7 +885,7 @@ CBD & \checkmark & \checkmark & \textbf{84.1} & \textbf{84.8} & \textbf{68.7} \\
 \centering
 \caption{不同递归层的性能对比}
 \label{tab:ablation_recurrent}
-\begin{tabular}{l|cccc}
+\begin{tabular}{lcccc}
 \toprule
 递归层 & Accuracy & Precision & Recall & Jaccard \\ 
 \midrule
@@ -911,7 +911,7 @@ Mamba & \textbf{84.1} & \textbf{81.0} & \textbf{81.2} & \textbf{68.7} \\
 \centering
 \caption{不同时长分布建模方式的性能对比}
 \label{tab:ablation_dist}
-\begin{tabular}{l|cccc}
+\begin{tabular}{lcccc}
     \toprule
     分布假设类型 & Accuracy & Precision & Recall & Jaccard \\
     \midrule
@@ -936,7 +936,7 @@ Mamba & \textbf{84.1} & \textbf{81.0} & \textbf{81.2} & \textbf{68.7} \\
 \centering
 \caption{\memoryunit 更新策略对比实验结果}
 \label{tab:ablation_mu_strategy}
-\begin{tabular}{l|cccc}
+\begin{tabular}{lcccc}
 \toprule
 更新策略 & Accuracy & Precision & Recall & Jaccard \\ 
 \midrule
@@ -968,7 +968,7 @@ Mamba & \textbf{84.1} & \textbf{81.0} & \textbf{81.2} & \textbf{68.7} \\
 \centering
 \caption{时长损失权重 \(\lambda_{dur}\) 的敏感性分析结果}
 \label{tab:param_lambda}
-\begin{tabular}{c|cccc}
+\begin{tabular}{ccccc}
     \toprule
     \(\lambda_{dur}\) & Accuracy & Precision & Recall & Jaccard \\ 
     \midrule
@@ -994,7 +994,7 @@ Mamba & \textbf{84.1} & \textbf{81.0} & \textbf{81.2} & \textbf{68.7} \\
 \centering
 \caption{边界增强系数 \(\beta\) 的敏感性分析结果}
 \label{tab:param_beta}
-\begin{tabular}{c|cccc}
+\begin{tabular}{ccccc}
 \toprule
     \(\beta\) 取值 & Accuracy & Precision & Recall & Jaccard \\ 
     \midrule

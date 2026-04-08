@@ -60,13 +60,13 @@ VFSS 中的时序微动作定位（TMAL）受限于成像原理及吞咽生理�
 
 随着骨架模态的引入，如何实现模态间的高效交互成为关键。
 为了有效集成这一模态，本章设计了一个双分支架构来并行处理外观特征和骨架特征，
-提出了\crossblockfull（\crossblockfullen, \crossblockshort）模块来促进两个分支间的特征层面上的校准。
+提出了\crossblockfull（\crossblockfullen, ~\crossblockshort）模块来促进两个分支间的特征层面上的校准。
 具体而言，为解决 X 射线图像中的空间模糊性，该模块利用骨架轨迹作为空间置信度门控，
 帮助模型关注吞咽过程中的重要区域来动态校准外观特征，从而更好地利用和学习临床的相关先验。
 另一方面，骨架特征通过外观特征的上下文信息进行增强，以补偿其固有的稀疏性。
 
 鉴于微小目标易被背景淹没，本章在\crossblockshort 中提出的
-\channelblockfull（\channelblockfullen, \channelblockshort）模块进一步增强了特征的判别能力。
+\channelblockfull（\channelblockfullen, ~\channelblockshort）模块进一步增强了特征的判别能力。
 利用通道间的相关性显式建模并剔除静态背景信息。
 这一操作类似于背景抑制，显著提升了微小运动目标在特征空间中的信噪比。
 通过上述设计，\sexyname 框架能够有效地融合解剖结构先验与外观特征，从而实现 VFSS 视频中吞咽微动作的精准时序定位。
@@ -549,22 +549,22 @@ Hyder 等人\(^\dagger\) \cite{hyder2024action} & 69.1 & 63.4 & 58.8 & 52.3 & 34
 \begin{table}[t]
 \small
 \renewcommand{\arraystretch}{1.0}
-\renewcommand{\tabcolsep}{5pt}
+\renewcommand{\tabcolsep}{8pt}
 \begin{center}
-\caption{{范式和模态的影响}消融实验}
-\begin{tabular}{llrrrrr}
+\caption{模态与融合方式消融}
+\begin{tabular}{lrrrrr}
 \toprule
-\multirow{2}{*}{方法}  & \multirow{2}{*}{范式}  &\multicolumn{5}{c}{mAP@tIoU} \\
-    &   &  0.1&0.3 & 0.5 & 0.7 & Avg.\\
+\multirow{2}{*}{方法}  &\multicolumn{5}{c}{mAP@tIoU} \\
+    & 0.1 & 0.3 & 0.5 & 0.7 & Avg.\\
 \midrule
-ActionMamba~\cite{chen2024video} & 单阶段 &  82.0&74.3 & 53.1 & 19.9& 59.0\\
+ActionMamba 基线~\cite{chen2024video} & 82.0 & 74.3 & 53.1 & 19.9 & 59.0 \\
 \midrule
-仅使用骨架分支 & 两阶段~\cite{ruan2023temporal}  &  75.5&66.4  & 50.3  & 13.0 &  52.7\\
-仅使用外观分支~\cite{chen2024video} & 两阶段~\cite{ruan2023temporal} & 80.7&71.2 & 58.3    & 33.1& 61.7   \\
+仅骨架分支 & 75.5 & 66.4 & 50.3 & 13.0 & 52.7 \\
+仅外观分支 & 80.7 & 71.2 & 58.3 & 33.1 & 61.7 \\
 \midrule
-双分支（结果拼接） & 两阶段 \cite{ruan2023temporal}& 78.6&70.9& 56.1& 35.4& 61.2\\
-双分支（后期融合） & 两阶段~\cite{ruan2023temporal}  &  80.9&72.1   &57.5 &34.2 & 62.1  \\
-\sexyname（本章方法）    & 两阶段~\cite{ruan2023temporal}   &  \textbf{83.1}&\textbf{74.6}  & \textbf{59.0}  &\textbf{37.2} &\textbf{64.3}  \\
+双分支（特征拼接） & 78.6 & 70.9 & 56.1 & 35.4 & 61.2 \\
+双分支（后期融合） & 80.9 & 72.1 & 57.5 & 34.2 & 62.1 \\
+\sexyname（本章方法） & \textbf{83.1} & \textbf{74.6} & \textbf{59.0} & \textbf{37.2} & \textbf{64.3} \\
 \bottomrule
 \end{tabular}%}
 \label{tab: modality ablation}
@@ -821,9 +821,11 @@ HRNet~\cite{wang2020deep}  & 7.7 & 28.5 & 82.2 \\
 本节旨在量化分析 \sexyname 中关键组件的贡献，主要评估指标包括 mAP@0.1、mAP@0.3、mAP@0.5、mAP@0.7 以及平均 mAP。
 
 \textbf{模态分析}\quad 如表~\ref{tab: modality ablation} 所示，
-与文献 \parencite{ruan2023temporal} 的结论一致，
-采用单类别分类的“由粗到细”定位策略显著优于单阶段多类别分类方法（mAP@Avg. 从 59.0\% 提升至 61.7\%），
-证明了级联定位在处理短时微动作时的有效性。
+本文对比了不同模态以及特征融合策略对微动作定位的影响，
+并将最新的运动分析模型 ActionMamba \parencite{chen2024video} 作为参考基线。
+结果显示，“仅骨架分支”只有骨架模态输入，性能不如参考基线，说明本文所提的方法的性能提升并非单纯引入骨架模态所得；
+“仅外观分支”对比基线，采用了和\parencite{ruan2023temporal}的“由粗到细”的定位策略，
+验证了两阶段的训练和推理范式能带来更大的性能提升。
 “双分支（后期融合）”与表~\ref{tab: CCM ablation} 中的“双分支基线”指代相同的含义，
 是指使用外观和骨架特征作为输入并使用公式~\ref{eq: late fusion} 进行推理融合的模型。
 就模态效应而言，仅依赖骨架分支的表现欠佳，
@@ -921,7 +923,7 @@ HRNet~\cite{wang2020deep}  & 7.7 & 28.5 & 82.2 \\
 本实验同时比对了通道增强机制模块SE\cite{hu2018squeeze}，
 虽然引入 SE 模块能带来轻微改善，但本章设计的 \channelblockshort 在所有增强模块中，
 以最低的参数量（109.2M）和微乎其微的额外计算成本，实现了最佳精度（64.3\% mAP@Avg.）。
-关键在于，\channelblockshort 采用的减法操作优于加法变体（\channelblockshort-Add，mAP 高出 0.8\%），
+\channelblockshort 采用的减法操作优于加法变体（\channelblockshort-Add，mAP 高出 0.8\%），
 这进一步验证了本章抑制共享背景噪声的设计动机。
 
 \textbf{骨架编码器架构探究}\quad 表~\ref{tab: heatmap encoder ablation}评估了三种不同架构的骨架特征提取器：
