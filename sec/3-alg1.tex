@@ -17,9 +17,11 @@ VFSS 中的时序微动作定位（TMAL）受限于成像原理及吞咽生理�
 此外，结构性遮挡经常致使关键轮廓不可见（如下颌骨对舌骨的遮挡），进一步提高了动作时序边界定位的难度。
 2) \textbf{关键运动结构体积微小}：
 医疗视频中的关键运动目标往往体积极小（如细窄的舌骨结构、微小的手术器械尖端）\cite{ruan2023temporal}，
-且动作幅度有限，导致不同动作模式难以区分。这意味着在整个视频画面中，有效运动区域的像素占比极低，
-绝大部分区域被静态的解剖背景（如颅骨、脊柱）所占据。
-这种“强背景、弱目标”分布特征，使得微动作的判别信号极易淹没在噪声中，从而影响微动作边界的定位。
+且动作幅度有限，导致不同动作模式难以区分。
+在整幅画面中，有效运动区域的像素占比极低，
+大部分区域由静态解剖背景（如颅骨、脊柱）构成。
+这种“强背景、弱目标”的分布特征会使微动作判别信号淹没于噪声，
+从而降低动作边界定位精度。
 
 传统的临床工作流程主要依赖专家进行逐帧人工标注 \cite{kellen2010computer}，
 由于吞咽过程分析涉及多个靶器官和众多参数计算，
@@ -54,7 +56,7 @@ VFSS 中的时序微动作定位（TMAL）受限于成像原理及吞咽生理�
 为此，本章引入“骨架”\footnote{本章中的“骨架”一词指由选定的解剖关键点（例如舌骨、椎骨角、软腭）构建的结构化表征，而非传统意义上的人体骨骼系统。}
 模态以增强解剖学表征（如图~\ref{fig: motivation}~b) 所示）。
 具体而言，本章算法将与吞咽微动作相关的关键点进行标注与连接，并将其编码为热图序列。
-与外观数据不同，这种表征天然地过滤了无关的背景细节，从而能够显式追踪具有临床意义部位的运动以辅助微动作时序的精确定位。
+与外观数据不同，这种表征天然地过滤了无关的背景细节，从而能够显式地追踪具有临床意义部位的运动，以辅助微动作时序的精确定位。
 
 随着骨架模态的引入，如何实现模态间的高效交互成为关键。
 为了有效集成这一模态，本章设计了一个双分支架构来并行处理外观特征和骨架特征，
@@ -162,9 +164,12 @@ $\mathbf{C}\in\mathbb{R}^{S \times D \times N}$ 和 $\Delta\in\mathbb{R}^{S \tim
     \caption{\sexyname 的训练流程}\label{alg:pipeline}
     \begin{algorithmic}[1] % [1]: 开启行号显示， 1代表每1行都显示
     \REQUIRE 
-        训练数据集 \( \mathcal{D} = \{(\vect{V}_i, \matr{Z}_i)\}_{i=1}^{|\mathcal{D}|} \)，预训练模型 \( \mathcal{F}_{\text{rgb}} \) 和 \( \mathcal{F}_{\text{flow}} \)，批大小 \( B \)，训练轮数 \( E \)，以及微动作类别数 \( C \)。
+        训练数据集 \( \mathcal{D} = \{(\vect{V}_i, \matr{Z}_i)\}_{i=1}^{|\mathcal{D}|} \)，
+        预训练模型 \( \mathcal{F}_{\text{rgb}} \) 和 \( \mathcal{F}_{\text{flow}} \)，批大小 \( B \)，
+        训练轮\\数 \( E \)，以及微动作类别数 \( C \)。
     \ENSURE 
-        训练好的骨架编码器 \( \{\mathcal{F}_{\text{BM}}^c \}_{c=1}^C  \)，训练好的 \sexyname 微动作检测器 \( \{\mathcal{G}_c^{\text{app}}, \mathcal{G}_c^{\text{ske}}\}_{c=1}^C \) 及其对应的 \crossblockshort 模块。
+        训练好的骨架编码器 \( \{\mathcal{F}_{\text{BM}}^c \}_{c=1}^C  \)，
+        训练好的 \sexyname 微动作检测器 \( \{\mathcal{G}_c^{\text{app}}, \mathcal{G}_c^{\text{ske}}\}_{c=1}^C \) 及其对应的 \crossblockshort 模块。
 
     \STATE 根据 RGB 帧 \( \vect{v}_i \) 计算光流 \( \vect{v}_i^{\text{flow}} \)；
     \STATE 利用公式~\ref{eq: heatmap_k} 和公式~\ref{eq: heatmap_l} 生成骨架热图 \( \matr{h}_i^{3D} \)；
@@ -339,6 +344,79 @@ $\mathbf{C}\in\mathbb{R}^{S \times D \times N}$ 和 $\Delta\in\mathbb{R}^{S \tim
 最终，时序边界预测值叠加粗定位阶段获取的时间偏移量进行坐标还原。
 通过整合上述损失设计、推理融合策略及后处理步骤，\sexyname 框架能够有效实现 VFSS 视频中时序微动作的精准定位。
 
+% \subsection{理论分析：方法为何有效}
+% 为从数学层面解释 \sexyname 的有效性，本节围绕三个核心问题展开：
+% 1) 骨架门控为何能提升微动作信号的可分性；
+% 2) 跨模态校准为何能降低预测误差；
+% 3) 双向时序建模为何有助于边界定位。
+
+% \textbf{(1) 骨架门控带来的信噪比分离增益}\quad
+% 将外观特征分解为动作相关项与背景项：
+% \begin{equation}
+% \vect{F}^{\text{app}} = \vect{S} + \vect{B},
+% \end{equation}
+% 其中 \(\vect{S}\) 表示与微动作相关的动态特征，\(\vect{B}\) 表示静态背景主导的干扰特征。
+% 在 \crossblockshort 中，骨架分支经激活后形成门控权重
+% \(\vect{G}=\mathrm{SiLU}(\psi(\vect{F}^{\text{ske}}))\)，并与外观分支逐元素相乘：
+% \begin{equation}\label{eq:theory_gate}
+% \widetilde{\vect{F}}^{\text{app}} = \vect{G} \odot (\vect{S}+\vect{B}).
+% \end{equation}
+% 令 \(\alpha_s=\mathbb{E}[\vect{G}\mid \text{action}]\) 与 \(\alpha_b=\mathbb{E}[\vect{G}\mid \text{background}]\)，在骨架先验有效时满足 \(\alpha_s > \alpha_b\)。
+% 则门控前后的期望信噪比满足：
+% \begin{equation}\label{eq:theory_snr}
+% \frac{\mathrm{SNR}_{\text{after}}}{\mathrm{SNR}_{\text{before}}}
+% \approx
+% \frac{\alpha_s^2}{\alpha_b^2} > 1.
+% \end{equation}
+% 式~\ref{eq:theory_snr} 表明，骨架门控并非简单融合，而是对动作区域与背景区域施加非对称增益，从而提高了可分性。
+
+% \textbf{(2) \channelblockshort 的共模抑制机制}\quad
+% 设拼接后的跨模态特征为 \(\mathbf{X}\)。若将背景干扰视作跨通道共享的低频共模分量 \(\mathbf{C}\)，动作细节视作稀疏残差 \(\mathbf{R}\)，则有
+% \(\mathbf{X}=\mathbf{C}+\mathbf{R}\)。
+% 公式~\ref{eq: ce} 中的
+% \(\mathrm{SiLU}(\mathrm{Conv}_1(\mathbf{X}))\)
+% 可视为对共模分量的估计 \(\widehat{\mathbf{C}}\)，因此
+% \begin{equation}
+% \mathcal{C}(\mathbf{X})
+% =
+% \mathbf{X}+\gamma\odot(\mathbf{X}-\widehat{\mathbf{C}})
+% \approx
+% \mathbf{C}+\mathbf{R}+\gamma\odot(\mathbf{R}+\varepsilon_c),
+% \end{equation}
+% 其中 \(\varepsilon_c=\mathbf{C}-\widehat{\mathbf{C}}\) 为估计误差。
+% 当 \(\widehat{\mathbf{C}}\) 估计充分时，主导项变为 \((1+\gamma)\odot\mathbf{R}\)，即动作相关残差被放大，而共享背景被抑制。
+% 这从频谱角度解释了“减法优于加法”的经验现象。
+
+% \textbf{(3) 双分支融合的误差上界收紧}\quad
+% 记外观分支与骨架分支对同一目标量（分类 Logit 或边界偏移）的估计误差分别为
+% \(\epsilon_{\text{app}}\) 与 \(\epsilon_{\text{ske}}\)。
+% 后期融合误差为
+% \(\epsilon=\omega\epsilon_{\text{app}}+(1-\omega)\epsilon_{\text{ske}}\)。
+% 其方差满足：
+% \begin{equation}\label{eq:theory_var}
+% \mathrm{Var}(\epsilon)
+% =
+% \omega^2\sigma^2_{\text{app}}+(1-\omega)^2\sigma^2_{\text{ske}}
+% +2\omega(1-\omega)\mathrm{Cov}(\epsilon_{\text{app}},\epsilon_{\text{ske}}).
+% \end{equation}
+% 当两分支误差相关性受 \crossblockshort 校准后降低（协方差项减小）时，
+% 融合方差严格小于任一单分支方差的条件更易满足，预测稳定性提升。
+% 这解释了本章在多阈值 tIoU 下的一致增益。
+
+% \textbf{(4) 双向 SSM 对边界偏差的抑制}\quad
+% 微动作边界检测可视为对时刻 \(t\) 的局部变点判别。
+% 单向模型仅依赖历史上下文，容易出现系统性“迟检”；
+% 双向 SSM 则同时利用前向与后向上下文，等价于构造了关于真实边界的双侧证据。
+% 设前向与后向边界估计误差分别为 \(b_f\)、\(b_b\)，融合后偏差近似为
+% \(b=\frac{1}{2}(b_f+b_b)\)。
+% 若两者方向相反（实践中常见于“提前/滞后”互补），则 \(|b|<\max(|b_f|,|b_b|)\)，
+% 从而减小边界回归偏差并提高高 tIoU 阈值下的精度。
+
+% 综上，\sexyname 的性能提升具备明确的理论基础：
+% 骨架门控提升有效信号占比，\channelblockshort 抑制共模背景并放大微弱动态，
+% 跨模态融合在低相关误差条件下收紧方差上界，双向时序建模进一步降低边界系统偏差。
+% 这四者共同构成了“解剖先验约束 + 统计误差降低 + 时序偏差校正”的统一解释框架。
+
 \section{实验结果}
 \subsection{数据集与评价指标}
 \textbf{数据集}\quad 本章实验选用文献 \parencite{ruan2023temporal} 提供的 VFSS 造影视频数据集，
@@ -349,7 +427,7 @@ $\mathbf{C}\in\mathbb{R}^{S \times D \times N}$ 和 $\Delta\in\mathbb{R}^{S \tim
 各微动作类别的平均持续时间统计详见表~\ref{tab:avg_duration}。
 
 \textbf{数据预处理}\quad 
-本文参照文献 \parencite{ruan2023temporal} 的工作，
+本文参照文献 \parencite{ruan2023temporal} 的工作，使用相同的数据划分和处理方式，
 采用滑动窗口策略对原始吞咽造影视频进行切分。
 具体的预处理与实验参数配置如下：
 在粗粒度定位阶段，为了覆盖完整的吞咽过程，设置滑动窗口长度分别为32s和64s，滑动步长取窗口长度的1/4；
@@ -416,25 +494,25 @@ $\mathbf{C}\in\mathbb{R}^{S \times D \times N}$ 和 $\Delta\in\mathbb{R}^{S \tim
 \renewcommand{\tabcolsep}{4pt}
 \begin{center}
 \caption{本章方法与现有方法在 VFSS 数据集上的性能比较}
-\begin{tabular}{lccrrrrrrrr}
+\begin{tabular}{lcrrrrrrrr}
 \toprule
-\multirow{2}{*}{方法}       & \multirow{2}{*}{检测器}&  \multirow{2}{*}{骨架} & \multicolumn{8}{c}{mAP@tIoU 阈值} \\
-     & &  & 0.1 & 0.2 & 0.3 & 0.4 & 0.5 & 0.6 & 0.7 & Avg.\\
+\multirow{2}{*}{方法}       & \multirow{2}{*}{检测器} & \multicolumn{8}{c}{mAP@tIoU 阈值} \\
+     &  & 0.1 & 0.2 & 0.3 & 0.4 & 0.5 & 0.6 & 0.7 & Avg.\\
 \midrule
 % P-GCN \cite{zeng2019graph} & P-GCN &  & 82.2	& 80.2 & 73.7 &	63.7&	51.6	&40.6&	26.4&	59.8 \\
-A2Net \cite{yang2020revisiting} & A2Net & & 53.7 & 51.5 & 45.7 & 36.0 & 22.4 & 10.6 & 3.5 &  31.9 \\
-ActionFormer \cite{zhang2022actionformer} & ActionFormer &  & 76.8	& 74.4 & 69.7 &	59.3 &	48.8 & 38.5 & 24.6 & 56.0 \\
-TriDet \cite{shi2023tridet} & TriDet & & 79.6 & 76.6 & 72.4 & 63.7 & 53.1 & 40.9 & 26.2 & 58.9 \\
-AdaTAD \cite{liu2024end} & ActionFormer & & 81.0 & 77.4 & 70.0 & 62.3 & 54.4 & 42.1 & 24.8 & 58.9 \\
-ActionMamba \cite{chen2024video} & ActionMamba & & 82.0	& 79.3 & 74.3 &	67.4 &	53.1	&37.1&	19.9&	59.0 \\
+A2Net \cite{yang2020revisiting} & A2Net  & 53.7 & 51.5 & 45.7 & 36.0 & 22.4 & 10.6 & 3.5 &  31.9 \\
+ActionFormer \cite{zhang2022actionformer} & ActionFormer   & 76.8	& 74.4 & 69.7 &	59.3 &	48.8 & 38.5 & 24.6 & 56.0 \\
+TriDet \cite{shi2023tridet} & TriDet  & 79.6 & 76.6 & 72.4 & 63.7 & 53.1 & 40.9 & 26.2 & 58.9 \\
+AdaTAD \cite{liu2024end} & ActionFormer & 81.0 & 77.4 & 70.0 & 62.3 & 54.4 & 42.1 & 24.8 & 58.9 \\
+ActionMamba \cite{chen2024video} & ActionMamba  & 82.0	& 79.3 & 74.3 &	67.4 &	53.1	&37.1&	19.9&	59.0 \\
 % AdaTAD \cite{liu2024end} & AdaTAD & 81.1 & 76.8 & 70.4 & 62.7 & 49.9 & 36.4 & 19.4 & 56.7 \\ %1e-4 small adapter
 %
 \midrule
-Ruan 等人 \cite{ruan2023temporal} & A2Net  &  & 70.9 & 67.5 & 62.5 & 55.0 & 46.1 & 31.6 & 15.8 & 49.9\\
-Ruan 等人\(^\dagger\) \cite{ruan2023temporal} & ActionMamba  &  & 77.9& 75.0& 69.5& 62.2&  54.8& 45.2& 28.9& 59.1\\
-Hyder 等人\(^\dagger\) \cite{hyder2024action} & ActionMamba   & \checkmark & 76.8& 74.6& 69.4& 62.0& 56.2& 45.2& 30.8& 59.3\\
-\textbf{\sexyname}（本章方法）  & ActionFormer& \checkmark&82.7 & \textbf{80.1} & \textbf{75.9} & 67.1 & 58.4 & 49.2 & 33.5 & 63.8\\
-\textbf{\sexyname}（本章方法） & ActionMamba & \checkmark & \textbf{83.1} & 78.5& 74.6 & \textbf{67.9} & \textbf{59.0} & \textbf{50.0} & \textbf{37.2} & \textbf{64.3}\\
+Ruan 等人 \cite{ruan2023temporal} & A2Net    & 70.9 & 67.5 & 62.5 & 55.0 & 46.1 & 31.6 & 15.8 & 49.9\\
+Ruan 等人\(^\dagger\) \cite{ruan2023temporal} & ActionMamba   & 77.9& 75.0& 69.5& 62.2&  54.8& 45.2& 28.9& 59.1\\
+Hyder 等人\(^\dagger\) \cite{hyder2024action} & ActionMamba    & 76.8& 74.6& 69.4& 62.0& 56.2& 45.2& 30.8& 59.3\\
+\textbf{\sexyname}（本章方法）  & ActionFormer&82.7 & \textbf{80.1} & \textbf{75.9} & 67.1 & 58.4 & 49.2 & 33.5 & 63.8\\
+\textbf{\sexyname}（本章方法） & ActionMamba  & \textbf{83.1} & 78.5& 74.6 & \textbf{67.9} & \textbf{59.0} & \textbf{50.0} & \textbf{37.2} & \textbf{64.3}\\
 % \midrule
 % \sexyname (Oracle) 	& ActionMamba  &	\checkmark 	 &	\textbf{91.2} &	\textbf{86.3} & \textbf{83.7} & \textbf{75.7} & \textbf{66.9} &	\textbf{56.7} & \textbf{42.2} & \textbf{71.8} \\
 \bottomrule
@@ -473,7 +551,7 @@ Hyder 等人\(^\dagger\) \cite{hyder2024action} & 69.1 & 63.4 & 58.8 & 52.3 & 34
 \renewcommand{\arraystretch}{1.0}
 \renewcommand{\tabcolsep}{5pt}
 \begin{center}
-\caption{{范式和模态的影响}}
+\caption{{范式和模态的影响}消融实验}
 \begin{tabular}{llrrrrr}
 \toprule
 \multirow{2}{*}{方法}  & \multirow{2}{*}{范式}  &\multicolumn{5}{c}{mAP@tIoU} \\
@@ -571,7 +649,8 @@ AdaTAD \cite{liu2024end}，以及基于 Mamba 的 ActionMamba \cite{chen2024vide
 (3) 引入骨架增强的多模态微动作定位方法~\cite{hyder2024action}。
 
 在通用 TAL 方法中，ActionMamba 确立了最强的基准性能（平均 mAP 达 59.0\%）。
-针对 VFSS 特定方法，在同等实验设置下基于 ActionMamba 复现了文献 \parencite{ruan2023temporal} 的策略（表中标记为 \(\dagger\)）。
+针对 VFSS 特定方法，在同等实验设置下基于 ActionMamba 复现了文献 \parencite{ruan2023temporal} 的策略
+（表~\ref{tab: main}和表~\ref{tab: external}将复现用 \(\dagger\)进行标记）。
 实验结果表明，尽管该策略对 A2Net 有所改进，但将其迁移至 ActionMamba 后带来的性能增益十分有限，
 暴露出该方法对特定架构的依赖性及其泛化瓶颈。
 对于多模态方法，Hyder 等人 \cite{hyder2024action} 简单地将热图特征与 RGB 特征进行拼接，
@@ -585,7 +664,7 @@ AdaTAD \cite{liu2024end}，以及基于 Mamba 的 ActionMamba \cite{chen2024vide
 值得注意的是，本章提出的框架具有良好的架构通用性，不局限于特定的检测器。
 如表~\ref{tab: main} 所示，\sexyname 在基于ActionFormer的架构上也取得了一致的性能提升，
 其平均表现优于ActionFormer基线 7.8\%。
-附录中提供了各微动作类别的详细评估结果。
+% 附录中提供了各微动作类别的详细评估结果。
 
 
 % \begin{table}[tp]
@@ -682,11 +761,15 @@ AdaTAD \cite{liu2024end}，以及基于 Mamba 的 ActionMamba \cite{chen2024vide
 
 \subsection{外部验证与泛化性分析}
 为验证模型的泛化能力与临床鲁棒性，本章引入了采集自不同医疗中心（明心康复中心）的独立外部数据集进行测试。
-该数据集包含 8 名受试者的影像资料，采用 Athena Plus 7500 动态平板型 DR 机（深圳蓝韵医学影像有限公司）进行 VFSS 检查，
-由吞咽功能影像数字化采集系统（广州龙之杰股份有限公司）进行视频图像采集。
-所有视频（总时长 95 分钟）均由两名资深临床医生独立评估，
-最终依据文献 \parencite{ruan2023temporal} 的标准筛选并标注了 48 个微动作片段，平均持续时间为 1.1 秒。
-实验采用直接推理模式，即直接使用在源域 \cite{ruan2023temporal} 训练的模型对该外部数据集进行评估，过程中未进行任何微调或重新训练。
+该数据集包含 8 名受试者的影像资料，所有受试者均通过该中心的公开渠道（如社区通告、医院导诊平台）招募，
+且本项针对外部样本的验证研究已获得伦理委员会批准，所有参与者均已签署知情同意书。
+影像检查采用 Athena Plus 7500 动态平板型 DR 机（深圳蓝韵医学影像有限公司）进行 VFSS 采集，
+并辅以吞咽功能影像数字化采集系统（广州龙之杰股份有限公司）实现视频流的实时数字化捕捉。
+为了保证数据分析的客观性，采集到的原始视频经脱敏处理后，由两名具有 5 年以上临床经验的资深医师进行独立标注。
+最终，所有视频（总时长 95 分钟）依据文献 \parencite{ruan2023temporal} 的标准筛选并标注了 48 个微动作片段，
+平均持续时间为 1.1 秒。
+实验采用直接推理模式，即直接使用在源域 \cite{ruan2023temporal} 训练的模型对该外部数据集进行评估，
+过程中未进行任何微调或重新训练。
 
 如表~\ref{tab: external} 所示，\sexyname（基于 ActionMamba）在大多数 tIoU 阈值下均表现出显著优势。
 其平均 mAP 较现有的 VFSS 方法提升了 9.0\%，较骨架增强基线提升了 5.9\%。
@@ -823,13 +906,15 @@ HRNet~\cite{wang2020deep}  & 7.7 & 28.5 & 82.2 \\
 % \end{table}
 
 \textbf{模块性能对比}\quad 表~\ref{tab: CCM ablation} 对比了不同交互机制的效果。
-“Self-Mamba”在公式~\ref{eq: ccm} 中对单一模态执行自注意力计算（而非跨模态交互），
-实验结果显示其性能低于双分支基线。尽管交叉注意力机制（Cross-Attention）相较于基线带来了微小的提升（mAP@Avg. +0.3\%），
-但本章提出的 \crossblockshort 实现了显著的性能飞跃（mAP@Avg. 提升 2.2\%）。
-值得注意的是，\crossblockshort 在实现上述性能突破的同时，保持了极高的计算效率：
-其参数量（109.2M）和计算量（116.9G FLOPs）分别比交叉注意力机制（188.7M Params, 163.3G FLOPs）降低了 42\% 和 28\%。
-这一结果表明，模型的性能增益不仅源于有效的跨模态交互设计，
-更得益于 \crossblockshort 高效的计算架构，使其极具在资源受限临床场景下部署的潜力。
+“Self-Mamba”在公式~\ref{eq: ccm} 中仅对单一模态执行自注意力计算，
+不进行跨模态交互，因此其性能低于双分支基线。
+交叉注意力机制（Cross-Attention）仅带来小幅提升（mAP@Avg. +0.3\%），
+而本章提出的 \crossblockshort 将 mAP@Avg. 提升了 2.2\%。
+同时，\crossblockshort 具备更高的计算效率：
+其参数量（109.2M）和计算量（116.9G FLOPs）
+较交叉注意力机制（188.7M Params, 163.3G FLOPs）分别降低 42\% 和 28\%。
+这表明性能增益不仅来自有效的跨模态交互设计，
+也来自更高效的计算架构，因而更适合资源受限的临床部署场景。
 
 \textbf{\channelblockshort 模块消融分析}\quad 表~\ref{tab: CE ablation}探究了 \channelblockshort 的作用。
 去除\channelblockshort 模块（w/o \channelblockshort）导致性能显著衰减（mAP@Avg. 下降 1.0\%），充分验证了该组件的必要性。
@@ -857,21 +942,20 @@ HRNet~\cite{wang2020deep}  & 7.7 & 28.5 & 82.2 \\
 实验表明，HRNet~\cite{wang2020deep} 在关键点正确概率（PCK）上优于以 
 ResNet-18 \cite{he2016deep} 为主干的 SimpleBaseline~\cite{xiao2018simple}。
 对于独立的骨架分支，HRNet 在所有阈值下均表现出更强的解剖特征捕捉能力。
-当集成至 \sexyname 框架时，基于 HRNet 的模型进一步刷新了最佳结果，
+当集成至 \sexyname 框架时，基于 HRNet 的模型进一步提升最终结果，
 在计算增量可控的前提下，平均 mAP 超出 SimpleBaseline 1.3\%。
 这证实了 HRNet 能有效保留对微动作定位至关重要的细粒度空间信息。
 因此，本章选用 HRNet 作为默认的骨架提取器。
 
 
-\textbf{针对骨架抖动的鲁棒性分析}\quad 如表~\ref{tab: kalman}所示，
-在移除卡尔曼滤波 \cite{kalman1960new} 的情况下，
-骨架分支表现出严重的性能退化（mAP@Avg. 从 52.7\% 降至 44.6\%），
-表明关键点的不稳定性会引入破坏性的噪声。
-然而，值得注意的是，即便在输入嘈杂骨架数据的情况下，\sexyname 框架依然取得了具有竞争力的结果（62.9\% mAP@Avg.），
-甚至优于经过卡尔曼增强的普通双分支模型（62.1\%）。
-这种鲁棒性归因于 \crossblockshort 模块能够自适应地抑制模态噪声并对齐多模态特征。
-而当引入卡尔曼滤波后，\sexyname 达到了峰值性能（64.3\% mAP@Avg.）。
-这表明，虽然卡尔曼滤波起到了辅助优化作用，但 \sexyname 的架构设计本身保证了模型在不同骨架质量下的性能下限与持续增益。
+\textbf{针对骨架抖动的鲁棒性分析}\quad 如表~\ref{tab: kalman} 所示，
+移除卡尔曼滤波 \cite{kalman1960new} 后，骨架分支性能显著退化（mAP@Avg. 由 52.7\% 降至 44.6\%），
+说明关键点不稳定会引入强噪声干扰。
+尽管如此，在输入骨架较嘈杂的情况下，\sexyname 仍取得 62.9\% mAP@Avg.，
+并超过使用卡尔曼滤波的普通双分支模型（62.1\%）。
+这说明 \crossblockshort 能够自适应抑制模态噪声并完成特征对齐。
+在引入卡尔曼滤波后，\sexyname 进一步达到 64.3\% mAP@Avg. 的最佳性能。
+因此，卡尔曼滤波可作为有效补充，而模型主体架构本身已具备较强鲁棒性。
 \begin{figure}[t]
     \centering
     % Standard Deviation Effect
@@ -902,7 +986,7 @@ ResNet-18 \cite{he2016deep} 为主干的 SimpleBaseline~\cite{xiao2018simple}。
 \end{figure}
 
 
-\subsection{更多实验}
+\subsection{超参数实验及错误分析}
 \label{sec:hyper}
 % In this section, we study the effect of different hyperparameters.
 \textbf{高斯标准差 \(\sigma\) 的选择}\quad 调整公式~\ref{eq: heatmap_k} 和公式~\ref{eq: heatmap_l} 中的高斯标准差 \(\sigma\) 以评估其对性能的影响，
@@ -931,9 +1015,8 @@ ResNet-18 \cite{he2016deep} 为主干的 SimpleBaseline~\cite{xiao2018simple}。
     \label{fig: false-positive}
 \end{figure}
 
-\textbf{错误分析}\quad 为深入剖析方法的局限性，对不同 tIoU 阈值（0.1 至 0.7）下的误报进行了定量的错误类型分解。
-如图~\ref{fig: false-positive} 所示。
-结果显示，按照结果的置信度进行排序分组，前 100 万（1G）个预测中实现了较高的真正率，且定位误差相对较小。
+\textbf{错误分析}\quad 为深入剖析方法局限性，本文对不同 tIoU 阈值（0.1 至 0.7）下的误报进行了定量分解。
+如图~\ref{fig: false-positive} 所示，按预测置信度排序后，前 100 万个预测具有较高的真阳性率，且定位误差相对较小。
 占比最大的错误类型为“背景误检”，即模型将无关的时间片段误判为微动作。
 与 BasicTAD \cite{yang2023basictad} 和 ViT-TAD \cite{yang2024adapting} 的结论相似，其主要成因在于回归锚点设计的固有局限性。
 此外，“定位错误”占比较小，表明框架整体边界检测能力较强，印证了本章所提出方法的有效性。
@@ -980,6 +1063,7 @@ ResNet-18 \cite{he2016deep} 为主干的 SimpleBaseline~\cite{xiao2018simple}。
 \section{临床应用原型系统}
 本章算法已集成于一套用于辅助吞咽障碍诊断的吞咽造影视频智能分析原型系统中。
 如图 ~\ref{fig:system} 所示，该系统支持视频上传，并能自动检测微动作的时序起始与终止时间点。
+在完成自动化检测后，系统可以导出预测数据与可视化结果，方便临床医生进一步分析和诊断。
 针对边缘案例或失效实例，系统提供了交互式接口以支持时序边界的手动微调。
 初步实验评估显示，该系统显著降低了时序标注的计算与人工成本，
 使临床医生得以从繁琐的重复性任务中解脱，专注于医学诊断分析。

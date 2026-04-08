@@ -25,24 +25,24 @@
 在显微手术中，不同阶段的操作往往共用相同或相似的手术器械，
 且背景环境几乎恒定（如始终聚焦于眼球且组织不会发生显著形变）。
 例如，不同阶段在视觉特征上可能仅表现为细微的流体质感差异或者器械深入长短的差距。
-在在线识别场景下，模型无法像“事后复盘”那样查看后续画面来反向印证当前动作，只能依赖已有的画面信息。
-当不同阶段的视觉表现高度雷同，仅凭空间特征很难实现精确区分。
+在在线识别场景中，模型无法像“事后复盘”那样利用后续画面反向验证当前动作，只能依赖当前及历史信息。
+当不同阶段的视觉表现高度雷同，仅凭空间特征难以实现可靠区分。
 2) \textbf{时序分布失衡，短时动作难以召回}：
 手术视频具有显著的数据分布不均衡，其流程通常由漫长的标准操作（如房角观察）和短暂的切换或精准交互操作组成。
-在这种分布不均的状态下，一些长阶段占据了数分钟时长，而决定阶段切换的关键动作（如注射粘弹剂）往往只有数秒。
+在这种分布下，部分长阶段可持续数分钟，而决定阶段切换的关键动作（如注射粘弹剂）往往仅持续数秒。
 这导致模型极易产生预测偏向，倾向于维持高频的长阶段预测，
 而忽略低频但同样关键的短动作，导致关键阶段或者操作的切换无法及时识别，严重影响手术状态判别的灵敏度。
 
 %算法层面
-现有的在线动作识别方法领域已取得显著进展，
+在线动作识别领域已取得显著进展，
 但在直接迁移至具体手术场景时仍面临严峻挑战。
 现有的长时序建模方法在处理手术中存在的不平衡分布时，
 往往由于缺乏对短时动作特征的针对性增强，
 导致模型在罕见或瞬时动作上的召回率大幅下降。
 同时，现有利用任务进度先验或动作切换的方法也无法完全适应手术场景。%todo: 进一步分析ProTAS的局限性，
-例如，尽管ProTAS\cite{shen2024progress}基于线性进度的建模方法利用任务完成进度进行时序建模，
+例如，ProTAS\cite{shen2024progress} 采用基于线性进度的时序建模策略，
 但缺乏对不确定性的建模能力，使得面对复杂多变的手术环境时表现不佳；
-ActionSwitch\cite{kang2024actionswitch}利用状态图进行切换管理，但其设计主要针对重叠的动作。
+ActionSwitch\cite{kang2024actionswitch} 利用状态图进行切换管理，但其设计主要针对重叠动作。
 在专门针对在线手术阶段识别的研究中，
 现有主流方案如SKiT\cite{skit2023}、SurgPLAN++\cite{chen2025surgplan++}及DACAT\cite{yang2025dacat}等，
 虽然通过关键池化、伪未来预测或双路自适应上下文增强等技术，
@@ -117,6 +117,7 @@ NFSM\cite{ding2024neural}尝试将经典有限状态机与全局状态嵌入相�
 
 \subsection{数据采集与筛选}
 本研究的青光眼手术视频数据均来源于临床实际手术场景，
+并通过伦理委员会审查批准（2022KYPJ026）。
 为保证数据集的泛化性，采用多中心数据采集策略，
 共收集国内三家三级甲等医疗机构的微创青光眼房角切开术
 （Minimally Invasive Glaucoma Surgery, MIGS）手术视频，
@@ -129,6 +130,7 @@ NFSM\cite{ding2024neural}尝试将经典有限状态机与全局状态嵌入相�
 视频记录平台采用AIAVS-ST12手术视频记录平台，
 采集的视频基础参数为1920×1080分辨率、25帧/秒（fps），
 单段视频文件大小约为1到3G，单段视频平均时长约 17 分钟。
+所有录制视频针对可识别的个人身份敏感数据进行去标识处理。
 
 为保证后续动作识别算法的训练效果，
 对原始采集的视频数据进行严格的质量筛选，
@@ -164,7 +166,7 @@ NFSM\cite{ding2024neural}尝试将经典有限状态机与全局状态嵌入相�
 视觉上高度相似，仅有仪器深入长度和注射液体的细微差异，
 标注人员需结合手术操作的上下文信息进行综合判断（先后顺序），以确保标注的准确性。
 
-\begin{table}[tp]
+\begin{table}[!htbp]
 \small
 \renewcommand{\arraystretch}{1.0}
 \renewcommand{\tabcolsep}{4pt}
@@ -201,7 +203,7 @@ NFSM\cite{ding2024neural}尝试将经典有限状态机与全局状态嵌入相�
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.9\textwidth]{fig/alg2/dataset-phases.png}
+    \includegraphics[width=0.94\textwidth]{fig/alg2/dataset-phases.png}
     \caption{微创青光眼手术8个阶段示例图}
     \label{fig: dataset_phases}
 \end{figure}
@@ -239,7 +241,7 @@ NFSM\cite{ding2024neural}尝试将经典有限状态机与全局状态嵌入相�
 同时，各个步骤的颜色深浅程度差距较大，
 这也同样反映了数据集的时序分布不平衡特征。
 
-\begin{table}[tp]
+\begin{table}[!htbp]
 \small
 \renewcommand{\arraystretch}{1.0}
 \renewcommand{\tabcolsep}{6pt}
@@ -270,6 +272,8 @@ NFSM\cite{ding2024neural}尝试将经典有限状态机与全局状态嵌入相�
     \label{fig: alg2_phase_distribution}
 \end{figure}
 
+\FloatBarrier
+
 \textbf{数据来源特征}\quad 对三个采集机构的数据集基线特征进行统计，
 包括患者性别、年龄、术前眼压等指标，
 结果显示不同机构的样本在年龄、术前眼压、眼轴长度等临床指标上存在显著差异（\(P<0.05\)），
@@ -279,7 +283,7 @@ NFSM\cite{ding2024neural}尝试将经典有限状态机与全局状态嵌入相�
 同时，不同机构的手术设备、操作医生存在差异，
 进一步增加了数据集的场景多样性。
 
-\begin{table}
+\begin{table}[!htbp]
 \small
 \renewcommand{\arraystretch}{1.0}
 \renewcommand{\tabcolsep}{6pt}
@@ -299,6 +303,8 @@ NFSM\cite{ding2024neural}尝试将经典有限状态机与全局状态嵌入相�
 \label{tab:data_baseline}
 \end{center}
 \end{table}
+
+\FloatBarrier
 
 
 \section{问题定义}
@@ -367,7 +373,7 @@ NFSM\cite{ding2024neural}尝试将经典有限状态机与全局状态嵌入相�
 兼顾视觉细节与规程逻辑，实现精准动作决策。
 该模块整体可概括为三个紧密关联的阶段，
 分别为记忆更新阶段、规则演化阶段与决策融合阶段，
-三个阶段协同工作，实现“利用历史预测、融入规程规则、优化当前决策”的核心目标，具体设计如下。
+三个阶段协同工作，实现“利用历史预测、融入规程规则、优化当前决策”的核心目标，具体设计如下：
 
 \textbf{\memoryunit}\quad
 \memoryunit
@@ -385,6 +391,7 @@ NFSM\cite{ding2024neural}尝试将经典有限状态机与全局状态嵌入相�
 作为量化输出不确定性的指标：
 \begin{equation}
 H_t = \sum_{c=1}^C - \mathbf{P}_{\mathrm{vis}, t, c} \log \mathbf{P}_{\mathrm{vis}, t, c}
+\label{eq:alg2_entropy}
 \end{equation}
 其中 \(\mathbf{P}_{\mathrm{vis}, t, c}\) 表示视觉分类器对类别 \(c\) 的预测概率。
 为了将信息熵映射至 \([0, 1]\) 范围，
@@ -394,6 +401,7 @@ H_t = \sum_{c=1}^C - \mathbf{P}_{\mathrm{vis}, t, c} \log \mathbf{P}_{\mathrm{vi
 \begin{equation}
 \mathbf{S}_t = \alpha_t \cdot \mathbf{P}_{\mathrm{vis}, t} +
  (1 - \alpha_t) \cdot \mathbf{S}_{t-1}
+\label{eq:alg2_memory_update}
 \end{equation}
 在初始时刻 \(t=1\) 时，\(\mathbf{S}_1 = \mathbf{P}_{\mathrm{vis}, 1}\)。
 
@@ -420,6 +428,7 @@ H_t = \sum_{c=1}^C - \mathbf{P}_{\mathrm{vis}, t, c} \log \mathbf{P}_{\mathrm{vi
 \begin{equation}
     \boldsymbol{\mu}_t, \boldsymbol{\phi}_t = 
     \mathrm{Softplus}\big(\mathrm{MLP}_{dur}(\mathrm{Recurrent}(\mathbf{Z}_t))\big)
+\label{eq:alg2_dur_pred}
 \end{equation}
 其中，向量中的每个分量 \(\mu_{t,c}\) 与 \(\phi_{t,c}\) 分别代表模型在当前上下文视觉信息下，
 对类别 \(c\) 预期总时长的对数均值与不确定性。
@@ -435,6 +444,7 @@ H_t = \sum_{c=1}^C - \mathbf{P}_{\mathrm{vis}, t, c} \log \mathbf{P}_{\mathrm{vi
 \begin{equation}
     h_c(\Delta T_t) = \frac{f(\Delta T_t \mid \mu_{t,c}, 
     \phi_{t,c})}{1 - F(\Delta T_t \mid \mu_{t,c}, \phi_{t,c})}
+\label{eq:alg2_hazard}
 \end{equation}
 式中，\(f(\cdot)\) 与 \(F(\cdot)\) 分别为对数正态分布的概率密度函数与累积分布函数。
 据此，我们定义自环权重向量 
@@ -442,6 +452,7 @@ H_t = \sum_{c=1}^C - \mathbf{P}_{\mathrm{vis}, t, c} \log \mathbf{P}_{\mathrm{vi
 其各分量通过风险概率的补数计算得出：
 \begin{equation}
     \tau_{t,c} = 1 - h_c(\Delta T_t)
+\label{eq:alg2_tau}
 \end{equation}
 该向量反映了在 \(t\) 时刻，所有候选动作类别维持当前状态的倾向性。
 当某个动作接近预期时长 \(\exp(\mu_{t,c})\) 时，
@@ -451,6 +462,7 @@ H_t = \sum_{c=1}^C - \mathbf{P}_{\mathrm{vis}, t, c} \log \mathbf{P}_{\mathrm{vi
 \begin{equation}
     \mathbf{A}_t = \mathrm{Softmax}\left( (\mathbf{A}_{\mathrm{s}} \odot \mathbf{M}) 
     + \mathrm{diag}(\boldsymbol{\tau}_t) \right)
+\label{eq:alg2_dynamic_transition}
 \end{equation}
 其中，\(\mathbf{A}_{\mathrm{s}}\) 是可学习的转移矩阵，主要学习动作间的跳转
 ，\(\mathbf{M}\) 是手术规程先验掩码矩阵（元素为0或1，表示合法跳转）。
@@ -458,10 +470,11 @@ H_t = \sum_{c=1}^C - \mathbf{P}_{\mathrm{vis}, t, c} \log \mathbf{P}_{\mathrm{vi
 基于动态转移矩阵 \(\mathbf{A}_t\)，输出融合规程与时长约束的预测对数概率：
 \begin{equation}
     \mathbf{\theta}_{\mathrm{logic}} = \ln\big( \mathbf{A}_t \, \mathbf{S}_t + \varepsilon \big)
+\label{eq:alg2_logic_pred}
 \end{equation}
 
 其中\(\mathbf{S}_t\) 为 \(t\) 时刻的状态概率分布， 
-\(\epsilon\)为一个极小的数值，避免对数计算中出现 0 值。
+\(\varepsilon\)为一个极小的数值，避免对数计算中出现 0 值。
 该设计迫使概率流向符合手术规程且处于合理时间窗的下一个阶段，
 既解决了短时动作因视觉特征不足导致的召回延迟问题，
 又有效抑制了相似动作间的越级跳转，实现了时序稳定性与动态适应性的平衡。
@@ -510,6 +523,7 @@ H_t = \sum_{c=1}^C - \mathbf{P}_{\mathrm{vis}, t, c} \log \mathbf{P}_{\mathrm{vi
 \begin{equation}
 \hat{\mathbf{y}}_t = \mathrm{Softmax}\left(s \cdot \big(\bar{\mathbf{\theta}}_{\mathrm{vis}} 
 + \lambda_t \cdot \bar{\mathbf{\theta}}_{\mathrm{logic}}\big)\right)
+\label{eq:alg2_fusion}
 \end{equation}
 其中 \(s\) 为可学习的缩放因子（初始化为 15.0），
 用于恢复 Softmax 函数在归一化后的判别力，避免概率分布过平滑，确保模型能够准确区分不同动作类别。
@@ -546,6 +560,7 @@ W_t = \omega_{y_t} \cdot \epsilon_t
 其中，\(\delta_t\) 表示当前样本点 \(t\) 距离最近动作切换点的时序距离；
 \(\beta\) 为边界增强系数；
 \(\sigma\) 为标准差，用于控制边界增强的影响范围。
+为简化超参数选择，本文固定 \(\sigma=1\)，通过主要调整 \(\beta\) 来优化边界增强的强度。
 当样本处于动作内部（远离边界）时，\(\epsilon_t\)接近1；
 当样本接近动作边界时，学习权重平滑上升至 \(\beta\)。
 % 为了平衡边界样本与内部样本的梯度贡献，本文在后续实验中取值为 1.5。
@@ -580,11 +595,59 @@ W_t = \omega_{y_t} \cdot \epsilon_t
 推理阶段，因无法获取当前帧真实类别标签，该框架利用视觉分类器输出的类别置信度引导逻辑状态更新。
 模型输出分类对数概率 \(\mathbf{\theta}_{\mathrm{vis}}\) 
 与时长分布参数向量 \(\boldsymbol{\mu}_t, \boldsymbol{\phi}_t\)；
-根据概率分布，提取置信度最高的视觉分类器预测置信度最高的类别对应的预测参数 \([\hat{\mu}_{t, c^*}, \hat{\sigma}_{t, c^*}]\)，
+根据预测概率分布，选取置信度最高类别对应的时长参数 \([\hat{\mu}_{t, c^*}, \hat{\phi}_{t, c^*}]\)，
 结合计时器维护的持续时长 \(\Delta T_t\) 计算该类别的风险概率。
 再根据小节~\ref{subsec: graph}中的公式，
 计算规程引导输出\(\mathbf{\theta}_\mathrm{logic}\)以及通过融合得到的最终预测\(\hat{\mathbf{y}}_t\)。
 
+\FloatBarrier
+
+\begin{algorithm}[!htbp]
+    \renewcommand{\algorithmicrequire}{\textbf{输入：}}
+    \renewcommand{\algorithmicensure}{\textbf{输出：}}
+    
+    \caption{\sexytwo 的在线推理流程}\label{alg:alg2_pipeline}
+    \begin{algorithmic}[1] % [1]: 开启行号显示， 1代表每1行都显示
+    \REQUIRE 
+        在线视频流 \( \mathbf{V} = \{\mathbf{f}_t\}_{t=1}^T \)，
+        预训练组件（特征提取器、时长预测头等），
+        动作\\类别数 \( C \)
+    \ENSURE 
+        在线动作类别预测结果 \( \{\hat{\mathbf{y}}_t\}_{t=1}^T \)
+
+    \STATE 初始化: \( \mathbf{S}_0 = \mathbf{0}, \ c^*_{prev} = \text{None}, \ \Delta T_1 = 1 \)
+    \FOR{\( t = 1 \) \textbf{to} \( T \)} 
+        \STATE \textit{// 1. 视觉特征提取与初步预测}
+        \STATE \( \mathbf{Z}_t = \text{FeatureExtractor}(\mathbf{f}_t) \)
+        \STATE 获取视觉对数概率 \( \mathbf{\theta}_{\mathrm{vis}} \) 及概率分布 \( \mathbf{P}_{\mathrm{vis}, t} \)
+        
+        \STATE \textit{// 2. 状态记忆更新（\memoryunit）}
+        \STATE 依式~\ref{eq:alg2_entropy} 计算 \( H_t \) ；并得置信度 \( \alpha_t = \exp(-H_t) \)
+        \IF{\( t == 1 \)}
+            \STATE \( \mathbf{S}_1 = \mathbf{P}_{\mathrm{vis}, 1} \)
+        \ELSE
+            \STATE 依式~\ref{eq:alg2_memory_update} 更新状态向量 \( \mathbf{S}_t \)
+        \ENDIF
+        
+        \STATE \textit{// 3. 动态逻辑演化（\evolution）}
+        \STATE 依式~\ref{eq:alg2_dur_pred} 预测预期时长参数 \( \boldsymbol{\mu}_t \) 与 \( \boldsymbol{\phi}_t \)
+        \STATE \( c^* = \arg\max_c(\mathbf{P}_{\mathrm{vis}, t, c}) \)
+        \IF{\( t > 1 \) \textbf{and} \( c^* == c^*_{prev} \)}
+            \STATE \( \Delta T_t = \Delta T_{t-1} + 1 \)
+        \ELSE
+            \STATE \( \Delta T_t = 1, \ c^*_{prev} = c^* \)
+        \ENDIF
+        \STATE 依式~\ref{eq:alg2_hazard} 与~\ref{eq:alg2_tau} 得自环权重向量 \(\boldsymbol{\tau}_t\)
+        \STATE 依式~\ref{eq:alg2_dynamic_transition} 构建动态转移矩阵 \( \mathbf{A}_t \)
+        \STATE 依式~\ref{eq:alg2_logic_pred} 获取规程引导预测 \(\mathbf{\theta}_{\mathrm{logic}}\)
+        
+        \STATE \textit{// 4. 决策融合（\fusion）}
+        \STATE 依式~\ref{eq:alg2_fusion} 计算最终预测输出 \( \hat{\mathbf{y}}_t \)
+    \ENDFOR
+    \end{algorithmic}
+\end{algorithm}
+
+\FloatBarrier
 
 \section{实验结果}
 
@@ -601,17 +664,16 @@ OphNet数据集主要采集来自Youtube平台等公开渠道的眼科手术视�
 为保证实验对比的公平性，本章遵循现有工作\cite{li2025meta, hu2024ophnet}, 
 选择共计约51.2小时的手术视频数据，
 包含7320个阶段实例，用445个视频进行训练，144个视频进行验证，154个视频进行测试。
-% TODO: 添加一个数据集对比？
 
 \textbf{实验细节}\quad
 % 输入
-在MIGS数据集上，输入视频帧的分辨率为 320\( \times \)256，并随机裁剪为 224\( \times \)224，
-视频采样率为24帧/秒，按照E2E-LOAD\cite{cao2023e2e}将输入组成6帧为大小的块（chunk），让模型在块级别上进行决策；
-而在OphNet数据集上，为了比较的公平性，输入视频帧的分辨率为 250\( \times \)250，采样率1帧/秒。
-对于时空特征编码，本章选取E2E-LOAD\cite{cao2023e2e}模型进行端到端的特征读取，同时将该方法作为基线方法用于公平比较。
+在 MIGS 数据集上，输入视频帧分辨率设为 320\( \times \)256，并随机裁剪为 224\( \times \)224。
+视频采样率为 24 帧/秒，并按 E2E-LOAD\cite{cao2023e2e} 的设置将输入划分为 6 帧一个的块（chunk），以块级别进行决策。
+在 OphNet 数据集上，为保证比较公平，输入分辨率设为 250\( \times \)250，采样率设为 1 帧/秒。
+对于时空特征编码，本文采用 E2E-LOAD\cite{cao2023e2e} 进行端到端特征提取，并将其作为对比基线。
 % 补充非端到端的编码方式（查看spr怎么弄的）
-在训练过程中，我们采用AdamW优化器，初始学习率为\(10^{-3}\)，权重衰减为0.05，动量为0.9，批处理大小为64，共训练50轮。
-所有实验均基于PyTorch框架实现，并基于型号为8张 NVIDIA GeForce TITAN Xp的显卡上进行训练与评估。
+在训练过程中，本文采用 AdamW 优化器，初始学习率设为 \(10^{-3}\)，权重衰减设为 0.05，动量设为 0.9，批处理大小设为 64，总训练轮数为 50。
+所有实验均基于 PyTorch 实现，并在 8 张 NVIDIA GeForce TITAN Xp GPU 上完成训练，在单张显卡上进行评估。
 对于\evolution 模块中的递归神经网络层，我们采用单层Mamba结构，输入输出维度保持一致；
 
 \textbf{评价指标}\quad
@@ -668,7 +730,7 @@ E2E-LOAD \cite{cao2023e2e}、CMeRT\cite{pang2025context}、BioMamba\cite{wang202
 
 如表~\ref{tab:migs_results} 所示，
 本章方法在各项评价指标上均显著优于现有模型。
-相比于基线方法 E2E-LOAD，
+相比于 E2E-LOAD，
 本章方法在 Accuracy 和 Jaccard 分别提升了约 7.0\% 和 11.1\%，
 证明了引入手术规程逻辑与时长感知的必要性。
 与目前性能最强的 BioMamba 相比，
@@ -739,9 +801,9 @@ E2E-LOAD \cite{cao2023e2e}、CMeRT\cite{pang2025context}、BioMamba\cite{wang202
 实验主要考察：\memoryunit（\text{MU}）、
 \evolution （\text{EV}）以及\fusion（\text{FN}）。
 
-如表~\ref{tab:ablation_module}所示，实验结果验证了\graphmoduleshort 框架中各组件的协同增益。
+如表~\ref{tab:ablation_module} 所示，实验结果验证了 \graphmoduleshort 框架中各组件的协同增益。
 具体而言，在消融 \memoryunit 时（w/o MU），模型退化为直接使用当前帧的视觉预测概率替代抗漂移记忆特征。
-实验发现，MU 的更新的方式使得模块能过获得更加稳定鲁棒的状态，使得在各个指标上都有稳定提升。
+实验表明，MU 的更新机制能够生成更稳定、鲁棒的状态表示，从而在各项指标上带来稳定提升。
 对于 \evolution 的消融（w/o EV），我们去除了基于风险函数的时长感知与自环权重计算，
 使模型退化为仅依赖静态转移矩阵。
 结果表明，EV 对 Jaccard 指数的贡献最为显著。
@@ -794,15 +856,17 @@ w/o \text{FN} & 83.7 & 80.7 & 80.9 & 68.4 \\
 \centering
 \caption{不同损失函数在MIGS上的实验结果}
 \label{tab:ablation_loss}
-\begin{tabular}{ccccc|ccc}
+\begin{tabular}{lcc|ccc}
 \toprule
-\(\mathcal{L}_{CE}\) & Focal & \(\omega_{y_t}\) & \(\epsilon_t\) & \(\mathcal{L}_{dur}\) & Accuracy & mAP & Jaccard \\
+\multicolumn{3}{c|}{损失组成} & \multicolumn{3}{c}{性能指标（\%）} \\
 \midrule
-\checkmark & & & & & 82.2 & 81.5 & 66.1 \\ % 加了模块！
-\checkmark & \checkmark & & & & 82.6 & 81.9 & 66.6 \\
-\checkmark & \checkmark & \checkmark & & & 83.1 & 83.8 & 67.2 \\
-\checkmark & \checkmark & \checkmark & \checkmark & & 83.6 & 84.3 & 68.2 \\
-\checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \textbf{84.1} & \textbf{84.8} & \textbf{68.7} \\
+分类损失 & \(\omega_{y_t}\) & \(\epsilon_t\) & Accuracy & mAP & Jaccard \\
+\midrule
+CE & & & 82.2 & 81.5 & 66.1 \\ % 加了模块！
+Focal & & &  82.6 & 81.9 & 66.6 \\
+Focal & \checkmark &  & 83.1 & 83.8 & 67.2 \\
+Focal &  & \checkmark  & 83.6 & 84.3 & 68.2 \\
+CBD & \checkmark & \checkmark & \textbf{84.1} & \textbf{84.8} & \textbf{68.7} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -860,8 +924,8 @@ Mamba & \textbf{84.1} & \textbf{81.0} & \textbf{81.2} & \textbf{68.7} \\
 
 \textbf{MU 记忆更新策略对比实验}\quad
 \memoryunit 的核心在于如何根据视觉置信度动态调节历史信息的占比。
-本实验对比了三种策略：(1) 仅依赖单帧预测（\(\alpha_t=1\)）；(2) 固定比例 （\(\alpha_t=0.5\)）；(3) 基于信息熵的动态权重更新。
-如表~\ref{tab:ablation_mu_strategy} 所示，固定比例 （\(\alpha_t=0.5\)）表现最差，无法根据画面内容灵活决策。
+本实验对比了三种策略：(1) 仅依赖单帧预测（\(\alpha_t=1\)）；(2) 固定比例（\(\alpha_t=0.5\)）；(3) 基于信息熵的动态权重更新。
+如表~\ref{tab:ablation_mu_strategy} 所示，固定比例（\(\alpha_t=0.5\)）表现最差，无法根据画面内容灵活决策。
 固定比例导致状态表达存在一定的滞后性，由于状态更新的延迟使得 Accuracy 反而降至 83.6\%。
 相比之下，本章方法通过信息熵对比仅依赖单帧和固定比例的方法，
 实现了“看清时快速更新，模糊时锁定逻辑”的动态平衡，在保留动作连续性的同时维持了最高的边界判别精度。
@@ -945,20 +1009,18 @@ Mamba & \textbf{84.1} & \textbf{81.0} & \textbf{81.2} & \textbf{68.7} \\
 
 \subsection{可视化结果分析}
 
-为了定性评估本章所提方法的检测性能，本章随机选取了2例手术视频进行结果可视化，
-图~\ref{fig: alg2_visualization}展示了青光眼手术视频（视频 ID: 144 与 119）中
-真实手术阶段序列、基线方法预测序列与本章方法预测序列的逐帧对比结果。
-图中不同颜色代表不同手术阶段，条带的连续性与颜色一致性直观反映了模型对手术阶段时序结构的还原能力。
-以视频 ID 119 为例，“房角镜下观察”（橙色）与 “房角切开”（浅橙色）在视觉特征上高度相似（参考图~\ref{fig: dataset_phases}），
-基线方法在这两个阶段的预测中出现了明显的混淆，难以准确区分两个阶段；
-而本章方法通过融入视觉置信度与动态时长约束，预测结果更符合真实结果，
-有效避免了相似动作间的误判，提升了准确度。
-在视频 ID 144 的各动作边界处，基线方法常滞后跳转，而本章方法的预测边界与真实值高度对齐，
-有效抑制了视觉噪声导致的边界漂移，尤其在短时长动作上的召回延迟显著降低，响应更为及时，
-更符合真实手术场景在线动作检测的及时响应要求。
-综合两条视频的对比结果，本章方法的预测序列在整体结构、动作顺序与持续时长上均比基线方法更贴近真实值，
-直观验证了本章所提方法在边界定位、短动作召回、相似动作区分上的优势，
-证明了通过视觉特征与手术规程逻辑融合的策略，能够有效提升在线手术动作检测的精度与鲁棒性。
+为了定性评估本章方法的检测性能，本小节随机选取 2 例手术视频进行可视化分析。
+图~\ref{fig: alg2_visualization} 展示了视频 ID 144 与 119 中真实阶段序列、基线预测序列和本章方法预测序列的逐帧对比。
+图中不同颜色对应不同手术阶段，条带的连续性与一致性反映了模型对手术时序结构的还原能力。
+
+以视频 ID 119 为例，“房角镜下观察”（橙色）与“房角切开”（浅橙色）在视觉特征上高度相似（见图~\ref{fig: dataset_phases}）。
+基线方法在两阶段间出现明显混淆，难以稳定区分；
+本章方法通过融合视觉置信度与动态时长约束，预测结果与真实标签更一致，显著降低了相似动作间的误判。
+在视频 ID 144 中，基线方法在多个动作边界处出现滞后跳转。
+相比之下，本章方法的预测边界与真实边界高度对齐，
+能够有效抑制视觉噪声引起的边界漂移，并显著降低短时动作的召回延迟。
+综合两条视频的结果可见，本章方法在整体结构、动作顺序和持续时长上均更接近真实标注，
+验证了其在边界定位、短动作召回和相似动作区分方面的优势。
 \begin{figure}
     \centering
     \includegraphics[width=0.8\textwidth]{fig/alg2/ribbon_map.pdf}
@@ -992,7 +1054,7 @@ Mamba & \textbf{84.1} & \textbf{81.0} & \textbf{81.2} & \textbf{68.7} \\
 本章提出了\fulltwo（\sexytwo），一个针对青光眼手术在线动作检测任务设计的时序均衡与逻辑协同框架。
 针对手术场景中解剖结构复杂导致的视觉语义混淆，以及长短动作时长分布极不均衡的核心挑战，
 本章首先构建并开源了一个多中心、高标准标注的青光眼手术视频数据集（MIGS），
-为清关眼手术导航领域提高了高质量数据资源。
+为青光眼手术导航领域提供了高质量数据资源。
 
 在算法层面，本章设计了核心逻辑增强模块\graphmodulefull（\graphmoduleshort）。
 该模块通过\memoryunit 引入置信度引导的动态更新机制，在视觉模糊时实现“逻辑锁定”，确保了历史状态的鲁棒性；

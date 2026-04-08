@@ -11,6 +11,7 @@
 \usepackage{xspace}
 \usepackage{amsfonts}
 \usepackage{algorithmic}
+\usepackage{placeins}
 % \usepackage{stfloats}
 % % \usepackage{url}
 % \usepackage{verbatim}
@@ -51,29 +52,40 @@
 \newcommand{\theHalgorithm}{\arabic{algorithm}}
 \newcommand{\vect}[1]{\mathbf{#1}} % 向量/矩阵：加粗正体
 \newcommand{\matr}[1]{\mathbf{#1}} % 备用名：矩阵
+\newcommand{\termfix}{%
+  \ifhmode
+    \ifdim\lastskip>0pt
+      \unskip
+      % Keep one interword space after punctuation (e.g., comma) in English text.
+      \ifnum\spacefactor>1000\space\fi
+    \fi
+  \fi
+}
 % \newcommand{\sexyname}{SG-Mamba\xspace}
-\newcommand{\sexyname}{AC-Mamba\xspace}
+\newcommand{\sexyname}{\termfix AC-Mamba\xspace}
+\newcommand{\fullnameen}{\termfix Anatomy-Calibrated Mamba for Temporal Micro-Action Localization\xspace}
 % \newcommand{\fullname}{Skeleton-Guided Mamba for Temporal Micro-Action Localization\xspace}
-\newcommand{\fullname}{基于解剖结构校准 Mamba\xspace}
-\newcommand{\crossblockfull}{解剖结构校准Mamba\xspace}
-\newcommand{\channelblockfull}{冗余剔除层\xspace}
-\newcommand{\crossblockfullen}{Anatomy-Calibrated Mamba\xspace}
-\newcommand{\channelblockfullen}{Redundancy Removal Layer\xspace}
-\newcommand{\crossblockshort}{ACM\xspace}
-\newcommand{\channelblockshort}{RRL\xspace}
-\newcommand{\featuremodulefull}{多尺度动态特征模块\xspace}
-\newcommand{\featuremodulefullen}{Multi-Scale Dynamic Feature Module\xspace}
-\newcommand{\featuremoduleshort}{MSDF\xspace}
-\newcommand{\fulltwo}{时序均衡与逻辑演化的青光眼手术动作检测框架\xspace}
-\newcommand{\sexytwo}{TBL Net\xspace}
-\newcommand{\graphmodulefull}{规程引导模块\xspace}
-\newcommand{\graphmodulefullen}{Procedural Guidance Constrainer\xspace} 
+\newcommand{\fullname}{\termfix 基于解剖结构校准 Mamba\xspace}
+\newcommand{\crossblockfull}{\termfix 解剖结构校准Mamba\xspace}
+\newcommand{\channelblockfull}{\termfix 冗余剔除层\xspace}
+\newcommand{\crossblockfullen}{\termfix Anatomy-Calibrated Mamba\xspace}
+\newcommand{\channelblockfullen}{\termfix Redundancy Removal Layer\xspace}
+\newcommand{\crossblockshort}{\termfix ACM\xspace}
+\newcommand{\channelblockshort}{\termfix RRL\xspace}
+\newcommand{\featuremodulefull}{\termfix 多尺度动态特征模块\xspace}
+\newcommand{\featuremodulefullen}{\termfix Multi-Scale Dynamic Feature Module\xspace}
+\newcommand{\featuremoduleshort}{\termfix MSDF\xspace}
+\newcommand{\fulltwo}{\termfix 时序均衡与逻辑演化的青光眼手术动作检测框架\xspace}
+\newcommand{\fulltwoen}{\termfix Temporal-Balance and Logic-Evolution Network for Glaucoma Surgical Online Action Detection\xspace}
+\newcommand{\sexytwo}{\termfix TBL Net\xspace}
+\newcommand{\graphmodulefull}{\termfix 规程引导模块\xspace}
+\newcommand{\graphmodulefullen}{\termfix Procedural Guidance Constrainer\xspace} 
 % Adaptive Protocol Evolution Module / Logic Evolution Augmentor
-\newcommand{\graphmoduleshort}{PGC\xspace}
-\newcommand{\lossfull}{类别边界加权损失函数\xspace}
-\newcommand{\lossshort}{CBD Loss\xspace}
-\newcommand{\lshort}{CBD\xspace}
-\newcommand{\lossfullen}{Category-Boundary Dual-Weighted Loss\xspace} 
+\newcommand{\graphmoduleshort}{\termfix PGC\xspace}
+\newcommand{\lossfull}{\termfix 类别边界加权损失函数\xspace}
+\newcommand{\lossshort}{\termfix CBD Loss\xspace}
+\newcommand{\lshort}{\termfix CBD\xspace}
+\newcommand{\lossfullen}{\termfix Category-Boundary Dual-Weighted Loss\xspace} 
 
 \newcommand{\memoryunit}{抗漂移记忆单元}
 \newcommand{\evolution}{时长感知演化单元}
