@@ -1,7 +1,7 @@
 \begin{abstractEN}
 Deep learning has achieved remarkable progress in general video action understanding and analysis in recent years.
 However, migrating these technologies to the healthcare sector reveals a pronounced domain gap.
-Unlike natural video analysis, clinical medical video analysis frequently suffers from low image contrast, subtle motion amplitudes, and highly imbalanced data distributions. 
+Unlike natural video analysis, medical video analysis frequently suffers from low image contrast, subtle motion amplitudes, and highly imbalanced data distributions. 
 These challenges impair the ability of deep models to learn effective visual representations for accurate action analysis.
 Therefore, deeply integrating medical domain priors to achieve more efficient medical video action understanding significantly 
 facilitates the practical deployment of smart healthcare systems.
@@ -11,8 +11,9 @@ videofluoroscopic swallowing study (VFSS) videos for auxiliary diagnosis and gla
 for intraoperative navigation, 
 this dissertation thoroughly investigates the core challenges of medical video action understanding in complex clinical scenarios:
 (1) In temporal micro-action localization for VFSS videos, 
-the low contrast of X-ray images and the blurring and occlusion of key anatomical structures easily overwhelm weak motion signals with static background noise. 
-This makes it difficult for models to capture precise temporal boundaries.
+the low contrast of X-ray images and the blurring and occlusion of key anatomical structures,
+which easily overwhelm weak motion signals with static background noise,
+making it difficult for models to capture precise temporal boundaries.
 (2) In online action recognition for glaucoma surgery videos, 
 the significant imbalance in surgical phase durations and the high visual similarity 
 among different operations frequently cause missed detections and false judgments during real-time inference.
@@ -29,7 +30,7 @@ and a \channelblockfullen (\channelblockshort) to efficiently calibrate and enha
 These modules use skeleton features to guide spatial focus and explicitly strip redundant static background signals, 
 effectively amplifying subtle motion signals.
 Experimental results on the VFSS benchmark dataset show that 
-the proposed method improves the mean Average Precision (mAP) by 5.3\% over state-of-the-art methods 
+the proposed method improves mean Average Precision (mAP) by 5.3\% over state-of-the-art methods 
 and exhibits excellent generalization on an external validation set.
 
 For glaucoma intraoperative navigation, this dissertation proposes \fulltwoen (\sexytwo), 

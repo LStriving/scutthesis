@@ -60,7 +60,7 @@ VFSS 中的时序微动作定位（TMAL）受限于成像原理及吞咽生理�
 
 随着骨架模态的引入，如何实现模态间的高效交互成为关键。
 为了有效集成这一模态，本章设计了一个双分支架构来并行处理外观特征和骨架特征，
-提出了\crossblockfull（\crossblockfullen, ~\crossblockshort）模块来促进两个分支间的特征层面上的校准。
+提出了\crossblockfull（\crossblockfullen, ~\crossblockshort）模块来促进两个分支间的特征层面的校准。
 具体而言，为解决 X 射线图像中的空间模糊性，该模块利用骨架轨迹作为空间置信度门控，
 帮助模型关注吞咽过程中的重要区域来动态校准外观特征，从而更好地利用和学习临床的相关先验。
 另一方面，骨架特征通过外观特征的上下文信息进行增强，以补偿其固有的稀疏性。
@@ -144,7 +144,7 @@ $\mathbf{C}\in\mathbb{R}^{S \times D \times N}$ 和 $\Delta\in\mathbb{R}^{S \tim
 或 ActionMamba\cite{chen2024video}）提取完整吞咽事件的候选区间（Proposals）；
 随后在精细定位阶段，以候选区间的中心为基准向外扩展固定时长（如 4 秒）对视频进行裁剪。
 粗定位阶段的标签集记为 \(\matr{Z}^{1}=\{\vect{z}^1_1,\vect{z}^1_2,\ldots,\vect{z}^1_M\}\)，
-每个吞咽事件包含 C 类微动作，\(M = N/C\) 表示吞咽事件的总数。
+由于每个吞咽事件包含 C 类微动作，以 \(M = N/C\) 表示吞咽事件的总数。
 每个事件 \(\vect{z}^1_i=(s_i,e_i)\) 仅包含起止时间 \(s_i\) 与 \(e_i\)。
 第二阶段的标签集则表示为 \(\matr{Z}^2 = \{\vect{z}^2_1, \dots, \vect{z}^2_C\}\)。
 由于粗定位阶段本质上是一个二分类时序动作定位任务，后续不再赘述。
@@ -202,13 +202,13 @@ $\mathbf{C}\in\mathbb{R}^{S \times D \times N}$ 和 $\Delta\in\mathbb{R}^{S \tim
 \subsection{解剖结构先验集成} 
 
 为突破 VFSS 影像中外观特征的固有局限性，本章引入解剖结构先验构建“骨架”模态。
-该模态显式编码了临床关键解剖结构（如舌骨），将其作为吞咽微动作的解剖学参照，
-显式抑制 X 射线成像噪声并消除结构模糊性（如图~\ref{fig: heatmap illu} 所示）。
+该模态有效编码了临床关键解剖结构（如舌骨），将其作为吞咽微动作的解剖学参照，
+从而显式抑制 X 射线成像噪声并消除结构模糊性（如图~\ref{fig: heatmap illu} 所示）。
 与仅依赖外观数据的现有方法不同，通过整合解剖先验，
 模型能够聚焦于那些虽短暂却对临床诊断至关重要的细微运动。
 
 本章通过构建骨架关键点序列来实现解剖先验的集成。
-具体而言，本章参考了吞咽分析中运动学参数分析中常利用的结构
+具体而言，章参考了吞咽运动学参数分析中常用的特征结构
 ~\cite{zhang2021automatic, hsiao2023deep, goldfield2010premature}，
 定义并标注了八个对吞咽功能评估至关重要的关键点，
 覆盖舌骨、软腭及颈椎区域（见图~\ref{fig: motivation}(b)），
@@ -222,7 +222,7 @@ $\mathbf{C}\in\mathbb{R}^{S \times D \times N}$ 和 $\Delta\in\mathbb{R}^{S \tim
 通过平滑运动轨迹有效降低了噪声干扰，
 提升了吞咽过程中对关键解剖结构的追踪精度。
 
-在获取视频帧级的关键点后，通过将其编码为热图以增强微动作定位的鲁棒性。
+在获取视频帧级的关键点后，算法将其编码为热图，以增强微动作定位的鲁棒性。
 每个 2D 关键点表示为三元组 \(\{(x_k, y_k, c_k)\}\)，其中 \((x_k, y_k)\) 为第 \(k\) 个关键点的坐标，\(c_k\) 为置信度分数。
 这些关键点被转换为热图张量 \(\matr{h} \in \mathbb{R}^{W \times H \times K}\)，其中 \(W, H\) 为分辨率，\(K=8\) 为关键点数量。
 具体地，基于关键点的高斯热图 \(\matr{h}^J\) 定义如下：
@@ -240,7 +240,7 @@ $\mathbf{C}\in\mathbb{R}^{S \times D \times N}$ 和 $\Delta\in\mathbb{R}^{S \tim
 \(\matr{h}_i = (\matr{h}_i^J + \matr{h}_i^L)/{2}\)。
 图~\ref{fig: heatmap illu} 展示了上述三种热图的示例。
 为进一步去除空间冗余背景，本章算法将骨架热图进一步按照能覆盖所有时序关键点的覆盖区域进行裁剪，并统一调整至目标分辨率（如 \(56 \times 56\)）。
-最终的热图序列\(\matr{h}^{3D}\)由在时间维度堆叠处理后的 2D 热图\(\matr{h}\)构建而成。
+最终的热图序列\(\matr{h}^{3D}\)由 2D 热图\(\matr{h}\)在时间维度堆叠构建而成。
 
 针对视频片段 \(\matr{v}_i\) 的 3D 骨架热图 \(\matr{h}^{3D}_i\)，利用 VideoMamba~\cite{li2025videomamba} 中的三个双向 Mamba 块提取特征。
 首先，\(\matr{h}^{3D}_i\) 经由 3D 卷积 Patch Embedding 进行序列化，并融合时空位置编码。
@@ -280,8 +280,13 @@ $\mathbf{C}\in\mathbb{R}^{S \times D \times N}$ 和 $\Delta\in\mathbb{R}^{S \tim
 其中 \(\vect{F}^{\text{app}}_{\text{fw}}\) 和 \(\vect{F}^{\text{app}}_{\text{bw}}\) 分别表示前向和后向 SSM 的输出特征。
 \({\rm SiLU}\) 为 Sigmoid 线性单元激活函数 \cite{elfwing2018sigmoid}，
 \({\rm Conv}\) 为一维深度卷积，\(\psi\) 为线性投影层，\(\odot\) 表示逐元素乘法，\({\rm flip}\) 表示沿时间维度的翻转操作。
-该乘法操作充当了空间维度上的置信度门控，骨架特征图发挥了类似掩码的作用，
-即仅允许具有高解剖相关性区域的梯度通过，从而有效阻断背景噪声的干扰。
+从信噪比提纯的角度来看，该乘法操作充当了空间维度上的置信度门控。
+由于 VFSS 视频受限于特定的成像原理，其特征空间往往由低对比度的庞大静态背景主导。
+假设外观特征由微动作相关信号与大面积静态背景干扰叠加而成，
+骨架特征经投影与激活后形成的空间掩码能够在生理先验的引导下，
+对动作区域与背景区域施加非对称增益。
+这种掩码机制不仅仅允许具有高解剖相关性区域的梯度通过，更在特征层面上成倍放大了有效目标的信噪比，
+从而强制使得淹没在背景中的微弱响应更为可分，有效阻断了背景噪声的干扰。
 
 在 VFSS 视频中，舌骨等关键结构的运动幅度小且区域占比低，
 这导致提取的特征 \(\vect{F}^{\text{app}}\) 往往由大面积的静态背景主导，
@@ -304,7 +309,14 @@ $\mathbf{C}\in\mathbb{R}^{S \times D \times N}$ 和 $\Delta\in\mathbb{R}^{S \tim
 \( \mathcal{C} \) 表示通道级增强操作，
 \( \gamma \) 为可学习的通道缩放因子（初始化为 \(10^{-5}\)），
 \( {\rm Conv_1} \) 是核大小为 1 的 1D 卷积。
-减法操作显式地剔除了共有的背景信号，从而迫使模型聚焦于幅度微小的细微动态变化。
+不同于常规的通道相加或特征拼接融合，此处的 \(\mathrm{SiLU}(\mathrm{Conv}_1(\mathbf{X}))\) 
+可被理解为对跨通道共享的全局冗余静态背景信息（即在各个特征通道中广泛存在、占据主要分布能量的背景图像上下文）进行自适应聚合与提取。
+由于微动作发生时的局部动态特征极为稀疏且变化微弱，而大面积的骨性及静态背景（如粗大的脊柱、头骨结构）留下的响应却高度同质化。
+因此，该减法操作相当于构建了一个特征级别的显式背景剥离模块：它利用原始复合特征剔除这些高度冗余的全局共有静态上下文之后，
+残留下的即是原本被淹没于庞大背景之中的高频微小动作残差，然后再利用可学习的尺度因子 \(\gamma\) 对其进行自适应放大。
+这种“先在通道级解耦并剥离高能量冗余背景，后对稀疏动作残差进行放大补偿”的设计逻辑，
+成功引导网络脱离了对粗大解剖结构的注意力依赖，迫使其高度聚焦于捕获隐蔽的真实吞咽微运动信号。
+
 同理，骨架特征 \(\vect{F}^{\text{ske}}\) 亦可通过 
 \({\rm \crossblockshort}(\vect{F}^{\text{ske}}, \vect{F}^{\text{app}})\) 进行增强。
 外观分支提供了稠密的上下文信息，从而在关键点检测发生抖动时，对稀疏的骨架信号起到稳定作用。
@@ -342,80 +354,11 @@ $\mathbf{C}\in\mathbb{R}^{S \times D \times N}$ 和 $\Delta\in\mathbb{R}^{S \tim
 其中 \(\omega \) 为控制模态贡献度的加权超参数，\({\rm Sigmoid}\) 激活函数用于将 Logits 映射为类别概率。
 在获得融合预测结果后，应用 Soft-NMS \cite{bodla2017soft} 算法以剔除冗余的重叠候选框。
 最终，时序边界预测值叠加粗定位阶段获取的时间偏移量进行坐标还原。
-通过整合上述损失设计、推理融合策略及后处理步骤，\sexyname 框架能够有效实现 VFSS 视频中时序微动作的精准定位。
-
-% \subsection{理论分析：方法为何有效}
-% 为从数学层面解释 \sexyname 的有效性，本节围绕三个核心问题展开：
-% 1) 骨架门控为何能提升微动作信号的可分性；
-% 2) 跨模态校准为何能降低预测误差；
-% 3) 双向时序建模为何有助于边界定位。
-
-% \textbf{(1) 骨架门控带来的信噪比分离增益}\quad
-% 将外观特征分解为动作相关项与背景项：
-% \begin{equation}
-% \vect{F}^{\text{app}} = \vect{S} + \vect{B},
-% \end{equation}
-% 其中 \(\vect{S}\) 表示与微动作相关的动态特征，\(\vect{B}\) 表示静态背景主导的干扰特征。
-% 在 \crossblockshort 中，骨架分支经激活后形成门控权重
-% \(\vect{G}=\mathrm{SiLU}(\psi(\vect{F}^{\text{ske}}))\)，并与外观分支逐元素相乘：
-% \begin{equation}\label{eq:theory_gate}
-% \widetilde{\vect{F}}^{\text{app}} = \vect{G} \odot (\vect{S}+\vect{B}).
-% \end{equation}
-% 令 \(\alpha_s=\mathbb{E}[\vect{G}\mid \text{action}]\) 与 \(\alpha_b=\mathbb{E}[\vect{G}\mid \text{background}]\)，在骨架先验有效时满足 \(\alpha_s > \alpha_b\)。
-% 则门控前后的期望信噪比满足：
-% \begin{equation}\label{eq:theory_snr}
-% \frac{\mathrm{SNR}_{\text{after}}}{\mathrm{SNR}_{\text{before}}}
-% \approx
-% \frac{\alpha_s^2}{\alpha_b^2} > 1.
-% \end{equation}
-% 式~\ref{eq:theory_snr} 表明，骨架门控并非简单融合，而是对动作区域与背景区域施加非对称增益，从而提高了可分性。
-
-% \textbf{(2) \channelblockshort 的共模抑制机制}\quad
-% 设拼接后的跨模态特征为 \(\mathbf{X}\)。若将背景干扰视作跨通道共享的低频共模分量 \(\mathbf{C}\)，动作细节视作稀疏残差 \(\mathbf{R}\)，则有
-% \(\mathbf{X}=\mathbf{C}+\mathbf{R}\)。
-% 公式~\ref{eq: ce} 中的
-% \(\mathrm{SiLU}(\mathrm{Conv}_1(\mathbf{X}))\)
-% 可视为对共模分量的估计 \(\widehat{\mathbf{C}}\)，因此
-% \begin{equation}
-% \mathcal{C}(\mathbf{X})
-% =
-% \mathbf{X}+\gamma\odot(\mathbf{X}-\widehat{\mathbf{C}})
-% \approx
-% \mathbf{C}+\mathbf{R}+\gamma\odot(\mathbf{R}+\varepsilon_c),
-% \end{equation}
-% 其中 \(\varepsilon_c=\mathbf{C}-\widehat{\mathbf{C}}\) 为估计误差。
-% 当 \(\widehat{\mathbf{C}}\) 估计充分时，主导项变为 \((1+\gamma)\odot\mathbf{R}\)，即动作相关残差被放大，而共享背景被抑制。
-% 这从频谱角度解释了“减法优于加法”的经验现象。
-
-% \textbf{(3) 双分支融合的误差上界收紧}\quad
-% 记外观分支与骨架分支对同一目标量（分类 Logit 或边界偏移）的估计误差分别为
-% \(\epsilon_{\text{app}}\) 与 \(\epsilon_{\text{ske}}\)。
-% 后期融合误差为
-% \(\epsilon=\omega\epsilon_{\text{app}}+(1-\omega)\epsilon_{\text{ske}}\)。
-% 其方差满足：
-% \begin{equation}\label{eq:theory_var}
-% \mathrm{Var}(\epsilon)
-% =
-% \omega^2\sigma^2_{\text{app}}+(1-\omega)^2\sigma^2_{\text{ske}}
-% +2\omega(1-\omega)\mathrm{Cov}(\epsilon_{\text{app}},\epsilon_{\text{ske}}).
-% \end{equation}
-% 当两分支误差相关性受 \crossblockshort 校准后降低（协方差项减小）时，
-% 融合方差严格小于任一单分支方差的条件更易满足，预测稳定性提升。
-% 这解释了本章在多阈值 tIoU 下的一致增益。
-
-% \textbf{(4) 双向 SSM 对边界偏差的抑制}\quad
-% 微动作边界检测可视为对时刻 \(t\) 的局部变点判别。
-% 单向模型仅依赖历史上下文，容易出现系统性“迟检”；
-% 双向 SSM 则同时利用前向与后向上下文，等价于构造了关于真实边界的双侧证据。
-% 设前向与后向边界估计误差分别为 \(b_f\)、\(b_b\)，融合后偏差近似为
-% \(b=\frac{1}{2}(b_f+b_b)\)。
-% 若两者方向相反（实践中常见于“提前/滞后”互补），则 \(|b|<\max(|b_f|,|b_b|)\)，
-% 从而减小边界回归偏差并提高高 tIoU 阈值下的精度。
-
-% 综上，\sexyname 的性能提升具备明确的理论基础：
-% 骨架门控提升有效信号占比，\channelblockshort 抑制共模背景并放大微弱动态，
-% 跨模态融合在低相关误差条件下收紧方差上界，双向时序建模进一步降低边界系统偏差。
-% 这四者共同构成了“解剖先验约束 + 统计误差降低 + 时序偏差校正”的统一解释框架。
+这种融合机制不仅仅是简单的结果集成。
+从误差方差的上界来看，由于 \crossblockshort 深层校准极大地缩小了两分支间的预测误差相关性，
+在统计学角度上确保了后期加权融合后的整体回归方差严格收缩，
+最终使时间边界预测和动作类别识别表现出更高、更鲁棒的高阈值评估指标。
+通过整合上述损失设计与后处理步骤，\sexyname 框架能够有效实现 VFSS 视频中时序微动作的精准与稳定定位。
 
 \section{实验结果}
 \subsection{数据集与评价指标}
@@ -1092,7 +1035,7 @@ ResNet-18 \cite{he2016deep} 为主干的 SimpleBaseline~\cite{xiao2018simple}。
     \caption{智能 VFSS 视频分析原型系统界面}
     \label{fig:system}
 \end{figure}
-
+\FloatBarrier
 
 
 \section{本章小结}
@@ -1102,7 +1045,7 @@ ResNet-18 \cite{he2016deep} 为主干的 SimpleBaseline~\cite{xiao2018simple}。
 显著增强了模型在低对比度环境下的特征表征能力。
 进一步地，为了更好融合骨架模态，减少背景干扰的问题，
 本章设计了\crossblockfull 模块。
-该模块结合\channelblockfull 机制，
+该模块结合\channelblockfull\unskip 机制，
 通过显式剥离冗余的静态背景信息，有效放大了微弱的动态特征信号；
 同时结合骨架特征作为空间注意力门控，实现了对细微解剖运动区域的精准聚焦与特征校准。
 在基准数据集上开展的系统性实验结果表明，\sexyname 取得了当前领域内先进的性能表现。
