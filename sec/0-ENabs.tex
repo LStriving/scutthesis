@@ -14,7 +14,7 @@ this dissertation thoroughly investigates the core challenges of medical video a
 the low contrast of X-ray images and the blurring and occlusion of key anatomical structures,
 which easily overwhelm weak motion signals with static background noise,
 making it difficult for models to capture precise temporal boundaries.
-(2) In online action recognition for glaucoma surgery videos, 
+(2) In online action detection for glaucoma surgery videos, 
 the significant imbalance in surgical phase durations and the high visual similarity 
 among different operations frequently cause missed detections and false judgments during real-time inference.
 
@@ -25,8 +25,8 @@ to tackle blurred anatomical structures and obscured weak target features in tem
 By introducing a skeleton heatmap modality based on clinical priors, 
 the framework provides the model with robust geometric structural references, 
 guiding it to learn highly interference-resistant visual representations.
-Furthermore, the proposed method employs a \crossblockfullen (\crossblockshort) 
-and a \channelblockfullen (\channelblockshort) to efficiently calibrate and enhance multimodal features.
+Furthermore, the proposed method employs a \crossblockfullen 
+and a \channelblockfullen to efficiently calibrate and enhance multimodal features.
 These modules use skeleton features to guide spatial focus and explicitly strip redundant static background signals, 
 effectively amplifying subtle motion signals.
 Experimental results on the VFSS benchmark dataset show that 
@@ -34,14 +34,16 @@ the proposed method improves mean Average Precision (mAP) by 5.3\% over state-of
 and exhibits excellent generalization on an external validation set.
 
 For glaucoma intraoperative navigation, this dissertation proposes \fulltwoen (\sexytwo), 
-an online action detection framework that addresses temporal logic confusion and imbalanced data distribution in online surgical action recognition.
-By leveraging the structural priors of surgical procedures through a \graphmodulefullen (\graphmoduleshort), 
+an online action detection framework that addresses temporal logic confusion 
+and imbalanced data distribution in online surgical action detection.
+By leveraging the structural priors of surgical procedures through a \graphmodulefullen, 
 the method enhances the model's perception of surgical state transitions and action durations,
 guiding it to learn logically coherent scene representations.
-Additionally, the framework introduces a \lossfullen(\lossshort) to balance feature learning for long- and short-duration actions.
+Additionally, the framework introduces a \lossfullen to balance feature learning for long- and short-duration actions.
 Extensive experiments demonstrate that the proposed method outperforms state-of-the-art approaches, 
-achieving online recognition accuracy improvements of 0.9\% on the self-constructed minimally invasive glaucoma surgery (MIGS) dataset and 1.9\% on the public OphNet dataset.
+achieving online detection accuracy improvements of 0.9\% on 
+the self-constructed minimally invasive glaucoma surgery (MIGS) dataset and 1.9\% on the public OphNet dataset.
 
 \end{abstractEN}
 
-\keywordsEN{Medical Video Understanding; Videofluoroscopic Swallowing Study; Temporal Micro-action Localization; Glaucoma Surgery Video; Online Surgical Action Detection}
+\keywordsEN{Medical Video Understanding; Videofluoroscopic Swallowing Study; Temporal Micro-action Localization; Glaucoma Surgery Video; Online Action Detection}
