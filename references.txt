@@ -1,0 +1,126 @@
+[1] Maier-Hein L, Vedula S S, Speidel S, et al. Surgical data science for next-generation interventions[J]. Nature Biomedical Engineering, 2017, 1(9): 691-696.
+[2] Li Y, Zhao Z, Li R, et al. Deep learning for surgical workflow analysis: a survey of progresses, limitations, and trends[J]. Artificial Intelligence Review, 2024, 57(11): 291.
+[3] 戴萌, 窦祖林, 卫小梅, 等. 吞咽造影的分析及应用进展[J]. 中国康复医学杂志, 2016, 31(11): 1269-1272.
+[4] Lin K Y, Urban G, Yang M C, et al. Accurate identification of the trabecular meshwork under gonioscopic view in real time using deep learning[J]. Ophthalmology Glaucoma, 2022, 5(4): 402-412.
+[5] Ouyang D, He B, Ghorbani A, et al. Video-based AI for beat-to-beat assessment of cardiac function[J]. Nature, 2020, 580(7802): 252-256.
+[6] Hübner W, McNerney G P, Chen P, et al. Quantitative 3D video microscopy of HIV transfer across T cell virological synapses[J]. Science, 2009, 323(5922): 1743-1747.
+[7] Jin Y, Dou Q, Chen H, et al. SV-RCNet: workflow recognition from surgical videos using recurrent convolutional network[J]. IEEE transactions on medical imaging, 2017, 37(5): 1114-1126.
+[8] Sarikaya D, Corso J J, Guru K A. Detection and localization of robotic tools in robot-assisted surgery videos using deep neural networks for region proposal and detection[J]. IEEE transactions on medical imaging, 2017, 36(7): 1542-1549.
+[9] Zeng R, Huang W, Tan M, et al. Graph convolutional networks for temporal action localization[C]//Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV). 2019: 7094-7103.
+[10] Yang L, Peng H, Zhang D, et al. Revisiting anchor mechanisms for temporal action localization[J]. IEEE Transactions on Image Processing, 2020, 29: 8535-8548.
+[11] Zhang C L, Wu J, Li Y. Actionformer: Localizing moments of actions with transformers[C]//Proceedings of the European Conference on Computer Vision (ECCV). Springer, 2022: 492-510.
+[12] Shi D, Zhong Y, Cao Q, et al. Tridet: Temporal action detection with relative boundary modeling[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 2023: 18857-18866.
+[13] Yang M, Gao H, Guo P, et al. Adapting short-term transformers for action detection in untrimmed videos[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 2024: 18570-18579.
+[14] Li K, Li X, Wang Y, et al. Videomamba: State space model for efficient video understanding[C]//Proceedings of the European Conference on Computer Vision (ECCV). Springer, 2025: 237-255.
+[15] Liu S, Zhang C L, Zhao C, et al. End-to-end temporal action detection with 1b parameters across 1000 frames[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 2024: 18591-18601.
+[16] Chao Y W, Vijayanarasimhan S, Seybold B, et al. Rethinking the faster r-cnn architecture for temporal action localization[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 2018: 1130-1139.
+[17] Lin T, Liu X, Li X, et al. Bmn: Boundary-matching network for temporal action proposal generation[C]//Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV). 2019: 3889-3898.
+[18] Zhao C, Thabet A K, Ghanem B. Video self-stitching graph network for temporal action localization[C]//Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV). 2021: 13658-13667.
+[19] Zhu Z, Tang W, Wang L, et al. Enriching local and global contexts for temporal action localization[C]//Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV). 2021: 13516-13525.
+[20] Liu X, Wang Q, Hu Y, et al. End-to-end temporal action detection with transformer[J]. IEEE Transactions on Image Processing, 2022, 31: 5427-5441.
+[21] Vaswani A, Shazeer N, Parmar N, et al. Attention is all you need[C]//Advances in neural information processing systems: 卷 30. 2017.
+[22] Zhu X, Su W, Lu L, et al. Deformable detr: Deformable transformers for end-to-end object detection[J]. arXiv preprint arXiv:2010.04159, 2020.
+[23] Carreira J, Zisserman A. Quo vadis, action recognition? a new model and the kinetics dataset[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 2017: 6299-6308.
+[24] Tong Z, Song Y, Wang J, et al. Videomae: Masked autoencoders are data-efficient learners for self-supervised video pre-training[C]//Advances in neural information processing systems: 卷 35. 2022: 10078-10093.
+[25] Wang L, Huang B, Zhao Z, et al. Videomae v2: Scaling video masked autoencoders with dual masking[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 2023: 14549-14560.
+[26] Lin C, Xu C, Luo D, et al. Learning salient boundary feature for anchor-free temporal action localization[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 2021: 3320-3329.
+[27] Wang C, Cai H, Zou Y, et al. RGB stream is enough for temporal action detection[J]. arXiv preprint arXiv:2107.04362, 2021.
+[28] Liu X, Bai S, Bai X. An empirical study of end-to-end temporal action detection[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 2022: 20010-20019.
+[29] Cheng F, Xu M, Xiong Y, et al. Stochastic backpropagation: A memory efficient strategy for training video models[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 2022: 8301-8310.
+[30] Liu S, Xu M, Zhao C, et al. Etad: Training action detection end to end on a laptop[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 2023: 4525-4534.
+[31] Zhao C, Liu S, Mangalam K, et al. Re2tal: Rewiring pretrained video backbones for reversible temporal action localization[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 2023: 10637-10647.
+[32] Chen X, Guo Y, Liang J, et al. Temporal action detection model compression by progressive block drop[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 2025: 29225-29236.
+[33] Shou Z, Wang D, Chang S F. Temporal action localization in untrimmed videos via multi-stage cnns[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 2016: 1049-1058.
+[34] Lin T, Zhao X, Shou Z. Single shot temporal action detection[C]//Proceedings of the 25th ACM International Conference on Multimedia. 2017: 988-996.
+[35] Xu M, Zhao C, Rojas D S, et al. G-tad: Sub-graph localization for temporal action detection[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 2020: 10156-10165.
+[36] Gu A, Dao T. Mamba: Linear-time sequence modeling with selective state spaces[C]//First conference on language modeling. 2024.
+[37] Li K, Li X, Wang Y, et al. Videomamba: State space model for efficient video understanding[C]//Proceedings of the European Conference on Computer Vision (ECCV). Springer, 2024: 237-255.
+[38] Li K, Liu P, Guo D, et al. Mmad: Multi-label micro-action detection in videos[C]//Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV). 2025: 13225-13236.
+[39] Tan J, Zhao X, Shi X, et al. Pointtad: Multi-label temporal action detection with learnable query points[C]//Advances in Neural Information Processing Systems: 卷 35. 2022: 15268-15280.
+[40] Zhu Y, Zhang G, Tan J, et al. Dual detrs for multi-label temporal action detection[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 2024: 18559-18569.
+[41] Yu J, Jing M, Zhao G, et al. End-to-end Spatio-Temporal Information Aggregation For Micro-Action Detection[C]//Proceedings of the 32nd ACM International Conference on Multimedia. 2024: 11306-11312.
+[42] Pascanu R, Mikolov T, Bengio Y. On the difficulty of training recurrent neural networks[C]//Proceedings of the International Conference on Machine Learning (ICML). Pmlr, 2013: 1310-1318.
+[43] Lipton Z C, Berkowitz J, Elkan C. A critical review of recurrent neural networks for sequence learning[J]. arXiv preprint arXiv:1506.00019, 2015.
+[44] Xu M, Gao M, Chen Y T, et al. Temporal recurrent networks for online action detection[C]//Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV). 2019: 5532-5541.
+[45] Eun H, Moon J, Park J, et al. Learning to discriminate information for online action detection[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 2020: 809-818.
+[46] An J, Kang H, Han S H, et al. Miniroad: Minimal rnn framework for online action detection[C]//Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV). 2023: 10341-10350.
+[47] Wang X, Zhang S, Qing Z, et al. Oadtr: Online action detection with transformers[C]//Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV). 2021: 7565-7575.
+[48] Liu S, Cheng J, Xia Z, et al. Hcm: Online action detection with hard video clip mining[J]. IEEE Transactions on Multimedia, 2023, 26: 3626-3639.
+[49] Yang L, Han J, Zhang D. Colar: Effective and efficient online action detection by consulting exemplars[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 2022: 3160-3169.
+[50] Xu M, Xiong Y, Chen H, et al. Long short-term transformer for online action detection[C]//Advances in Neural Information Processing Systems: 卷 34. 2021: 1086-1099.
+[51] Chen J, Mittal G, Yu Y, et al. Gatehub: Gated history unit with background suppression for online action detection[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 2022: 19925-19934.
+[52] Wang J, Chen G, Huang Y, et al. Memory-and-anticipation transformer for online action understanding[C]//Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV). 2023: 13824-13835.
+[53] Wang S, Zhang C, Wang L, et al. Long and short-term collaborative decision-making transformer for online action detection and anticipation[J]. Pattern Recognition, 2025: 111773.
+[54] Zhao Y, Krähenbühl P. Real-time online video detection with temporal smoothing transformers[C]//Proceedings of the European Conference on Computer Vision (ECCV). Springer, 2022: 485-502.
+[55] Yang Z, Wang R, Tan Y, et al. MALT: Multi-scale action learning transformer for online action detection[C]//Proceedings of the International Joint Conference on Neural Networks (IJCNN). IEEE, 2024: 1-8.
+[56] Wang Y, Xu J, He Y, et al. Does video-text pretraining help open-vocabulary online action detection?[C]//Advances in Neural Information Processing Systems: 卷 37. 2024: 47908-47930.
+[57] Wang L, Xiong Y, Wang Z, et al. Temporal segment networks: Towards good practices for deep action recognition[C]//Proceedings of the European Conference on Computer Vision (ECCV). Springer, 2016: 20-36.
+[58] Cao S, Luo W, Wang B, et al. E2e-load: end-to-end long-form online action detection[C]//Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV). 2023: 10422-10432.
+[59] Li Y, Wu C Y, Fan H, et al. Mvitv2: Improved multiscale vision transformers for classification and detection[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 2022: 4804-4814.
+[60] Wang S, Liu Y, Zhang C. BiOMamba: Mamba-based Forward-Then-Backward Temporal Modeling for Online Action Detection and Anticipation[C]//Proceedings of the 33rd ACM International Conference on Multimedia. 2025: 787-795.
+[61] Catinello A S, Farinella G M, Furnari A. Mamba-OTR: A Mamba-Based Solution for Online Take and Release Detection from Untrimmed Egocentric Video[C]//International Conference on Image Analysis and Processing. Springer, 2025: 456-468.
+[62] Kellen P M, Becker D L, Reinhardt J M, et al. Computer-assisted assessment of hyoid bone motion from videofluoroscopic swallow studies[J]. Dysphagia, 2010, 25: 298-306.
+[63] Hossain I, Roberts-South A, Jog M, et al. Semi-automatic assessment of hyoid bone motion in digital videofluoroscopic images[J]. Computer Methods in Biomechanics and Biomedical Engineering: Imaging & Visualization, 2014, 2(1): 25-37.
+[64] Sanjeevi G, Gopalakrishnan U, Pathinarupothi R K, et al. Artificial intelligence in videofluoroscopy swallow study analysis: a comprehensive review[J]. Dysphagia, 2025, 40(5): 1035-1048.
+[65] Lee J T, Park E, Jung T D. Automatic detection of the pharyngeal phase in raw videos for the videofluoroscopic swallowing study using efficient data collection and 3d convolutional networks[J]. Sensors, 2019, 19(18): 3873.
+[66] Bandini A, Steele C M. The effect of time on the automated detection of the pharyngeal phase in videofluoroscopic swallowing studies[C]//2021 43rd Annual International Conference of the IEEE Engineering in Medicine & Biology Society (EMBC). IEEE, 2021: 3435-3438.
+[67] Jeong S Y, Kim J M, Park J E, et al. Application of deep learning technology for temporal analysis of videofluoroscopic swallowing studies[J]. Scientific Reports, 2023, 13(1): 17522.
+[68] Ruan X, Dai M, Chen Z, et al. Temporal micro-action localization for videofluoroscopic swallowing study[J]. IEEE Journal of Biomedical and Health Informatics, 2023, 27(12): 5904-5913.
+[69] Liu Z, Chen K, Wang S, et al. Deep learning in surgical process modeling: A systematic review of workflow recognition[J]. Journal of Biomedical Informatics, 2025: 104779.
+[70] Yi F, Jiang T. Hard frame detection and online mapping for surgical phase recognition[C]//International Conference on Medical Image Computing and Computer-Assisted Intervention. Springer, 2019: 449-457.
+[71] Kitaguchi D, Takeshita N, Matsuzaki H, et al. Real-time automatic surgical phase recognition in laparoscopic sigmoidectomy using the convolutional neural network-based deep learning approach[J]. Surgical endoscopy, 2020, 34(11): 4924-4931.
+[72] Jin Y, Long Y, Chen C, et al. Temporal memory relation network for workflow recognition from surgical video[J]. IEEE Transactions on Medical Imaging, 2021, 40(7): 1911-1923.
+[73] Gao X, Jin Y, Long Y, et al. Trans-svnet: Accurate phase recognition from surgical videos via hybrid embedding aggregation transformer[C]//International conference on medical image computing and computer-assisted intervention. Springer, 2021: 593-603.
+[74] Tao R, Zou X, Zheng G. Last: Latent space-constrained transformers for automatic surgical phase recognition and tool presence detection[J]. IEEE Transactions on Medical Imaging, 2023, 42(11): 3256-3268.
+[75] Liu Y, Huo J, Peng J, et al. SKiT: a Fast Key Information Video Transformer for Online Surgical Phase Recognition[C/OL]//Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV). 2023: 21017-21027. DOI:10.1109/ICCV51070.2023.01927.
+[76] Yang K, Li Q, Wang Z. Dacat: Dual-stream adaptive clip-aware time modeling for robust online surgical phase recognition[C]//Proceedings of the IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP). IEEE, 2025: 1-5.
+[77] Chen Z, Luo X, Wu J, et al. Surgplan++: Universal surgical phase localization network for online and offline inference[C]//Proceedings of the IEEE International Conference on Robotics and Automation (ICRA). IEEE, 2025: 12782-12788.
+[78] Li Y, Wu J, Tian L, et al. Meta-SurDiff: Classification Diffusion Model Optimized by Meta Learning is Reliable for Online Surgical Phase Recognition[J]. arXiv preprint arXiv:2506.14181, 2025.
+[79] Ghamsarian N, Taschwer M, Putzgruber-Adamitsch D, et al. Relevance detection in cataract surgery videos by spatio-temporal action localization[C]//Proceedings of the International Conference on Pattern Recognition (ICPR). IEEE, 2021: 10720-10727.
+[80] Schoeffmann K, Taschwer M, Sarny S, et al. Cataract-101: video dataset of 101 cataract surgeries[C]//Proceedings of the 9th ACM Multimedia Systems Conference. 2018: 421-425.
+[81] Ghamsarian N, El-Shabrawi Y, Nasirihaghighi S, et al. Cataract-1k dataset for deep-learning-assisted analysis of cataract surgery videos[J]. Scientific data, 2024, 11(1): 373.
+[82] Hu M, Xia P, Wang L, et al. Ophnet: A large-scale video benchmark for ophthalmic surgical workflow understanding[C]//Proceedings of the European Conference on Computer Vision (ECCV). Springer, 2024: 481-500.
+[83] Zisimopoulos O, Flouty E, Luengo I, et al. Deepphase: surgical phase recognition in cataracts videos[C]//International conference on medical image computing and computer-assisted intervention. Springer, 2018: 265-272.
+[84] Yeh H H, Jain A M, Fox O, et al. PhacoTrainer: a multicenter study of deep learning for activity recognition in cataract surgical videos[J]. Translational Vision Science & Technology, 2021, 10(13): 23-23.
+[85] Xia T, Jia F. Against spatial–temporal discrepancy: Contrastive learning-based network for surgical workflow recognition[J]. International Journal of Computer Assisted Radiology and Surgery, 2021, 16(5): 839-848.
+[86] Rommel N, Hamdy S. Oropharyngeal dysphagia: manifestations and diagnosis[J]. Nature Reviews Gastroenterology & Hepatology, 2016, 13(1): 49-59.
+[87] Pflug C, Bihler M, Emich K, et al. Critical dysphagia is common in Parkinson disease and occurs even in early stages: a prospective cohort study[J]. Dysphagia, 2018, 33: 41-50.
+[88] Hughes S M. Management of dysphagia in stroke patients[J]. Nursing Older People (through 2013), 2011, 23(3): 21.
+[89] Molfenter S M, Steele C M. Temporal variability in the deglutition literature[J]. Dysphagia, 2012, 27: 162-177.
+[90] Kendall K A, McKenzie S, Leonard R J, et al. Timing of events in normal swallowing: a videofluoroscopic study[J]. Dysphagia, 2000, 15(2): 74-83.
+[91] Zheng Y, Nixon M S, Allen R. Automated segmentation of lumbar vertebrae in digital videofluoroscopic images[J]. IEEE Transactions on Medical Imaging, 2004, 23(1): 45-52.
+[92] Amiot C, Girard C, Chanussot J, et al. Spatio-temporal multiscale denoising of fluoroscopic sequence[J]. IEEE transactions on medical imaging, 2016, 35(6): 1565-1574.
+[93] Goldfield E C, Buonomo C, Fletcher K, et al. Premature infant swallowing: patterns of tongue-soft palate coordination based upon videofluoroscopy[J]. Infant Behavior and Development, 2010, 33(2): 209-218.
+[94] Zhang Z, Mao S, Coyle J, et al. Automatic annotation of cervical vertebrae in videofluoroscopy images via deep learning[J]. Medical Image Analysis, 2021, 74: 102218.
+[95] Hsiao M Y, Weng C H, Wang Y C, et al. Deep learning for automatic hyoid tracking in videofluoroscopic swallow studies[J]. Dysphagia, 2023, 38(1): 171-180.
+[96] Gu A, Goel K, Re C. Efficiently Modeling Long Sequences with Structured State Spaces[C]//International Conference on Learning Representations. 2021.
+[97] Chen G, Huang Y, Xu J, et al. Video mamba suite: State space model as a versatile alternative for video understanding[J]. International Journal of Computer Vision, 2026, 134(1): 20.
+[98] Wang J, Sun K, Cheng T, et al. Deep high-resolution representation learning for visual recognition[J]. IEEE Transactions on Pattern Analysis and Machine Intelligence, 2020, 43(10): 3349-3364.
+[99] Kalman R E. A new approach to linear filtering and prediction problems[J]. 1960: 35-45.
+[100] Hyder S W, Usama M, Zafar A, et al. Action segmentation using 2d skeleton heatmaps and multi-modality fusion[C]//Proceedings of the IEEE International Conference on Robotics and Automation (ICRA). IEEE, 2024: 1048-1055.
+[101] Elfwing S, Uchibe E, Doya K. Sigmoid-weighted linear units for neural network function approximation in reinforcement learning[J]. Neural networks, 2018, 107: 3-11.
+[102] Tian Z, Shen C, Chen H, et al. Fcos: Fully convolutional one-stage object detection[C]//Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV). 2019: 9627-9636.
+[103] Rezatofighi H, Tsoi N, Gwak J, et al. Generalized intersection over union: A metric and a loss for bounding box regression[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 2019: 658-666.
+[104] Bodla N, Singh B, Chellappa R, et al. Soft-NMS–improving object detection with one line of code[C]//Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV). 2017: 5561-5569.
+[105] Dantas R O, Aguiar Cassiani R de, Dos Santos C M, et al. Effect of gender on swallow event duration assessed by videofluoroscopy[J]. Dysphagia, 2009, 24: 280-284.
+[106] Park T, Kim Y, Ko D H, et al. Initiation and duration of laryngeal closure during the pharyngeal swallow in post-stroke patients[J]. Dysphagia, 2010, 25: 177-182.
+[107] Zhang R, Qin B, Zhao J, et al. Locating X-ray coronary angiogram keyframes via long short-term spatiotemporal attention with image-to-patch contrastive learning[J]. IEEE Transactions on Medical Imaging, 2023, 43(1): 51-63.
+[108] Yang Y, Ramanan D. Articulated human detection with flexible mixtures of parts[J]. IEEE Transactions on Pattern Analysis and Machine Intelligence, 2012, 35(12): 2878-2890.
+[109] Moskvyak O, Maire F, Dayoub F, et al. Semi-supervised Keypoint Localization[C]//International Conference on Learning Representations. 2021.
+[110] Huang G, Li Y, Pleiss G, et al. Snapshot Ensembles: Train 1, Get M for Free[C]//International Conference on Learning Representations. 2017.
+[111] Hu J, Shen L, Sun G. Squeeze-and-excitation networks[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 2018: 7132-7141.
+[112] Fan H, Xiong B, Mangalam K, et al. Multiscale vision transformers[C]//Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV). 2021: 6824-6835.
+[113] Xiao B, Wu H, Wei Y. Simple baselines for human pose estimation and tracking[C]//Proceedings of the European Conference on Computer Vision (ECCV). 2018: 466-481.
+[114] He K, Zhang X, Ren S, et al. Deep residual learning for image recognition[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 2016: 770-778.
+[115] Yang M, Chen G, Zheng Y D, et al. Basictad: an astounding rgb-only baseline for temporal action detection[J]. Computer Vision and Image Understanding, 2023, 232: 103692.
+[116] Flaxman S R, Bourne R R, Resnikoff S, et al. Global causes of blindness and distance vision impairment 1990–2020: a systematic review and meta-analysis[J]. The Lancet Global Health, 2017, 5(12): e1221-e1234.
+[117] Sabanayagam C, Cheng C Y. Global causes of vision loss in 2015: are we on track to achieve the Vision 2020 target?[J]. The Lancet Global Health, 2017, 5(12): e1164-e1165.
+[118] Song Y, Zhang H, Zhang Y, et al. Minimally invasive glaucoma surgery in primary angle-closure glaucoma[J]. The Asia-Pacific Journal of Ophthalmology, 2022, 11(5): 460-469.
+[119] Zhang Y, Yu P, Zhang Y, et al. Influence of goniotomy size on treatment safety and efficacy for primary open-angle glaucoma: a multicenter study[J]. American Journal of Ophthalmology, 2023, 256: 118-125.
+[120] Dietlein T S, Jacobi P C, Lüke C, et al. Morphological variability of the trabecular meshwork in glaucoma patients: implications for non-perforating glaucoma surgery[J]. British journal of ophthalmology, 2000, 84(12): 1354-1359.
+[121] PRC N H C of. The National Eye Health Plan for the Fourteenth Five-Year Plan (2021-2025)[Z]. http://www.nhc.gov.cn/yzygj/s7653/202201/d607d24b6b1c4bd9b827eedf41eff820.shtml, 2022.
+[122] Resnikoff S, Lansingh V C, Washburn L, et al. Estimated number of ophthalmologists worldwide (International Council of Ophthalmology update): will we meet the needs?[J]. British Journal of Ophthalmology, 2020, 104(4): 588-592.
+[123] Shen Y, Elhamifar E. Progress-aware online action segmentation for egocentric procedural task videos[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 2024: 18186-18197.
+[124] Kang H, Hyun J, An J, et al. ActionSwitch: Class-Agnostic Detection of Simultaneous Actions in Streaming Videos[C]//Proceedings of the European Conference on Computer Vision (ECCV). Springer, 2024: 383-400.
+[125] Pang Z, Sener F, Yao A. Context-enhanced memory-refined transformer for online action detection[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 2025: 8700-8710.
+[126] Ni B, Peng H, Chen M, et al. Expanding language-image pretrained models for general video recognition[C]//Proceedings of the European Conference on Computer Vision (ECCV). Springer, 2022: 1-18. 

@@ -81,7 +81,7 @@ ActionSwitch\cite{kang2024actionswitch} 利用状态图进行切换管理，但�
 本章首先构建一个多中心、标注精细的青光眼手术视频数据集，
 进一步丰富了青光眼手术导航领域的数据资源，
 为算法研究提供坚实的数据基础。
-在算法层面上，本章从时间维度构建先验知识体系，提出了\fulltwo（\sexytwo）。具体而言，
+在算法层面上，本章从时间维度构建先验知识体系，提出了\fulltwo（\fulltwoen, ~\sexytwo）。具体而言，
 针对语义混淆的核心挑战，本章提出了\graphmodulefull（\graphmodulefullen, ~\graphmoduleshort）。
 该模块基于上一章的优化设想，将手术全局逻辑步骤转化为可学习的图表征。
 配合时长分布感知机制，针对当前环境的置信度进行实时评估，
@@ -324,7 +324,7 @@ ActionSwitch\cite{kang2024actionswitch} 利用状态图进行切换管理，但�
 \section{本章方法}
 
 % \subsection{总体架构设计}
-\sexytwo 核心逻辑是通过\graphmoduleshort 将提取特征与手术规程逻辑引导相结合，
+\sexytwo 核心逻辑是通过\graphmoduleshort 模块将提取特征与手术规程逻辑引导相结合，
 通过捕捉历史动作信息、融入手术规程先验、实现视觉与逻辑信息的有效融合，
 在训练阶段，通过类别边界加权损失函数解决分布不平衡与边界模糊问题，
 确保模型对短动作、相似动作的检测性能。
@@ -357,7 +357,7 @@ ActionSwitch\cite{kang2024actionswitch} 利用状态图进行切换管理，但�
 \subsection{\graphmodulefull}
 \label{subsec: graph}
 % TODO: ai味道太重：
-\graphmoduleshort 作为\sexytwo 框架的核心逻辑增强模块，
+\graphmoduleshort 模块作为\sexytwo 框架的核心逻辑增强模块，
 其核心动机是通过青光眼手术的固有规程特性，
 基于动态逻辑转移矩阵构建约束机制，
 让模型感知当前动作持续时间，
@@ -370,8 +370,7 @@ ActionSwitch\cite{kang2024actionswitch} 利用状态图进行切换管理，但�
 融入手术规程先验与时长信息，实现逻辑约束与演化；
 最终通过\fusion，将逻辑转移结果与视觉动作预测进行协同融合，
 兼顾视觉细节与规程逻辑，实现精准动作决策。
-该模块整体可概括为三个紧密关联的阶段，
-分别为记忆更新阶段、规则演化阶段与决策融合阶段，
+该模块可概括为记忆更新阶段、规则演化阶段与决策融合阶段三个紧密关联的阶段，
 三个阶段协同工作，实现“利用历史预测、融入规程规则、优化当前决策”的核心目标，具体设计如下：
 
 \textbf{\memoryunit}\quad
@@ -796,7 +795,7 @@ E2E-LOAD \cite{cao2023e2e}、CMeRT\cite{pang2025context}、BioMamba\cite{wang202
 实验主要考察：\memoryunit（\text{MU}）、
 \evolution （\text{EV}）以及\fusion（\text{FN}）。
 
-如表~\ref{tab:ablation_module} 所示，实验结果验证了 \graphmoduleshort 框架中各组件的协同增益。
+如表~\ref{tab:ablation_module} 所示，实验结果验证了 \graphmoduleshort 模块中各组件的协同增益。
 具体而言，在消融 \memoryunit 时（w/o MU），模型退化为直接使用当前帧的视觉预测概率替代抗漂移记忆特征。
 实验表明，MU 的更新机制能够生成更稳定、鲁棒的状态表示，从而在各项指标上带来稳定提升。
 对于 \evolution 的消融（w/o EV），我们去除了基于风险函数的时长感知与自环权重计算，

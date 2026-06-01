@@ -9,8 +9,8 @@
 在 VFSS 分析中，对微动作（如舌骨运动）进行精确的时序定位与分析具有重要意义 
 \cite{molfenter2012temporal, kendall2000timing}。
 
-相较于常规的时序动作定位（TAL）任务，
-VFSS 中的时序微动作定位（TMAL）受限于成像原理及吞咽生理机制的双重特性，面临更为严峻的挑战：
+相较于常规的时序动作定位任务，
+VFSS 中的时序微动作定位受限于成像原理及吞咽生理机制的双重特性，面临更为严峻的挑战：
 1) \textbf{关键解剖结构的模糊性}：
 微动作的精确定位依赖于对关键解剖结构（如舌骨）运动的持续追踪。
 然而，X 射线影像的对比度低 \cite{zheng2004automated, amiot2016spatio} ，关键结构轮廓模糊；
@@ -73,7 +73,7 @@ VFSS 中的时序微动作定位（TMAL）受限于成像原理及吞咽生理�
 
 \section{问题定义}
 
-时序微动作定位（TMAL）任务旨在精准预测视频中微动作的起止时间，并识别其具体类别。
+时序微动作定位任务旨在精准预测视频中微动作的起止时间，并识别其具体类别。
 给定一个未裁剪的吞咽视频 \( \vect{V} \)，令标签集合 \(\matr{Z}=\{\vect{z}_1, \vect{z}_2, \dots, \vect{z}_{N}\}\) 
 表示视频中包含的微动作实例，其中 \(N\) 为实例总数。
 每个实例定义为 \(\vect{z}_i=(s_i, e_i, a_i)\)，
@@ -138,10 +138,10 @@ $\mathbf{C}\in\mathbb{R}^{S \times D \times N}$ 和 $\Delta\in\mathbb{R}^{S \tim
 
 本章提出了\fullname （\sexyname） 框架。
 遵循 Ruan 等人~\cite{ruan2023temporal} 的思路，
-本章采用“由粗到细”（Coarse-to-Fine）的策略以降低微动作定位的难度并提升模型性能。
+本章采用“由粗到细”的策略以降低微动作定位的难度并提升模型性能。
 具体而言，首先在粗定位阶段利用现有检测器
 （如 ActionFormer~\cite{zhang2022actionformer} 
-或 ActionMamba\cite{chen2024video}）提取完整吞咽事件的候选区间（Proposals）；
+或 ActionMamba\cite{chen2024video}）提取完整吞咽事件的候选区间；
 随后在精细定位阶段，以候选区间的中心为基准向外扩展固定时长（如 4 秒）对视频进行裁剪。
 粗定位阶段的标签集记为 \(\matr{Z}^{1}=\{\vect{z}^1_1,\vect{z}^1_2,\ldots,\vect{z}^1_M\}\)，
 由于每个吞咽事件包含 C 类微动作，以 \(M = N/C\) 表示吞咽事件的总数。
@@ -152,10 +152,10 @@ $\mathbf{C}\in\mathbb{R}^{S \times D \times N}$ 和 $\Delta\in\mathbb{R}^{S \tim
 针对精细定位阶段，本章引入骨架热图作为一种编码了解剖学先验的新模态。
 通过追踪八个吞咽强相关的关键点并构建结构化骨架序列，
 本章所提框架增强了模型对解剖结构的关注度，显式抑制背景噪声，克服了仅依赖外观数据的局限性。
-基于提取的外观与骨架特征，本章设计了\crossblockfull（\crossblockshort）模块以实现多模态特征的对比校准和特征融合。
-校准后的特征被送入并行检测器，其输出的分类得分（Logits）与边界偏移量（Offsets）经组合后，
+基于提取的外观与骨架特征，本章设计了\crossblockfull 模块以实现多模态特征的对比校准和特征融合。
+校准后的特征被送入并行检测器，其输出的分类得分与边界偏移量经组合后，
 生成最终的微动作定位预测结果。
-\sexyname 的整体框架如图~\ref{fig:framework} 所示。
+整体框架如图~\ref{fig:framework} 所示。
 
 \begin{algorithm}[t]
     \renewcommand{\algorithmicrequire}{\textbf{输入：}}
@@ -296,7 +296,7 @@ $\mathbf{C}\in\mathbb{R}^{S \times D \times N}$ 和 $\Delta\in\mathbb{R}^{S \tim
 通过减去这种高能量的背景分量，我们相对放大了微小目标引起的局部特征变化，
 使得模型能够敏锐感知像素级幅度的细微运动，从而有效区分高度相似的微动作类别。
 具体而言，在拼接 \(\vect{F}^{\text{app}}_{\text{fw}}\) 和 \(\vect{F}^{\text{app}}_{\text{bw}}\) 后，
-\crossblockshort 模块中嵌入了\channelblockfull（\channelblockshort） ，公式如下：
+~\crossblockshort 模块中嵌入了\channelblockfull（\channelblockshort） ，公式如下：
 \begin{equation}
 \begin{aligned}\label{eq: ccm}
     {\rm \crossblockshort}(\vect{F}^{\text{app}},\vect{F}^{\text{ske}})=\vect{F}^{\text{app}}+\psi_{\text{out}}(\mathcal{C}([\vect{F}^{\text{app}}_{\text{fw}}\|\vect{F}^{\text{app}}_{\text{bw}}]))
@@ -531,7 +531,7 @@ ActionMamba 基线~\cite{chen2024video} & 82.0 & 74.3 & 53.1 & 19.9 & 59.0 \\
 详细的超参数敏感性分析见第~\ref{sec:hyper} 节。
 此外，训练过程中引入了指数移动平均（EMA）\cite{huang2017snapshot} 及梯度裁剪机制以增强训练稳定性。
 所有实验均基于 PyTorch 深度学习框架，并在搭载 7 张 NVIDIA GeForce RTX 3090 GPU（24GB 显存）的计算平台上完成。
-模型的参数量（Params）与浮点运算次数（FLOPs）均使用 calflops \footnote{https://github.com/MrYxJ/calculate-flops.pytorch} 库进行统计。
+模型的参数量与浮点运算次数（FLOPs）均使用 calflops \footnote{https://github.com/MrYxJ/calculate-flops.pytorch} 库进行统计。
 
 
 \begin{table}[tp]
@@ -862,11 +862,11 @@ HRNet~\cite{wang2020deep}  & 7.7 & 28.5 & 82.2 \\
 也来自更高效的计算架构，因而更适合资源受限的临床部署场景。
 
 \textbf{\channelblockshort 模块消融分析}\quad 表~\ref{tab: CE ablation}探究了 \channelblockshort 的作用。
-去除\channelblockshort 模块（w/o \channelblockshort）导致性能显著衰减（mAP@Avg. 下降 1.0\%），充分验证了该组件的必要性。
+去除\channelblockshort 模块（w/o ~\channelblockshort）导致性能显著衰减（mAP@Avg. 下降 1.0\%），充分验证了该组件的必要性。
 本实验同时比对了通道增强机制模块SE\cite{hu2018squeeze}，
 虽然引入 SE 模块能带来轻微改善，但本章设计的 \channelblockshort 在所有增强模块中，
 以最低的参数量（109.2M）和微乎其微的额外计算成本，实现了最佳精度（64.3\% mAP@Avg.）。
-\channelblockshort 采用的减法操作优于加法变体（\channelblockshort-Add，mAP 高出 0.8\%），
+所提出的\channelblockshort 采用的减法操作优于加法变体（\channelblockshort-Add，mAP 高出 0.8\%），
 这进一步验证了本章抑制共享背景噪声的设计动机。
 
 \textbf{骨架编码器架构探究}\quad 表~\ref{tab: heatmap encoder ablation}评估了三种不同架构的骨架特征提取器：
